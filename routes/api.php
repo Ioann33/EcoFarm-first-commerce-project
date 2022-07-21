@@ -25,3 +25,4 @@ Route::get('/getStorageOrderIn/{id}', [\App\Http\Controllers\ApiController::clas
 
 Route::post('/goodsMovementPush', [\App\Http\Controllers\ApiController::class, 'goodsMovementPush'])->name('goods.movement.push');
 Route::post('/goodsMovementPull', [\App\Http\Controllers\ApiController::class, 'goodsMovementPull'])->name('goods.movement.pull');
+Route::post('/setPrice', [\App\Http\Controllers\ApiController::class, 'setPrice'])->name('set.price');
