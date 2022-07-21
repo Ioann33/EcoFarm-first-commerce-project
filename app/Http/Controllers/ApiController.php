@@ -37,17 +37,21 @@ class ApiController extends Controller
 
     }
 
-    public function GoodsMovement(Request $request){
-        if ($request->action === 'pull'){
+    public function GoodsMovementPush(Request $request){
 
-        }else{
-
-        }
-
-        var_dump($request->action);
-        var_dump($request->where);
+        var_dump($request->storage_id_from);
+        var_dump($request->storage_id_to);
         var_dump($request->goods_id);
         var_dump($request->amount);
         var_dump(Auth::id());
+    }
+
+    public function GoodsMovementPull(Request $request){
+
+        var_dump($request->action);
+        var_dump($request->movements_id);
+        var_dump(Auth::id());
+        echo 'complited';
+
     }
 }
