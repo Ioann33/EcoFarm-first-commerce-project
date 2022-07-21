@@ -6,6 +6,7 @@ use App\Http\Resources\OrderInResource;
 use App\Http\Resources\StorageGoodsResource;
 use App\Http\Resources\StoragesResource;
 use App\Http\Resources\UserStorageResource;
+use App\Models\Movements;
 use App\Models\Orders;
 use App\Models\StorageGoods;
 use App\Models\Storages;
@@ -37,21 +38,60 @@ class ApiController extends Controller
 
     }
 
-    public function GoodsMovementPush(Request $request){
+    public function goodsMovementPush(Request $request){
 
-        var_dump($request->storage_id_from);
-        var_dump($request->storage_id_to);
-        var_dump($request->goods_id);
-        var_dump($request->amount);
-        var_dump(Auth::id());
+        $newMovement = new Movements();
+        $newMovement->user_id_created = Auth::id();
+        $newMovement->date_created = date('Y-m-d H:i:s');
+        $newMovement->storage_id_from = $request->storage_id_from;
+        $newMovement->storage_id_to = $request->storage_id_to;
+        $newMovement->goods_id = $request->goods_id;
+        $newMovement->amount = $request->amount;
+        if (isset($request->price)){
+            $newMovement->price = $request->price;
+        }
+
+        if (isset($request->order_main)){
+            $newMovement->order_main = $request->order_main;
+            $order = Orders::findOrFail($request->order_main);
+            if ($order->status === null || $order->status === 'progress'){
+                $order->status = 'completed';
+                $order->date_status = date('Y-m-d H:i:s');
+                $order->user_id_handler = Auth::id();
+                if ($order->save()){
+                    echo 'status updating OK';
+                }
+            }else{
+                return 'this order already completed or canceled';
+            }
+        }
+
+        //TODO handle possible error
+
+        if($newMovement->save()){
+            echo 'Goods push OK';
+        }
+
     }
 
-    public function GoodsMovementPull(Request $request){
+    public function goodsMovementPull(Request $request){
 
-        var_dump($request->action);
-        var_dump($request->movements_id);
-        var_dump(Auth::id());
-        echo 'complited';
+        $movement = Movements::findOrFail($request->movement_id);
+        $movement->user_id_accepted = Auth::id();
+        $movement->date_accepted = date('Y-m-d H:i:s');
+        //TODO handle possible error
+        if($movement->save()){
+            echo 'Goods pull OK';
+        }
+    }
 
+    public function setPrice(Request $request){
+        $movement = Movements::findOrFail($request->movement_id);
+        $movement->price = $request->price;
+        var_dump($movement->save());
+
+        if($movement->save()) {
+            echo 'Set price OK';
+        }
     }
 }

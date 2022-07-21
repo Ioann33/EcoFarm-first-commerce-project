@@ -18,6 +18,11 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <style>
+        form{
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
