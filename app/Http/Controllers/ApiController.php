@@ -7,6 +7,7 @@ use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
 use App\Http\Resources\StoragesResource;
 use App\Http\Resources\UserStorageResource;
+use App\Models\MainStore;
 use App\Models\Movements;
 use App\Models\Orders;
 use App\Models\StorageGoods;
@@ -158,6 +159,7 @@ class ApiController extends Controller
     }
 
     public function getMainStorage(){
-
+        $mainStore = MainStore::all()->where('name', '=', 'main_storage')->toArray();
+        return response()->json(['storage_id'=>$mainStore[0]['param']]);
     }
 }
