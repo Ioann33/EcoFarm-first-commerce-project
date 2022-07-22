@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\OrderInResource;
+use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
 use App\Http\Resources\StoragesResource;
 use App\Http\Resources\UserStorageResource;
@@ -11,13 +12,15 @@ use App\Models\Orders;
 use App\Models\StorageGoods;
 use App\Models\Storages;
 use App\Models\UserStorages;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ApiController extends Controller
 {
     public function getMyStorage(){
-        $userStorage = UserStorages::all()->where('user_id', '=', Auth::user()->id);
+        $user_id = Auth::id();
+        $userStorage = UserStorages::all()->where('user_id', '=', $user_id);
         return UserStorageResource::collection($userStorage);
     }
 
@@ -39,6 +42,12 @@ class ApiController extends Controller
     }
 
     public function goodsMovementPush(Request $request){
+        $this->validate($request,[
+            'storage_id_from'=>'required',
+            'storage_id_to'=>'required',
+            'goods_id'=>'required',
+            'amount'=>'required',
+        ]);
 
         $newMovement = new Movements();
         $newMovement->user_id_created = Auth::id();
@@ -59,7 +68,7 @@ class ApiController extends Controller
                 $order->date_status = date('Y-m-d H:i:s');
                 $order->user_id_handler = Auth::id();
                 if ($order->save()){
-                    echo 'status updating OK';
+                    return response()->json(['status'=>'ok']);
                 }
             }else{
                 return 'this order already completed or canceled';
@@ -69,29 +78,52 @@ class ApiController extends Controller
         //TODO handle possible error
 
         if($newMovement->save()){
-            echo 'Goods push OK';
+            return response()->json(['status'=>'ok']);
         }
 
     }
 
     public function goodsMovementPull(Request $request){
 
+        $this->validate($request,[
+            'movement_id'=>'required',
+        ]);
+
         $movement = Movements::findOrFail($request->movement_id);
         $movement->user_id_accepted = Auth::id();
         $movement->date_accepted = date('Y-m-d H:i:s');
         //TODO handle possible error
         if($movement->save()){
-            echo 'Goods pull OK';
+            return response()->json(['status'=>'ok']);
         }
     }
 
     public function setPrice(Request $request){
-        $movement = Movements::findOrFail($request->movement_id);
+        $this->validate($request,[
+            'movement_id'=>'required',
+            'price'=>'required',
+        ]);
+
+        try {
+            $movement = Movements::findOrFail($request->movement_id);
+        }catch (QueryException $e){
+            return response()->json(['message'=>$e->getMessage()]);
+        }
+
+
         $movement->price = $request->price;
-        var_dump($movement->save());
+
 
         if($movement->save()) {
-            echo 'Set price OK';
+            return response()->json(['status'=>'ok']);
         }
+    }
+
+    public function getStorageGoodsAllowed(Request $request){
+
+
+        $goods = StorageGoods::all()->where('storage_id','=', $request->id);
+
+        return StorageAllowedGoodsResource::collection($goods);
     }
 }
