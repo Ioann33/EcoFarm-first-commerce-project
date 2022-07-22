@@ -27,3 +27,4 @@ Route::post('/goodsMovementPush', [\App\Http\Controllers\ApiController::class, '
 Route::post('/goodsMovementPull', [\App\Http\Controllers\ApiController::class, 'goodsMovementPull']);
 Route::post('/setPrice', [\App\Http\Controllers\ApiController::class, 'setPrice']);
 Route::get('/getStorageGoodsAllowed/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageGoodsAllowed']);
+Route::post('/createOrder', [\App\Http\Controllers\ApiController::class, 'createOrder']);

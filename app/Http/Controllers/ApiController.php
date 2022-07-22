@@ -68,7 +68,7 @@ class ApiController extends Controller
                 $order->date_status = date('Y-m-d H:i:s');
                 $order->user_id_handler = Auth::id();
                 if ($order->save()){
-                    return response()->json(['status'=>'ok']);
+                    response()->json(['status'=>'ok']);
                 }
             }else{
                 return 'this order already completed or canceled';
@@ -121,9 +121,43 @@ class ApiController extends Controller
 
     public function getStorageGoodsAllowed(Request $request){
 
+        $this->validate($request,[
+            'storage_id'=>'required',
+        ]);
 
         $goods = StorageGoods::all()->where('storage_id','=', $request->id);
 
         return StorageAllowedGoodsResource::collection($goods);
+    }
+
+    public function createOrder(Request $request){
+
+        $this->validate($request,[
+            'storage_id_from'=>'required',
+            'storage_id_to'=>'required',
+            'goods_id'=>'required',
+            'amount'=>'required',
+        ]);
+
+        $newOrder = new Orders();
+
+        $newOrder->user_id_created = Auth::id();
+        $newOrder->date_created = date('Y-m-d H:i:s');
+        $newOrder->storage_id_from = $request->storage_id_from;
+        $newOrder->storage_id_to = $request->storage_id_to;
+        $newOrder->goods_id = $request->goods_id;
+        $newOrder->amount = $request->amount;
+
+        if (isset($request->order_main)){
+            $newOrder->order_main = $request->order_main;
+        }
+
+        if ($newOrder->save()){
+            return response()->json(['status'=>'ok']);
+        }
+    }
+
+    public function getMainStorage(){
+
     }
 }

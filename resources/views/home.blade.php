@@ -60,6 +60,28 @@
 
                             <input type="submit" value="confirm">
                         </form>
+                        <form method="post" action="{{ route('create.order') }}">
+                            @csrf
+                            <div>Create Order</div>
+                            <label>Goods
+                                <input type="text" name="goods_id">
+                            </label>
+                            <label>Amount
+                                <input type="text" name="amount">
+                            </label>
+                            <label>From
+                                <input type="text" name="storage_id_from">
+                            </label>
+                            <label>to
+                                <input type="text" name="storage_id_to">
+                            </label>
+                            <label>order_main
+                                <input type="text" name="order_main">
+                            </label>
+
+
+                            <input type="submit" value="confirm">
+                        </form>
                 </div>
             </div>
         </div>

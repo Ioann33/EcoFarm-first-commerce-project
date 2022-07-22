@@ -28,3 +28,4 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::post('/goodsMovementPush', [\App\Http\Controllers\ApiController::class, 'goodsMovementPush'])->name('goods.movement.push');
 Route::post('/goodsMovementPull', [\App\Http\Controllers\ApiController::class, 'goodsMovementPull'])->name('goods.movement.pull');
 Route::post('/setPrice', [\App\Http\Controllers\ApiController::class, 'setPrice'])->name('set.price');
+Route::post('/createOrder', [\App\Http\Controllers\ApiController::class, 'createOrder'])->name('create.order');
