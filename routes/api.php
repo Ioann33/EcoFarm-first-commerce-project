@@ -17,11 +17,3 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::get('/getMyStorage', [\App\Http\Controllers\ApiController::class, 'getMyStorage']);
-Route::get('/getStorageProp/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageProp']);
-Route::get('/getStorageGoodsAvailable/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageGoodsAvailable']);
-Route::get('/getStorageOrderIn/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageOrderIn']);
-
-Route::post('/goodsMovementPush', [\App\Http\Controllers\ApiController::class, 'goodsMovementPush'])->name('goods.movement.push');
-Route::post('/goodsMovementPull', [\App\Http\Controllers\ApiController::class, 'goodsMovementPull'])->name('goods.movement.pull');
