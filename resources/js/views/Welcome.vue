@@ -48,10 +48,8 @@ export default {
     name: "Welcome",
     data() {
         return {
-            //user_login: 'graf',
-            user_login: '',
-            user_password: ''
-            //user_password: 'Rkfcnth45'
+            user_login: 'djeklu',
+            user_password: '12345678'
         }
     },
     methods: {
@@ -69,15 +67,36 @@ export default {
                         console.log('token: '+r.config.headers['X-XSRF-TOKEN']);
 
                         localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN']);
-                        console.log('Redirect to /home2');
+                        console.log('Redirect to /home');
 
 
-                        axios.get('/api/get').then(res => {
-                            console.log('get: '+res.data)
+                        axios.get('/api/getMyStorage').then(res => {
+                            console.log(res.data)
+                            let a = res.data.data
+                            console.log(a)
+                            console.log(a.length)
+                            if(a.length>1)
+                            {
+                                console.log('Redirect to /SelectSorage')
+
+                                this.$router.push({name: 'selectStorage'});
+                                //ocation.reload();
+                            }
+                            else {
+                                console.log('save to Localstorage')
+                                localStorage.setItem('my_storage_id', a[0]['storage_id']);
+                                this.$router.push({name: 'home'});
+                                // location.reload();
+                            }
+
+                            // a.forEach(function(item, i, arr){
+                            //     console.log( i + ": " + item['storage_id'] + " (массив:" + arr + ")" );
+                            // })
+
                         })
 
-                        //this.$router.push({name: 'home2'});
-                        location.reload();
+                        // this.$router.push({name: 'home'});
+                        // location.reload();
                     })
                     .catch(err => {
                         console.log('Auth...no');
