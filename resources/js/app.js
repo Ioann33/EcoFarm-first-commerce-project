@@ -1,8 +1,10 @@
 import './bootstrap';
+import './bootstrap.min'
+import './custom'
 
 import { createApp } from 'vue';
 
-import app from './Page/app.vue'
+import App from './Page/App.vue'
 import router from './router/router'
 
 // import Home from "./views/Home.vue";
@@ -18,7 +20,7 @@ import router from './router/router'
 //     routes, // short for `routes: routes`
 // })
 
-createApp(app)
+createApp(App)
     .use(router)
     .mount("#app")
 

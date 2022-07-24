@@ -31,9 +31,25 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/bootstrap.css',
+                'resources/css/style.css',
                 'resources/js/app.js',
+//                'resources/js/bootstrap.min.js',
+//                'resources/js/custom.js'
             ],
             refresh: true,
         }),
     ],
+    resolve: {
+        extensions: [
+            ".mjs",
+            ".js",
+            ".ts",
+            ".jsx",
+            ".tsx",
+            ".json",
+            ".vue",
+            ".scss",
+        ],
+    }
 });
