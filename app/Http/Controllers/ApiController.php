@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\getListOrderAllResource;
+use App\Http\Resources\getListOrderProcessedResource;
+use App\Http\Resources\getListOrderInResource;
+use App\Http\Resources\getListOrderOutResource;
 use App\Http\Resources\OrderInResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
@@ -122,9 +126,6 @@ class ApiController extends Controller
 
     public function getStorageGoodsAllowed(Request $request){
 
-        $this->validate($request,[
-            'storage_id'=>'required',
-        ]);
 
         $goods = StorageGoods::all()->where('storage_id','=', $request->id);
 
@@ -161,5 +162,45 @@ class ApiController extends Controller
     public function getMainStorage(){
         $mainStore = MainStore::all()->where('name', '=', 'main_storage')->toArray();
         return response()->json(['storage_id'=>$mainStore[0]['param']]);
+    }
+
+    public function getListOrder(Request $request){
+
+
+        if ($request->status === 'in'){
+            $orderList = Orders::all()->where('status','=', null)->where('storage_id_to', '=', $request->id);
+
+            return getListOrderInResource::collection($orderList);
+        }
+
+        if ($request->status === 'out'){
+            $orderList = Orders::all()->where('status','=', null)->where('storage_id_from', '=', $request->id);
+
+            return getListOrderOutResource::collection($orderList);
+        }
+
+        if ($request->status === 'canceled'){
+            $orderList = Orders::all()->where('status','=', 'canceled')->where('storage_id_from', '=', $request->id);
+
+            return getListOrderProcessedResource::collection($orderList);
+        }
+
+        if ($request->status === 'progress'){
+            $orderList = Orders::all()->where('status','=', 'progress')->where('storage_id_from', '=', $request->id);
+
+            return getListOrderProcessedResource::collection($orderList);
+        }
+
+        if ($request->status === 'completed'){
+            $orderList = Orders::all()->where('status','=', 'completed')->where('storage_id_from', '=', $request->id);
+
+            return getListOrderProcessedResource::collection($orderList);
+        }
+
+        if ($request->status === 'all'){
+            $orderList = Orders::all()->where('storage_id_from', '=', $request->id);
+
+            return getListOrderAllResource::collection($orderList);
+        }
     }
 }
