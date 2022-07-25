@@ -1,13 +1,30 @@
-require('./bootstrap');
+import './bootstrap';
+import './bootstrap.min'
+import './custom'
 
-window.Vue = require('vue').default;
+import { createApp } from 'vue';
+
+import App from './Page/App.vue'
+import router from './router/router'
+
+// import Home from "./views/Home.vue";
+//
+// const routes = [
+//     { path: '/', component: Home },
+//     //{ path: '/about', component: About },
+// ]
+//
+// const router = VueRouter.createRouter({
+//     // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
+//     history: VueRouter.createWebHashHistory(),
+//     routes, // short for `routes: routes`
+// })
+
+createApp(App)
+    .use(router)
+    .mount("#app")
 
 
-Vue.component('App', require('./src/App.vue').default);
 
-
-const app = new Vue({
-    el: '#app',
-});
-
+//new Vue(Vue.util.extend({ router }, app)).$mount('#app');
 
