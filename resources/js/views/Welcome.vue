@@ -57,7 +57,6 @@ export default {
             console.log('Auth...');
             axios.get('/sanctum/csrf-cookie').then(response => {
                 axios.post('/login', {
-                    email: this.user_login,
                     login: this.user_login,
                     password: this.user_password
                 })
@@ -67,7 +66,6 @@ export default {
                         console.log('token: '+r.config.headers['X-XSRF-TOKEN']);
 
                         localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN']);
-                        console.log('Redirect to /home');
 
 
                         axios.get('/api/getMyStorage').then(res => {
@@ -80,7 +78,7 @@ export default {
                                 console.log('Redirect to /SelectSorage')
 
                                 this.$router.push({name: 'selectStorage'});
-                                //ocation.reload();
+                                //location.reload();
                             }
                             else {
                                 console.log('save to Localstorage')

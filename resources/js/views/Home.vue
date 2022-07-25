@@ -7,13 +7,13 @@
 <div class="page-content header-clear-medium">
 
 
-
+{{ storage_name }}
 
     <div v-if="money_in">money in</div>
     <div v-if="money_out">money out</div>
 
     <div v-if="order_in">order in</div>
-    <div v-if="order_out">order out</div>
+    <div v-if="order_out === 'true'">order outdddd {{ order_out }}</div>
 
     <div v-if="move_in">move in</div>
     <div v-if="move_out">move out</div>
@@ -34,6 +34,8 @@ import headBar from "../components/headBar";
 import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
 
+
+
 export default {
     name: "Home",
     components:{
@@ -48,7 +50,8 @@ export default {
             move_out: false,
             money_in: false,
             money_out: false,
-            storage_id: null
+            storage_id: null,
+            storage_name: null
 
         }
     },
@@ -68,6 +71,7 @@ export default {
         this.money_out = localStorage.getItem('money_out');
         this.move_in = localStorage.getItem('move_in');
         this.move_out = localStorage.getItem('move_out');
+        this.storage_name = localStorage.getItem('storage_name');
 
 
         // document.onreadystatechange = () => {
