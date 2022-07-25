@@ -11,5 +11,8 @@ class UserStorages extends Model
 
     protected $table = 'users_storages';
 
+    public function storage(){
+        return $this->belongsTo(Storages::class, 'storage_id');
+    }
 
 }
