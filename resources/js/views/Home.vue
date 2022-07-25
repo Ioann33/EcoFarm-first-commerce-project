@@ -13,7 +13,7 @@
     <div v-if="money_out">money out</div>
 
     <div v-if="order_in">order in</div>
-    <div v-if="order_out === 'true'">order outdddd {{ order_out }}</div>
+    <div v-if="order_out === 'true'">order out</div>
 
     <div v-if="move_in">move in</div>
     <div v-if="move_out">move out</div>
