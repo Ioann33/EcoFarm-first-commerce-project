@@ -7,18 +7,69 @@
 <div class="page-content header-clear-medium">
 
 
-{{ storage_name }}
+    <div data-card-height="150" style="height: 150px" class="card card-style rounded-m shadow-xl preload-img" data-src="images/teplitsa.webp">
+        <div class="card-top mt-3 ms-3">
+            <h1 class="color-white mb-0 mb-n2 font-22">{{ storage_name }} </h1>
+            <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">{{storage_name}}</p>
+        </div>
+        <div class="card-center text-center">
+            <h1 class="color-white fa-4x">{{ balance }} ₴ </h1>
+            <p class="color-white opacity-70 font-11 mb-n5">Баланс</p>
+        </div>
 
-    <div v-if="money_in">money in</div>
-    <div v-if="money_out">money out</div>
-
-    <div v-if="order_in">order in</div>
-    <div v-if="order_out === 'true'">order out</div>
-
-    <div v-if="move_in">move in</div>
-    <div v-if="move_out">move out</div>
+        <div class="card-overlay bg-black opacity-40"></div>
+    </div>
 
 
+    <div class="card card-style">
+        <div class="content mt-0 mb-0">
+            <div class="list-group list-custom-large short-border">
+
+                <router-link :to="{name: 'makeOrder'}" v-if="order_out">
+                    <i class="fa  bg-green-dark rounded-s"></i>
+                    <span>Заказать товар</span>
+                    <strong>товар или продукцию</strong>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+
+                <a href="component-ad-boxes.html" v-if="order_in">
+                    <i class="fa  bg-green-dark rounded-s"></i>
+                    <span>Входящие заявки</span>
+                    <strong>на товар или продукцию</strong>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+                <a href="component-ad-boxes.html" v-if="move_in">
+                    <i class="fa bg-yellow-dark rounded-s"></i>
+                    <span>Принять товар</span>
+                    <strong>принять товар</strong>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+                <a href="component-ad-boxes.html" v-if="move_out">
+                    <i class="fa bg-yellow-dark rounded-s"></i>
+                    <span>Отправить</span>
+                    <strong>отправить продукцию</strong>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+                <a href="component-ad-boxes.html" v-if="money_in">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                    <span>Получить деньги</span>
+                    <strong>отправить продукцию</strong>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+                <a href="component-ad-boxes.html" v-if="money_out">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                    <span>Отправить деньги</span>
+                    <strong>отправить продукцию</strong>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+            </div>
+        </div>
+    </div>
 
 
 
@@ -51,7 +102,8 @@ export default {
             money_in: false,
             money_out: false,
             storage_id: null,
-            storage_name: null
+            storage_name: null,
+            balance: 343.45
 
         }
     },

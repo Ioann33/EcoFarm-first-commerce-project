@@ -11,6 +11,8 @@ class Orders extends Model
 
     protected $table = 'orders';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'user_id_created',
         'date_created',

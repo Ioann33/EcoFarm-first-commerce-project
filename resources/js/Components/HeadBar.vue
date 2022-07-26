@@ -25,7 +25,7 @@
 <!--        </div>-->
 
         <div style="z-index:97!important" class="header gradient-green header-logo-center mb-3">
-            <a href="index.html" class="header-title color-white">EcoFarm - {{ storage_name }}</a>
+            <a href="index.html" class="header-title color-white">{{ title }}</a>
             <a href="#" class="header-icon color-white header-icon-1"><i class="fas fa-arrow-left"></i></a>
                         <a href="#" class="header-icon header-icon-2">
                             <i class="fas fa-envelope"></i>
@@ -42,12 +42,12 @@ export default {
     name: "headBar",
     data(){
         return {
-            storage_name: 'storage_name'
+            title: 'storage_name'
         }
     },
     mounted() {
         //console.log('Component headBar mounted')
-        this.storage_name = localStorage.getItem('my_storage_name')
+        this.title = localStorage.getItem('title')
     }
 }
 </script>

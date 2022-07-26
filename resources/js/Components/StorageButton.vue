@@ -29,7 +29,8 @@ export default {
         changeStorage(storage_id, storage_name){
             console.log('Set MyStorage to: '+storage_id)
             localStorage.setItem('my_storage_id', storage_id);
-            localStorage.setItem('my_storage_name', storage_name + storage_id);
+            localStorage.setItem('my_storage_name', storage_name);
+            localStorage.setItem('title',storage_name);
 
             axios.get('/api/getStorageProp/'+storage_id).then(res => {
                 this.storage_prop = res.data.data

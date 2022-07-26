@@ -5,7 +5,7 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
-
+{{ test }}
 
             <div  v-for="(storage_id, index) in listStorage">
 <!--                    index:{{ index }} - storage_id:{{storage_id['storage_id']}}-->
@@ -41,11 +41,12 @@ export default {
     data(){
         return {
             listStorage: null,
-
+            test: null
         }
     },
     mounted() {
         //console.log('Component views/Home mounted....')
+        localStorage.setItem('title','Выбор склада');
         this.getMyStorages()
 
         //console.log('Component views/Home mounted......done!')
@@ -73,6 +74,11 @@ export default {
                 //     console.log( i + ": " + item['storage_id'] + " (массив:" + arr + ")" );
                 // })
 
+            }).catch(err => {
+                console.log(err.response)
+                console.log(err.response.data.message)
+                console.log(err.response.status)
+                this.test = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
         },
 

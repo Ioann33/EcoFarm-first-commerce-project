@@ -83,6 +83,8 @@ export default {
                             else {
                                 console.log('save to Localstorage')
                                 localStorage.setItem('my_storage_id', a[0]['storage_id']);
+
+
                                 this.$router.push({name: 'home'});
                                 // location.reload();
                             }
