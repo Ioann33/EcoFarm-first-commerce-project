@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserStorageResource extends JsonResource
+class getListOrderAllResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,9 +14,6 @@ class UserStorageResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'storage_id' => $this->storage_id,
-            'name'=> $this->storage->name,
-        ];
+        return parent::toArray($request);
     }
 }

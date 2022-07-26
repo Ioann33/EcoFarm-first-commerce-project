@@ -7,8 +7,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => 'auth:sanctum'], function(){
-    Route::get('/get', \App\Http\Controllers\GetController::class  );
+Route::group(['middleware' => 'auth:sanctum'], function() {
+    Route::get('/get', \App\Http\Controllers\GetController::class);
     Route::get('/getMyStorage', [\App\Http\Controllers\ApiController::class, 'getMyStorage']);
     Route::get('/getStorageProp/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageProp']);
     Route::get('/getStorageGoodsAvailable/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageGoodsAvailable']);
@@ -20,4 +20,5 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::get('/getStorageGoodsAllowed/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageGoodsAllowed']);
     Route::post('/createOrder', [\App\Http\Controllers\ApiController::class, 'createOrder']);
     Route::get('/getMainStorage', [\App\Http\Controllers\ApiController::class, 'getMainStorage']);
+    Route::get('/getListOrder/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'getListOrder']);
 });
