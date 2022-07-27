@@ -6,6 +6,7 @@
 
 <div class="page-content header-clear-medium">
 
+    {{ message }}
 
     <div data-card-height="150" style="height: 150px" class="card card-style rounded-m shadow-xl preload-img" data-src="images/teplitsa.webp">
         <div class="card-top mt-3 ms-3">
@@ -21,13 +22,109 @@
     </div>
 
 
+    <div class="card card-style" v-if="order_in">
+        <div class="content mb-0 mt-0">
+            <div class="list-group list-custom-small" >
+                <router-link :to="{name: 'makeOrder'}">
+                    <i class="fa  bg-green-dark rounded-s"></i>
+                    <span>Заказы, заявки</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+
+                <div class="row mb-n2">
+                    <div class="col-4 pe-2">
+                        <div class="card card-style mx-0 mb-3">
+                            <div class="p-3 bg-red-dark">
+                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Отмененные</h4>
+                                <h1 class="font-700 font-34 opacity-60  mb-0">{{count_order_canceled}}</h1>
+                                <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 ps-2 pe-2">
+                        <div class="card card-style mx-0 mb-3">
+                            <div class="p-3 bg-blue-dark">
+                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Открытые заявки</h4>
+                                <h1 class="font-700 font-34  opacity-60 mb-0">{{count_order_out}}</h1>
+                                <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 ps-2">
+                        <div class="card card-style mx-0 mb-3">
+                            <div class="p-3 bg-yellow-dark ">
+                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">В работе</h4>
+                                <h1 class="font-700 font-34 opacity-60 mb-0">{{count_order_progres}}</h1>
+                                <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" style="margin-left: 50px">
+                    <i class="fa font-14 fa-bars rounded-xl shadow bg-blue-dark"></i>
+                    <span>Открытые заявки</span>
+                    <span class="badge bg-red-dark font-10">{{count_order_out}}</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                <a href="#" style="margin-left: 50px">
+                    <i class="fa font-14 fa-cancel rounded-xl shadow bg-red-dark"></i>
+                    <span>Отмененные</span>
+                    <span class="badge bg-green-dark">{{count_order_canceled}}</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+                <a href="#" style="margin-left: 50px">
+                    <i class="fa font-14 fa-star rounded-xl shadow bg-yellow-dark"></i>
+                    <span>В работе</span>
+                    <span class="badge bg-yellow-dark">{{count_order_progres}}</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card card-style" v-if="order_in">
+        <div class="content mb-0 mt-0">
+            <div class="list-group list-custom-small" >
+                <router-link :to="{name: 'makeOrder'}">
+                    <i class="fa  bg-green-dark rounded-s"></i>
+                    <span>Входящие заявки</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+                <a href="#" style="margin-left: 50px">
+                    <i class="fa font-14 fa-bars rounded-xl shadow bg-blue-dark"></i>
+                    <span>Открытые заявки</span>
+                    <span class="badge bg-red-dark font-10">{{count_order_out}}</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                <a href="#" style="margin-left: 50px">
+                    <i class="fa font-14 fa-cancel rounded-xl shadow bg-red-dark"></i>
+                    <span>Отмененные</span>
+                    <span class="badge bg-green-dark">{{count_order_canceled}}</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+                <a href="#" style="margin-left: 50px">
+                    <i class="fa font-14 fa-star rounded-xl shadow bg-yellow-dark"></i>
+                    <span>В работе</span>
+                    <span class="badge bg-yellow-dark">{{count_order_progres}}</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+            </div>
+        </div>
+    </div>
+
     <div class="card card-style">
         <div class="content mt-0 mb-0">
             <div class="list-group list-custom-large short-border">
 
                 <router-link :to="{name: 'makeOrder'}" v-if="order_out">
                     <i class="fa  bg-green-dark rounded-s"></i>
-                    <span>Заказать товар</span>
+                    <span>Заказать товар </span>
                     <strong>товар или продукцию</strong>
                     <i class="fa fa-angle-right"></i>
                 </router-link>
@@ -94,6 +191,7 @@ export default {
     },
     data(){
         return {
+            message: '',
             ddd: 'Test name button',
             order_in: false,
             order_out: false,
@@ -103,7 +201,11 @@ export default {
             money_out: false,
             storage_id: null,
             storage_name: null,
-            balance: 343.45
+            balance: 343.45,
+            count_order_out: 0,
+            count_order_in: 0,
+            count_order_canceled: 0,
+            count_order_progres: 0
 
         }
     },
@@ -139,11 +241,27 @@ export default {
         console.log('Component views/Home mounted......done!')
     },
     updated() {
+        this.loadStoragesParams()
         console.log('updated')
         init_template2()
     },
     methods: {
+        loadStoragesParams(){
 
+            axios.get('/api/getStorageOrderIn/'+ this.storage_id).then(res => {
+                this.count_order_out = res.data.data.out
+                this.count_order_in = res.data.data.in
+                this.count_order_canceled = res.data.data.canceled
+                this.count_order_progres = res.data.data.progress
+
+            }).catch(err => {
+                console.log(err.response)
+                console.log(err.response.data.message)
+                console.log(err.response.status)
+                this.test = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            })
+            console.log('load')
+        }
     }
 
 }
