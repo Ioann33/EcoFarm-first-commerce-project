@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@vitejs/plugin-vue": "^3.0.1",
+        "pinia": "^2.0.17",
         "vue": "^3.2.36",
         "vue-router": "^4.1.2"
     }

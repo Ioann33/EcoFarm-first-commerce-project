@@ -5,7 +5,7 @@ setTimeout(function(){
 },150);
 
 //Global Variables
-let isPWA = true;  // Enables or disables the service worker and PWA
+let isPWA = false;  // Enables or disables the service worker and PWA
 let isAJAX = false; // AJAX transitions. Requires local server or server
 var pwaName = "Sticky"; //Local Storage Names for PWA
 var pwaRemind = 1; //Days to re-remind to add to home

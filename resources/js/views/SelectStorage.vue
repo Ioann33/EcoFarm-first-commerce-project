@@ -1,3 +1,17 @@
+<script setup>
+import {useStorage} from "../stores/storages";
+
+
+const Storage = useStorage()
+
+// {{ Storage.store_message }}
+
+// import { storeToRefs } from 'pinia'
+// const { store_message } = storeToRefs(useStorage())
+// {{ store_message }}
+
+</script>
+
 <template>
     <div id="page">
 
@@ -5,6 +19,7 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
+
 {{ test }}
 
             <div  v-for="(storage_id, index) in listStorage">
@@ -15,9 +30,6 @@
                 >
                 </StorageButton>
             </div>
-
-
-
 
         </div>
 
