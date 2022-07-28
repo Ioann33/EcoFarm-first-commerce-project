@@ -23,11 +23,12 @@ const router = createRouter({
         {
             path: '/selectStorage',
             name: 'selectStorage',
-            // route level code-splitting
-            // this generates a separate chunk (About.[hash].js) for this route
-            // which is lazy-loaded when the route is visited.
-            // component: Home
             component: () => import('../views/SelectStorage')
+        },
+        {
+            path: '/pageOrders/:type',
+            name: 'pageOrders',
+            component: () => import('../views/pageOrders')
         },
         {
             path: '/makeOrder',

@@ -48,7 +48,7 @@
                         <label for="f1" class="color-blue-dark">кол-во</label>
                         <i class="fa fa-times disabled invalid color-red-dark"></i>
                         <i class="fa fa-check disabled valid color-green-dark"></i>
-                        <em>(required)</em>
+                        <em>(кол-во)</em>
                     </div>
                 </div>
 

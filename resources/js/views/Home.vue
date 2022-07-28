@@ -1,3 +1,18 @@
+<script setup>
+import {useStorage} from "../stores/storages";
+
+
+const Storage = useStorage()
+Storage.getMyStorages()
+// {{ Storage.store_message }}
+
+// import { storeToRefs } from 'pinia'
+// const { store_message } = storeToRefs(useStorage())
+// {{ store_message }}
+
+
+</script>
+
 <template>
     <div id="page">
 
@@ -5,7 +20,10 @@
         <nav-bar></nav-bar>
 
 <div class="page-content header-clear-medium">
-
+<!--{{ store_message }}-->
+    {{ Storage.store_message }}
+    {{ Storage.storages_id }}
+    ddddd{{ Storage.my_storage_id }}
     {{ message }}
 
     <div data-card-height="150" style="height: 150px" class="card card-style rounded-m shadow-xl preload-img" data-src="images/teplitsa.webp">
@@ -32,20 +50,21 @@
                 </router-link>
 
                 <div class="row mb-n2">
-                    <div class="col-4 pe-2">
-                        <div class="card card-style mx-0 mb-3">
-                            <div class="p-3 bg-red-dark">
-                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Отмененные</h4>
-                                <h1 class="font-700 font-34 opacity-60  mb-0">{{count_order_canceled}}</h1>
-                                <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
-                            </div>
-                        </div>
-                    </div>
                     <div class="col-4 ps-2 pe-2">
                         <div class="card card-style mx-0 mb-3">
                             <div class="p-3 bg-blue-dark">
                                 <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Открытые заявки</h4>
                                 <h1 class="font-700 font-34  opacity-60 mb-0">{{count_order_out}}</h1>
+                                <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 pe-2">
+                        <div class="card card-style mx-0 mb-3">
+                            <div class="p-3 bg-red-dark">
+                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Отмененные</h4>
+                                <h1 class="font-700 font-34 opacity-60  mb-0">{{count_order_canceled}}</h1>
                                 <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
                             </div>
                         </div>
@@ -61,25 +80,26 @@
                     </div>
                 </div>
 
-                <a href="#" style="margin-left: 50px">
+                <router-link :to="{name: 'pageOrders', params: { type: 'in' }}" style="margin-left: 50px">
                     <i class="fa font-14 fa-bars rounded-xl shadow bg-blue-dark"></i>
                     <span>Открытые заявки</span>
-                    <span class="badge bg-red-dark font-10">{{count_order_out}}</span>
+                    <span class="badge bg-blue-dark font-10">{{count_order_out}}</span>
                     <i class="fa fa-angle-right"></i>
-                </a>
-                <a href="#" style="margin-left: 50px">
+                </router-link>
+
+                <router-link :to="{name: 'pageOrders', params: { type: 'cancelled' }}" style="margin-left: 50px">
                     <i class="fa font-14 fa-cancel rounded-xl shadow bg-red-dark"></i>
                     <span>Отмененные</span>
-                    <span class="badge bg-green-dark">{{count_order_canceled}}</span>
+                    <span class="badge bg-red-dark">{{count_order_canceled}}</span>
                     <i class="fa fa-angle-right"></i>
-                </a>
+                </router-link>
 
-                <a href="#" style="margin-left: 50px">
+                <router-link :to="{name: 'pageOrders', params: { type: 'progress' }}" style="margin-left: 50px">
                     <i class="fa font-14 fa-star rounded-xl shadow bg-yellow-dark"></i>
                     <span>В работе</span>
                     <span class="badge bg-yellow-dark">{{count_order_progres}}</span>
                     <i class="fa fa-angle-right"></i>
-                </a>
+                </router-link>
 
             </div>
         </div>
