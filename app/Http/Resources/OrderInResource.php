@@ -15,12 +15,17 @@ class OrderInResource extends JsonResource
      */
     public function toArray($request)
     {
+        $storageDir='';
+        if ($request->status === 'in'){
+            $storageDir = 'storage_id_to';
+        }else{
+            $storageDir = 'storage_id_from';
+        }
+
         return [
-            'name' => 'Принять заявки',
-            'in' => $inputOrder = Orders::all()->where('storage_id_to', '=',$request->id)->where('status', '=', null)->count(),
-            'out' => $inputOrder = Orders::all()->where('storage_id_from', '=',$request->id)->where('status', '=', null)->count(),
-            'progress' => $inputOrder = Orders::all()->where('storage_id_from', '=',$request->id)->where('status', '=', 'progress')->count(),
-            'canceled' => $inputOrder = Orders::all()->where('storage_id_from', '=',$request->id)->where('status', '=', 'canceled')->count(),
+            'opened' => $inputOrder = Orders::all()->where($storageDir, '=',$request->id)->where('status', '=', null)->count(),
+            'progress' => $inputOrder = Orders::all()->where($storageDir, '=',$request->id)->where('status', '=', 'progress')->count(),
+            'canceled' => $inputOrder = Orders::all()->where($storageDir, '=',$request->id)->where('status', '=', 'canceled')->count(),
         ];
     }
 }

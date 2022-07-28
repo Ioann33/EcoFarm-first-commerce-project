@@ -40,7 +40,7 @@ class ApiController extends Controller
         return StorageGoodsResource::collection($allGoods);
     }
 
-    public function getStorageOrderIn(Request $request){
+    public function getStorageOrder(Request $request){
 
         return new OrderInResource($request);
 

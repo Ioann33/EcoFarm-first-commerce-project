@@ -249,6 +249,7 @@ export default {
         loadStoragesParams(){
 
             axios.get('/api/getStorageOrderIn/'+ this.storage_id).then(res => {
+                console.log(res.data)
                 this.count_order_out = res.data.data.out
                 this.count_order_in = res.data.data.in
                 this.count_order_canceled = res.data.data.canceled

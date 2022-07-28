@@ -12,7 +12,7 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/getMyStorage', [\App\Http\Controllers\ApiController::class, 'getMyStorage']);
     Route::get('/getStorageProp/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageProp']);
     Route::get('/getStorageGoodsAvailable/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageGoodsAvailable']);
-    Route::get('/getStorageOrderIn/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageOrderIn']);
+    Route::get('/getStorageOrder/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageOrder']);
 
     Route::post('/goodsMovementPush', [\App\Http\Controllers\ApiController::class, 'goodsMovementPush']);
     Route::post('/goodsMovementPull', [\App\Http\Controllers\ApiController::class, 'goodsMovementPull']);
