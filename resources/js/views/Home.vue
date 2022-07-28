@@ -20,6 +20,12 @@ Storage.getMyStorages()
         <nav-bar></nav-bar>
 
 <div class="page-content header-clear-medium">
+
+    <!-- ERROR -->
+    <error
+        :message="message"
+    ></error>
+
 <!--{{ store_message }}-->
     {{ Storage.store_message }}
     {{ Storage.storages_id }}
@@ -45,7 +51,7 @@ Storage.getMyStorages()
             <div class="list-group list-custom-small" >
                 <router-link :to="{name: 'makeOrder'}">
                     <i class="fa  bg-green-dark rounded-s"></i>
-                    <span>Заказы, заявки</span>
+                    <span class="font-20">Заказать</span>
                     <i class="fa fa-angle-right"></i>
                 </router-link>
 
@@ -53,9 +59,9 @@ Storage.getMyStorages()
                     <div class="col-4 ps-2 pe-2">
                         <div class="card card-style mx-0 mb-3">
                             <div class="p-3 bg-blue-dark">
-                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Открытые заявки</h4>
-                                <h1 class="font-700 font-34  opacity-60 mb-0">{{count_order_out}}</h1>
-                                <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
+<!--                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Открытые</h4>-->
+                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">{{count_order_out_opened}}</h1>
+
                             </div>
                         </div>
                     </div>
@@ -63,42 +69,39 @@ Storage.getMyStorages()
                     <div class="col-4 pe-2">
                         <div class="card card-style mx-0 mb-3">
                             <div class="p-3 bg-red-dark">
-                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Отмененные</h4>
-                                <h1 class="font-700 font-34 opacity-60  mb-0">{{count_order_canceled}}</h1>
-                                <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
+<!--                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Отмененн</h4>-->
+                                <h1 class="font-700 font-34 opacity-60  mb-0 text-center">{{count_order_out_canceled}}</h1>
+
                             </div>
                         </div>
                     </div>
+
                     <div class="col-4 ps-2">
                         <div class="card card-style mx-0 mb-3">
                             <div class="p-3 bg-yellow-dark ">
-                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">В работе</h4>
-                                <h1 class="font-700 font-34 opacity-60 mb-0">{{count_order_progres}}</h1>
-                                <i class="fa fa-arrow-right float-end mt-n3 opacity-20"></i>
+<!--                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">В работе</h4>-->
+                                <h1 class="font-700 font-34 opacity-60 mb-0 text-center">{{count_order_out_progres}}</h1>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <router-link :to="{name: 'pageOrders', params: { type: 'in' }}" style="margin-left: 50px">
+                <router-link :to="{name: 'pageOrders', params: { type: 'out', status:'openned' }}" style="margin-left: 20px">
                     <i class="fa font-14 fa-bars rounded-xl shadow bg-blue-dark"></i>
                     <span>Открытые заявки</span>
-                    <span class="badge bg-blue-dark font-10">{{count_order_out}}</span>
-                    <i class="fa fa-angle-right"></i>
+                    <span class="badge bg-blue-dark font-10">{{count_order_out_opened}}</span>
                 </router-link>
 
-                <router-link :to="{name: 'pageOrders', params: { type: 'cancelled' }}" style="margin-left: 50px">
+                <router-link :to="{name: 'pageOrders', params: { type: 'out', status: 'canceled' }}" style="margin-left: 20px">
                     <i class="fa font-14 fa-cancel rounded-xl shadow bg-red-dark"></i>
                     <span>Отмененные</span>
-                    <span class="badge bg-red-dark">{{count_order_canceled}}</span>
-                    <i class="fa fa-angle-right"></i>
+                    <span class="badge bg-red-dark">{{count_order_out_canceled}}</span>
                 </router-link>
 
-                <router-link :to="{name: 'pageOrders', params: { type: 'progress' }}" style="margin-left: 50px">
+                <router-link :to="{name: 'pageOrders', params: {type: 'out', status: 'progress' }}" style="margin-left: 20px">
                     <i class="fa font-14 fa-star rounded-xl shadow bg-yellow-dark"></i>
                     <span>В работе</span>
-                    <span class="badge bg-yellow-dark">{{count_order_progres}}</span>
-                    <i class="fa fa-angle-right"></i>
+                    <span class="badge bg-yellow-dark">{{count_order_out_progres}}</span>
                 </router-link>
 
             </div>
@@ -107,32 +110,40 @@ Storage.getMyStorages()
 
 
     <div class="card card-style" v-if="order_in">
-        <div class="content mb-0 mt-0">
+        <div class="content mb-3 mt-0">
             <div class="list-group list-custom-small" >
-                <router-link :to="{name: 'makeOrder'}">
-                    <i class="fa  bg-green-dark rounded-s"></i>
-                    <span>Входящие заявки</span>
-                    <i class="fa fa-angle-right"></i>
-                </router-link>
-                <a href="#" style="margin-left: 50px">
-                    <i class="fa font-14 fa-bars rounded-xl shadow bg-blue-dark"></i>
-                    <span>Открытые заявки</span>
-                    <span class="badge bg-red-dark font-10">{{count_order_out}}</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
-                <a href="#" style="margin-left: 50px">
-                    <i class="fa font-14 fa-cancel rounded-xl shadow bg-red-dark"></i>
-                    <span>Отмененные</span>
-                    <span class="badge bg-green-dark">{{count_order_canceled}}</span>
-                    <i class="fa fa-angle-right"></i>
+                <a href="#">
+                    <i class="fa fa-inbox  bg-green-dark rounded-s"></i>
+                    <span class="font-20">Входящие заявки</span>
                 </a>
 
-                <a href="#" style="margin-left: 50px">
-                    <i class="fa font-14 fa-star rounded-xl shadow bg-yellow-dark"></i>
-                    <span>В работе</span>
-                    <span class="badge bg-yellow-dark">{{count_order_progres}}</span>
-                    <i class="fa fa-angle-right"></i>
-                </a>
+                <div class="row mb-n2">
+                    <div class="col-6 ps-2 pe-2">
+                        <router-link :to="{name: 'pageOrders', params: { type: 'out', status: 'openned' }}">
+
+                        <div class="card card-style mx-0 mb-3">
+                            <div class="p-3 bg-blue-dark">
+                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Открытые</h4>
+                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">{{count_order_out_opened}}</h1>
+
+                            </div>
+                        </div>
+
+                        </router-link>
+                    </div>
+
+
+
+                    <div class="col-6 ps-2">
+                        <div class="card card-style mx-0 mb-3">
+                            <div class="p-3 bg-yellow-dark ">
+                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">В работе</h4>
+                                <h1 class="font-700 font-34 opacity-60 mb-0 text-center">{{count_order_out_progres}}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
             </div>
         </div>
@@ -149,12 +160,6 @@ Storage.getMyStorages()
                     <i class="fa fa-angle-right"></i>
                 </router-link>
 
-                <a href="component-ad-boxes.html" v-if="order_in">
-                    <i class="fa  bg-green-dark rounded-s"></i>
-                    <span>Входящие заявки</span>
-                    <strong>на товар или продукцию</strong>
-                    <i class="fa fa-angle-right"></i>
-                </a>
 
                 <a href="component-ad-boxes.html" v-if="move_in">
                     <i class="fa bg-yellow-dark rounded-s"></i>
@@ -163,12 +168,12 @@ Storage.getMyStorages()
                     <i class="fa fa-angle-right"></i>
                 </a>
 
-                <a href="component-ad-boxes.html" v-if="move_out">
+                <router-link :to="{name: 'moveGoods'}" v-if="move_out">
                     <i class="fa bg-yellow-dark rounded-s"></i>
                     <span>Отправить</span>
                     <strong>отправить продукцию</strong>
                     <i class="fa fa-angle-right"></i>
-                </a>
+                </router-link>
 
                 <a href="component-ad-boxes.html" v-if="money_in">
                     <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
@@ -201,12 +206,12 @@ Storage.getMyStorages()
 import headBar from "../components/headBar";
 import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
-
-
+import error from "../Components/Error";
 
 export default {
     name: "Home",
     components:{
+        error,
         headBar, NavBar, NavBarMenu,
     },
     data(){
@@ -222,10 +227,14 @@ export default {
             storage_id: null,
             storage_name: null,
             balance: 343.45,
-            count_order_out: 0,
-            count_order_in: 0,
-            count_order_canceled: 0,
-            count_order_progres: 0
+
+            count_order_out_opened: 0,
+            count_order_out_canceled: 0,
+            count_order_out_progres: 0,
+
+            count_order_in_opened: 0,
+            count_order_in_canceled: 0,
+            count_order_in_progres: 0
 
         }
     },
@@ -240,7 +249,6 @@ export default {
         }
 
         this.order_in = localStorage.getItem('order_in');
-        this.order_out = localStorage.getItem('order_out');
         this.money_in = localStorage.getItem('money_in');
         this.money_out = localStorage.getItem('money_out');
         this.move_in = localStorage.getItem('move_in');
@@ -262,26 +270,38 @@ export default {
     },
     updated() {
         this.loadStoragesParams()
-        console.log('updated')
         init_template2()
     },
     methods: {
         loadStoragesParams(){
 
-            axios.get('/api/getStorageOrderIn/'+ this.storage_id).then(res => {
+            axios.get('/api/getStorageOrder/out/'+ this.storage_id).then(res => {
                 console.log(res.data)
-                this.count_order_out = res.data.data.out
-                this.count_order_in = res.data.data.in
-                this.count_order_canceled = res.data.data.canceled
-                this.count_order_progres = res.data.data.progress
+                this.count_order_out_opened = res.data.data.opened
+                this.count_order_out_canceled = res.data.data.canceled
+                this.count_order_out_progres = res.data.data.progress
 
             }).catch(err => {
                 console.log(err.response)
                 console.log(err.response.data.message)
                 console.log(err.response.status)
-                this.test = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
-            console.log('load')
+
+            axios.get('/api/getStorageOrder/in/'+ this.storage_id).then(res => {
+                console.log(res.data)
+                this.count_order_in_opened = res.data.data.opened
+                this.count_order_in_canceled = res.data.data.canceled
+                this.count_order_in_progres = res.data.data.progress
+
+            }).catch(err => {
+                console.log(err.response)
+                console.log(err.response.data.message)
+                console.log(err.response.status)
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            })
+
+            console.log('load all params for storage: ' + this.storage_id)
         }
     }
 

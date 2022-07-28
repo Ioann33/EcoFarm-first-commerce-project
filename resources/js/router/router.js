@@ -26,18 +26,19 @@ const router = createRouter({
             component: () => import('../views/SelectStorage')
         },
         {
-            path: '/pageOrders/:type',
+            path: '/pageOrders/:type/:status',
             name: 'pageOrders',
             component: () => import('../views/pageOrders')
         },
         {
             path: '/makeOrder',
             name: 'makeOrder',
-            // route level code-splitting
-            // this generates a separate chunk (About.[hash].js) for this route
-            // which is lazy-loaded when the route is visited.
-            // component: Home
-            component: () => import('../views/MakeOrder')
+            component: () => import('../views/pageMakeOrder')
+        },
+        {
+            path: '/moveGoods',
+            name: 'moveGoods',
+            component: () => import('../views/pageMoveGoods')
         }
     ]
 })

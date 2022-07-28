@@ -6,69 +6,71 @@
 
         <div class="page-content header-clear-medium">
 
-{{message}}
+            {{message}}
 
+            <div class="card card-style bg-green-dark shadow-bg shadow-bg-l">
+                <p class="content color-white mb-4">
+                    Передать продукцию
+                </p>
+            </div>
 
-
-{{selected_goods_id}} - {{goods_amount}}
+            {{selected_goods_id}} - {{goods_amount}}
 
             <div class="card card-style">
                 <div class="content mb-0">
 
-            <div class="row mb-0">
+                    <div class="row mb-0">
 
-                <div class="col-8">
-                    <div class="input-style input-style-always-active has-borders no-icon">
-                        <label for="f6" class="color-blue-dark">Выбрать продукцию для заказа</label>
-                        <select id="f6" v-model="selected_goods_id">
-                            <option value="default" disabled selected>продукция</option>
+                        <div class="col-6">
+                            <div class="input-style input-style-always-active has-borders no-icon">
+                                <label for="f6" class="color-blue-dark">Выбрать продукцию для заказа</label>
+                                <select id="f6" v-model="selected_goods_id">
+                                    <option value="default" disabled selected>продукция</option>
 
-                                <option
-                                    v-for="(goods, index) in listGoods"
-                                    v-bind:value="goods.goods_id"
+                                    <option
+                                        v-for="(goods, index) in listGoods"
+                                        v-bind:value="goods.goods_id"
+                                    >
+                                        {{ goods.name }} ({{ goods.goods_id }})
+                                    </option>
+
+                                </select>
+                                <span><i class="fa fa-chevron-down"></i></span>
+                                <i class="fa fa-check disabled valid color-green-dark"></i>
+                                <em></em>
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="input-style input-style-always-active has-borders no-icon">
+                                <input type="number" class="form-control focus-color focus-blue validate-name "
+                                       id="f1"
+                                       v-model="goods_amount"
                                 >
-                                    {{ goods.name }} ({{ goods.goods_id }})
-                                </option>
+                                <label for="f1" class="color-blue-dark">кол-во</label>
+                                <i class="fa fa-times disabled invalid color-red-dark"></i>
+                                <i class="fa fa-check disabled valid color-green-dark"></i>
+                                <em>0</em>
+                            </div>
+                        </div>
 
-                        </select>
-                        <span><i class="fa fa-chevron-down"></i></span>
-                        <i class="fa fa-check disabled valid color-green-dark"></i>
-                        <em></em>
+                        <div class="col-3">
+                            <div class="input-style input-style-always-active has-borders no-icon">
+                                <input type="number" disabled class="form-control focus-color focus-blue validate-name text-center"
+                                       id="f1"
+                                       v-bind:value="selected"
+                                       v-bind:placeholder="selected"
+                                >
+                                <label for="f1" class="color-blue-dark" style="background: transparent;">ед.изм</label>
+                                <i class="fa fa-times disabled invalid color-red-dark"></i>
+                                <i class="fa fa-check disabled valid color-green-dark"></i>
+                            </div>
+                        </div>
+
                     </div>
-                </div>
-
-                <div class="col-2">
-                    <div class="input-style input-style-always-active has-borders no-icon">
-                        <input type="number" class="form-control focus-color focus-blue validate-name "
-                               id="f1"
-
-                               placeholder="1"
-                               v-model="goods_amount"
-                        >
-                        <label for="f1" class="color-blue-dark">кол-во</label>
-                        <i class="fa fa-times disabled invalid color-red-dark"></i>
-                        <i class="fa fa-check disabled valid color-green-dark"></i>
-                        <em>(кол-во)</em>
-                    </div>
-                </div>
-
-                <div class="col-2">
-                    <div class="input-style input-style-always-active has-borders no-icon">
-                        <input type="number" disabled class="form-control focus-color focus-blue validate-name text-center"
-                               id="f1"
-                               v-bind:value="selected"
-                               v-bind:placeholder="selected"
-                        >
-                        <label for="f1" class="color-blue-dark" style="background: transparent;">ед.изм</label>
-                        <i class="fa fa-times disabled invalid color-red-dark"></i>
-                        <i class="fa fa-check disabled valid color-green-dark"></i>
-                    </div>
-                </div>
-
-            </div>
 
                     <a @click.prevent="makeOrder" href="#" class="btn btn-xxl  shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-blue-dark">
-                        Подать заявку
+                        Передать на склад
                     </a>
                 </div>
             </div>
@@ -100,7 +102,7 @@ export default {
             selected: null,
             selected_goods_id: null,
             storage_id_to: null,
-            goods_amount: 1 // количество товара
+            goods_amount: 0 // количество товара
 
         }
     },
