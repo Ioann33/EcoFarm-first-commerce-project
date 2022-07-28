@@ -179,8 +179,8 @@ class ApiController extends Controller
             return getListOrderOutResource::collection($orderList);
         }
 
-        if ($request->status === 'canceled'){
-            $orderList = Orders::all()->where('status','=', 'canceled')->where('storage_id_from', '=', $request->id);
+        if ($request->status === 'cancelled'){
+            $orderList = Orders::all()->where('status','=', 'cancelled')->where('storage_id_from', '=', $request->id);
 
             return getListOrderProcessedResource::collection($orderList);
         }
