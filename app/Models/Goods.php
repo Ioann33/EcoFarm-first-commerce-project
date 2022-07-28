@@ -11,6 +11,8 @@ class Goods extends Model
 
     protected $table = 'goods';
 
+    public $timestamps = false;
+
     protected $fillable = [
 
     ];

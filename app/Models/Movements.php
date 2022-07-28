@@ -11,6 +11,8 @@ class Movements extends Model
 
     protected $table = 'movements';
 
+    public $timestamps = false;
+
     public function goods(){
         return $this->belongsTo(Goods::class, 'goods_id');
     }

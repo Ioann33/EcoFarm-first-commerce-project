@@ -10,6 +10,8 @@ class StorageGoods extends Model
     use HasFactory;
     protected $table = 'storage_goods';
 
+    public $timestamps = false;
+
     public function goods(){
         return $this->belongsTo(Goods::class, 'goods_id');
     }
