@@ -6,6 +6,7 @@ use App\Http\Resources\getListOrderAllResource;
 use App\Http\Resources\getListOrderProcessedResource;
 use App\Http\Resources\getListOrderOpenedResource;
 use App\Http\Resources\getListOrderOutResource;
+use App\Http\Resources\getMovementResource;
 use App\Http\Resources\OrderInResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
@@ -233,5 +234,26 @@ class ApiController extends Controller
 
         return StorageGoodsResource::collection($goods);
 
+    }
+
+    public function getMovement(Request $request){
+        $status = '';
+
+        $dir = '';
+        if($request->status === 'opened'){
+            $operator = '=';
+        }else{
+            $operator = '!=';
+        }
+
+        if ($request->dir === 'in'){
+            $dir = 'storage_id_to';
+        }else{
+            $dir = 'storage_id_from';
+        }
+
+        $movement = Movements::all()->where($dir, '=', $request->id)->where('user_id_accepted', $operator,null);
+
+        return getMovementResource::collection($movement);
     }
 }
