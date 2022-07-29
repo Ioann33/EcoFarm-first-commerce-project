@@ -34,11 +34,11 @@ class ApiController extends Controller
         return StoragesResource::collection($storage);
     }
 
-    public function getStorageGoodsAvailable(Request $request){
-        $allGoods = StorageGoods::all()->where('storage_id', '=', $request->id);
-
-        return StorageGoodsResource::collection($allGoods);
-    }
+//    public function getStorageGoodsAvailable(Request $request){
+//        $allGoods = StorageGoods::all()->where('storage_id', '=', $request->id);
+//
+//        return StorageGoodsResource::collection($allGoods);
+//    }
 
     public function getStorageOrder(Request $request){
 
@@ -124,13 +124,13 @@ class ApiController extends Controller
         }
     }
 
-    public function getStorageGoodsAllowed(Request $request){
-
-
-        $goods = StorageGoods::all()->where('storage_id','=', $request->id);
-
-        return StorageAllowedGoodsResource::collection($goods);
-    }
+//    public function getStorageGoodsAllowed(Request $request){
+//
+//
+//        $goods = StorageGoods::all()->where('storage_id','=', $request->id);
+//
+//        return StorageAllowedGoodsResource::collection($goods);
+//    }
 
     public function createOrder(Request $request){
 
@@ -219,6 +219,19 @@ class ApiController extends Controller
         }else{
             return response()->json(['status' => 'some problem with setStatus']);
         }
+
+    }
+
+    public function getStorageGoods(Request $request){
+
+        $goods = StorageGoods::all()->where('storage_id','=', $request->id);
+
+        if ($request->key === 'allowed'){
+
+            return StorageAllowedGoodsResource::collection($goods);
+        }
+
+        return StorageGoodsResource::collection($goods);
 
     }
 }
