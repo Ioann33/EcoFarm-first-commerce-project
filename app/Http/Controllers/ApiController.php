@@ -202,5 +202,21 @@ class ApiController extends Controller
 
             return getListOrderAllResource::collection($orderList);
         }
+
+
+    }
+
+    public function setStatus(Request $request){
+
+        $order = Orders::findOrFail($request->id);
+        $order->status = $request->status;
+        $order->date_status = date('Y-m-d H:i:s');
+        $order->user_id_handler = Auth::id();
+        if($order->save()) {
+            return response()->json(['status' => 'ok']);
+        }else{
+            return response()->json(['status' => 'some problem with setStatus']);
+        }
+
     }
 }
