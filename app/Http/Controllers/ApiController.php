@@ -167,7 +167,6 @@ class ApiController extends Controller
 
     public function getListOrder(Request $request){
 
-        $dir = '';
 
         if($request->dir === 'in'){
             $dir = 'storage_id_to';
@@ -237,9 +236,7 @@ class ApiController extends Controller
     }
 
     public function getMovement(Request $request){
-        $status = '';
 
-        $dir = '';
         if($request->status === 'opened'){
             $operator = '=';
         }else{
