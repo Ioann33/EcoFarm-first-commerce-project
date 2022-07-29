@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\getListOrderAllResource;
 use App\Http\Resources\getListOrderProcessedResource;
-use App\Http\Resources\getListOrderInResource;
+use App\Http\Resources\getListOrderOpenedResource;
 use App\Http\Resources\getListOrderOutResource;
 use App\Http\Resources\OrderInResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
@@ -166,39 +166,41 @@ class ApiController extends Controller
 
     public function getListOrder(Request $request){
 
+        $dir = '';
 
-        if ($request->status === 'in'){
-            $orderList = Orders::all()->where('status','=', null)->where('storage_id_to', '=', $request->id);
-
-            return getListOrderInResource::collection($orderList);
+        if($request->dir === 'in'){
+            $dir = 'storage_id_to';
+        }else{
+            $dir = 'storage_id_from';
         }
 
-        if ($request->status === 'out'){
-            $orderList = Orders::all()->where('status','=', null)->where('storage_id_from', '=', $request->id);
+        if ($request->status === 'opened'){
+            $orderList = Orders::all()->where('status','=', null)->where($dir, '=', $request->id);
 
-            return getListOrderOutResource::collection($orderList);
+            return getListOrderOpenedResource::collection($orderList);
         }
 
-        if ($request->status === 'cancelled'){
-            $orderList = Orders::all()->where('status','=', 'cancelled')->where('storage_id_from', '=', $request->id);
+
+        if ($request->status === 'canceled'){
+            $orderList = Orders::all()->where('status','=', 'canceled')->where($dir, '=', $request->id);
 
             return getListOrderProcessedResource::collection($orderList);
         }
 
         if ($request->status === 'progress'){
-            $orderList = Orders::all()->where('status','=', 'progress')->where('storage_id_from', '=', $request->id);
+            $orderList = Orders::all()->where('status','=', 'progress')->where($dir, '=', $request->id);
 
             return getListOrderProcessedResource::collection($orderList);
         }
 
         if ($request->status === 'completed'){
-            $orderList = Orders::all()->where('status','=', 'completed')->where('storage_id_from', '=', $request->id);
+            $orderList = Orders::all()->where('status','=', 'completed')->where($dir, '=', $request->id);
 
             return getListOrderProcessedResource::collection($orderList);
         }
 
         if ($request->status === 'all'){
-            $orderList = Orders::all()->where('storage_id_from', '=', $request->id);
+            $orderList = Orders::all()->where($dir, '=', $request->id);
 
             return getListOrderAllResource::collection($orderList);
         }
