@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class getListOrderInResource extends JsonResource
+class getListOrderOpenedResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,14 +14,24 @@ class getListOrderInResource extends JsonResource
      */
     public function toArray($request)
     {
+
+        $storageID = '';
+        $storageName = '';
+        if($request->dir === 'in'){
+            $storageID = $this->storage_id_from;
+            $storageName = $this->storageFrom;
+        }else{
+            $storageID = $this->storage_id_to;
+            $storageName = $this->storageFrom;
+        }
         return [
           'order_id' => $this->id,
           'good_id' => $this->goods_id,
           'name' => $this->goods->name,
           'unit' => $this->goods->unit,
           'amount' => $this->amount,
-          'storage_id_from' => $this->storage_id_from,
-          'storage_name_from' => $this->storageFrom->name,
+          'storage_id' => $storageID,
+          'storage_name' => $storageName->name,
           'user_id_created' => $this->user_id_created,
           'user_name_created' => $this->user->name,
           'date_created' => $this->date_created,
