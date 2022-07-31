@@ -82,9 +82,6 @@ export default {
                     this.$router.push({name: 'home'});
                 }
 
-                // a.forEach(function(item, i, arr){
-                //     console.log( i + ": " + item['storage_id'] + " (массив:" + arr + ")" );
-                // })
 
             }).catch(err => {
                 console.log(err.response)

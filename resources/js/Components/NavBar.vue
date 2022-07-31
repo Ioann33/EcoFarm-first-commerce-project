@@ -17,8 +17,8 @@
 
         <router-link :to="{name: 'selectStorage'}"><i class="fa-fw select-all fas"></i><span>Выбор склада</span></router-link>
         <router-link :to="{name: 'home'}"><i class="fa fa-home"></i><span>Главная</span></router-link>
-        <router-link :to="{name: 'home'}"><i class="fa fa-heart"></i><span>Контакты</span></router-link>
-        <router-link :to="{name: 'home'}"><i class="fa fa-search"></i><span>Новости и Акции</span></router-link>
+        <router-link :to="{name: 'home'}"><i class="fa fa-heart"></i><span>page-3</span></router-link>
+        <router-link :to="{name: 'home'}"><i class="fa fa-search"></i><span>page-4</span></router-link>
         <a href="#" data-menu="menu-settings"><i class="fa fa-cog"></i><span>Настройки</span></a>
     </div>
 

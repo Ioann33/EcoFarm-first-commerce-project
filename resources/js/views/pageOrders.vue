@@ -16,19 +16,29 @@
 
 
 
+<!-- OPENED >>>> -->
+<div  v-if="this.status=='opened'">
+<!--    <div class="card card-style bg-blue-dark shadow-bg shadow-bg-l">-->
+<!--        <p class="content mb-4 text-uppercase font-900 font-15 text-center color-white ">-->
+<!--            <div      v-if="this.dir=='in'">    Новые заказы ко мне     </div>-->
+<!--            <div v-else-if="this.dir=='out'">   Открытые мои заказы     </div>-->
+<!--        </p>-->
+<!--    </div>-->
 
-<div  v-if="this.status=='openned'">
-    <div class="card card-style bg-blue-dark shadow-bg shadow-bg-l">
-        <p class="content color-white mb-4">
-            Открытые заявки
-        </p>
+    <div class="content-boxed bg-blue-dark mb-3 pb-3 text-uppercase">
+        <h4 class="color-white text-center">
+            <div      v-if="this.dir=='in'">    Новые заказы ко мне     </div>
+            <div v-else-if="this.dir=='out'">   Открытые мои заказы     </div>
+        </h4>
     </div>
+
 
     <div v-for="(order, index) in listOrders" :key="order.id">
 
         <card-order
             :order="order"
-            :type='this.type'
+            :status='this.status'
+            :dir='this.dir'
         ></card-order>
 
     </div>
@@ -62,19 +72,28 @@
     <!--end TABLE OUT-->
 
 </div>
+<!-- <<<<< OPENED -->
 
-
+<!-- CANCELED >>>> -->
 <div v-else-if="this.status=='canceled'">
-    <div class="card card-style bg-red-dark shadow-bg shadow-bg-l" >
-        <p class="content color-white mb-4">
+<!--    <div class="card card-style bg-red-dark shadow-bg shadow-bg-l" >-->
+<!--        <p class="content mb-4 text-uppercase font-900 font-15 text-center color-white ">-->
+<!--            Отмененные заявки-->
+<!--        </p>-->
+<!--    </div>-->
+
+    <div class="content-boxed bg-red-dark mb-3 pb-3 text-uppercase">
+        <h4 class="color-white text-center">
             Отмененные заявки
-        </p>
+        </h4>
     </div>
+
 
     <div v-for="(order, index) in listOrders" :key="order.id">
         <card-order
             :order="order"
             :type='this.type'
+            :status='this.status'
         ></card-order>
     </div>
 
@@ -109,20 +128,28 @@
     </div>
     <!--end TABLE Canceled-->
 </div>
+<!-- <<<<< CANCELED -->
 
+<!-- PROGRESS >>>> -->
 <div v-if="this.status=='progress'">
 
-    <div class="card card-style bg-yellow-dark shadow-bg shadow-bg-l" >
-        <p class="content color-white mb-4">
-            Заявки взяты в работу
-        </p>
-    </div>
+<!--    <div class="card card-style bg-yellow-dark  shadow-bg-l" >-->
+<!--        <p class="content mb-4 text-uppercase font-900 font-15 text-center color-black opacity-60">-->
+<!--            Заявки взяты в работу-->
+<!--        </p>-->
+<!--    </div>-->
 
+    <div class="content-boxed bg-yellow-dark mb-3 pb-3 text-uppercase">
+        <h4 class="color-black opacity-60 text-center">
+            Заявки взяты в работу
+        </h4>
+    </div>
 
     <div v-for="(order, index) in listOrders" :key="order.id">
         <card-order
             :order="order"
-            :type='this.type'
+            :dir='this.dir'
+            :status='this.status'
         ></card-order>
     </div>
 
@@ -158,7 +185,7 @@
     </div>
     <!--end TABLE progress-->
 </div>
-
+<!-- <<<<< PROGRESS -->
 
 
 
@@ -170,25 +197,25 @@
 </template>
 
 <script>
+import Error from "../Components/Error";
 import headBar from "../components/headBar";
 import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
-import StorageButton from "../Components/StorageButton";
+
 import CardOrder from "../Components/cardOrder";
-import Error from "../Components/Error";
 
 export default {
-    name: "ShowOrders",
+    name: "pageOrders",
     components:{
-        Error,
-        CardOrder,
-        headBar, NavBar, NavBarMenu,
-        StorageButton
+        Error,headBar, NavBar, NavBarMenu,
+        CardOrder
+
     },
     data(){
         return {
             listOrders: [],
             type: null,
+            dir: null,
             status: null,
             message: null
         }
@@ -197,11 +224,12 @@ export default {
         //console.log('Component views/Home mounted....')
         this.storage_id = localStorage.getItem('my_storage_id')
         this.type = this.$route.params.type
+        this.dir = this.$route.params.dir
         this.status = this.$route.params.status
         this.getListOrders(this.storage_id)
 
 
-        //console.log('Component views/Home mounted......done!')
+        console.log('Component views/pageOrders mounted......done!')
     },
     updated() {
         console.log('updated')
@@ -209,8 +237,9 @@ export default {
     },
     methods: {
         getListOrders(storage_id) {
-            axios.get('/api/getListOrder/'+ this.type +'/'+storage_id).then(res => {
+            axios.get('/api/getListOrder/'+ this.dir +'/'+this.status+'/'+storage_id).then(res => {
                 this.listOrders = res.data.data
+                console.log('listOrders: ')
                 console.log(this.listOrders)
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;

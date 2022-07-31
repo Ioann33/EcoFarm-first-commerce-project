@@ -8,6 +8,6 @@ class GetController extends Controller
 {
     public function __invoke()
     {
-        return 1111;
+        return "authorize is ok";
     }
 }
