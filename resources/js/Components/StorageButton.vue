@@ -42,14 +42,6 @@ export default {
                 localStorage.setItem('move_out', this.storage_prop[0]['money_out'])
                 localStorage.setItem('order_in', this.storage_prop[0]['money_in'])
                 localStorage.setItem('order_out', this.storage_prop[0]['money_out'])
-
-                // console.log(this.listStorage.length)
-
-
-                // a.forEach(function(item, i, arr){
-                //     console.log( i + ": " + item['storage_id'] + " (массив:" + arr + ")" );
-                // })
-
             })
 
             this.$router.push({name: 'home'});

@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadHighlight.rel = "stylesheet";
             loadHighlight.className = "page-highlight";
             loadHighlight.type = "text/css";
-            loadHighlight.href = 'styles/highlights/highlight_' + highlight +'.css';
+            loadHighlight.href = '/styles/highlights/highlight_' + highlight +'.css';
             document.getElementsByTagName("head")[0].appendChild(loadHighlight);
             document.body.setAttribute('data-highlight', 'highlight-'+highlight)
             localStorage.setItem(pwaName+'-Highlight', highlight)
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadHighlight.rel = "stylesheet";
             loadHighlight.className = "page-highlight";
             loadHighlight.type = "text/css";
-            loadHighlight.href = 'styles/highlights/highlight_' + rememberHighlight +'.css';
+            loadHighlight.href = '/styles/highlights/highlight_' + rememberHighlight +'.css';
             if(!document.querySelectorAll('.page-highlight').length){
                 document.getElementsByTagName("head")[0].appendChild(loadHighlight);
                 document.body.setAttribute('data-highlight', 'highlight-'+rememberHighlight)
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadHighlight.rel = "stylesheet";
             loadHighlight.className = "page-highlight";
             loadHighlight.type = "text/css";
-            loadHighlight.href = 'styles/highlights/highlight_' + defaultHighlight[1] +'.css';
+            loadHighlight.href = '/styles/highlights/highlight_' + defaultHighlight[1] +'.css';
             if(!document.querySelectorAll('.page-highlight').length){
                 document.getElementsByTagName("head")[0].appendChild(loadHighlight);
                 document.body.setAttribute('data-highlight', 'highlight-'+defaultHighlight[1])

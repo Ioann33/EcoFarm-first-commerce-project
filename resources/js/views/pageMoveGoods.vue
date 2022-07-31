@@ -6,15 +6,16 @@
 
         <div class="page-content header-clear-medium">
 
-            {{message}}
+            <!-- ERROR -->
+            <error
+                :message="message"
+            ></error>
 
             <div class="card card-style bg-green-dark shadow-bg shadow-bg-l">
                 <p class="content color-white mb-4">
                     Передать продукцию
                 </p>
             </div>
-
-            {{selected_goods_id}} - {{goods_amount}}
 
             <div class="card card-style">
                 <div class="content mb-0">
@@ -69,7 +70,7 @@
 
                     </div>
 
-                    <a @click.prevent="makeOrder" href="#" class="btn btn-xxl  shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-blue-dark">
+                    <a @click.prevent="makeMoveGoods" href="#" class="btn btn-xxl  shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-blue-dark">
                         Передать на склад
                     </a>
                 </div>
@@ -87,12 +88,14 @@ import headBar from "../components/headBar";
 import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
 import StorageButton from "../Components/StorageButton";
+import error from "../Components/Error";
 
 export default {
     name: "SelectStorage",
     components:{
         headBar, NavBar, NavBarMenu,
-        StorageButton
+        StorageButton,
+        error
     },
     data(){
         return {
@@ -102,7 +105,8 @@ export default {
             selected: null,
             selected_goods_id: null,
             storage_id_to: null,
-            goods_amount: 0 // количество товара
+            goods_amount: 0 ,// количество товара
+            main_storage_id: null
 
         }
     },
@@ -112,7 +116,6 @@ export default {
 
         this.getStorageGoodsAllowed(this.storage_id)
 
-        //console.log('Component views/Home mounted......done!')
     },
     updated() {
         console.log('updated')
@@ -120,7 +123,7 @@ export default {
     },
     methods: {
         getStorageGoodsAllowed(storage_id) {
-            axios.get('/api/getStorageGoodsAllowed/'+storage_id).then(res => {
+            axios.get('/api/getStorageGoods/allowed/'+storage_id).then(res => {
                 this.listGoods = res.data.data
                 console.log(this.listGoods)
             }).catch(err => {
@@ -128,32 +131,23 @@ export default {
                 console.log(this.message)
             })
         },
-        makeOrder(){
-            axios.get('/api/getMainStorage/').then(res => {
-                this.storage_id_to = res.data.storage_id
-                console.log(this.storage_id_to)
+        makeMoveGoods(){
+            this.main_storage_id = localStorage.getItem('main_storage_id')
 
-                console.log('good_id:' + this.selected_goods_id +
-                    ', storage_to: '+ this.storage_id_to +
-                    ', storage_from: '+ localStorage.getItem('my_storage_id')+
-                    ', amount: '+ this.goods_amount
+            axios.post('/api/goodsMovementPush',{
+                storage_id_from: this.storage_id,
+                storage_id_to: this.main_storage_id,
+                goods_id: this.selected_goods_id,
+                amount: this.goods_amount
+            }).then(res => {
+                console.log('Move Goods Succesful:' +
+                    '\ngood_id:' + this.selected_goods_id +
+                    ', \nstorage_to: '+ this.main_storage_id +
+                    ', \nstorage_from: '+ localStorage.getItem('my_storage_id')+
+                    ', \namount: '+ this.goods_amount
                 )
+                this.$router.push({name: 'home'});
 
-                axios.post('/api/createOrder/',{
-                    amount: this.goods_amount,
-                    storage_id_to: this.storage_id_to,
-                    storage_id_from: localStorage.getItem('my_storage_id'),
-                    goods_id: this.selected_goods_id
-
-                }).then(res => {
-                    if(res.data.status=='ok') {
-                        console.log('createOrder - ok')
-                        this.$router.push({name: 'home'});
-                    }
-                }).catch(err => {
-                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                    console.log(this.message)
-                })
 
 
             }).catch(err => {

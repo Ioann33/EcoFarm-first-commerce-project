@@ -63,35 +63,43 @@ export default {
                     .then(r => {
                         console.log('Auth...ok');
                         console.log(r);
-                        console.log('token: '+r.config.headers['X-XSRF-TOKEN']);
+                        //console.log('token: '+r.config.headers['X-XSRF-TOKEN']);
 
                         localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN']);
 
+                        axios.get('/api/getMainStorage/').then(res => {
+                            localStorage.setItem('main_storage_id', res.data.storage_id)
+                        })
 
                         axios.get('/api/getMyStorage').then(res => {
-                            console.log(res.data)
-                            let a = res.data.data
-                            console.log(a)
-                            console.log(a.length)
-                            if(a.length>1)
+
+                            if(res.data.data.length>1)
                             {
-                                console.log('Redirect to /SelectSorage')
+                                console.log('Redirect to /selectSorage')
 
                                 this.$router.push({name: 'selectStorage'});
                                 //location.reload();
                             }
-                            else {
+                            else
+                            {
                                 console.log('save to Localstorage')
-                                localStorage.setItem('my_storage_id', a[0]['storage_id']);
 
+                                axios.get('/api/getStorageProp/'+storage_id).then(res => {
+                                    this.storage_prop = res.data.data
+                                    console.log(this.storage_prop)
+                                    localStorage.setItem('storage_name', this.storage_prop[0]['name'])
+                                    localStorage.setItem('money_in', this.storage_prop[0]['money_in'])
+                                    localStorage.setItem('money_out', this.storage_prop[0]['money_out'])
+                                    localStorage.setItem('move_in', this.storage_prop[0]['money_in'])
+                                    localStorage.setItem('move_out', this.storage_prop[0]['money_out'])
+                                    localStorage.setItem('order_in', this.storage_prop[0]['money_in'])
+                                    localStorage.setItem('order_out', this.storage_prop[0]['money_out'])
+                                })
+                                localStorage.setItem('my_storage_id', a[0]['storage_id']);
 
                                 this.$router.push({name: 'home'});
                                 // location.reload();
                             }
-
-                            // a.forEach(function(item, i, arr){
-                            //     console.log( i + ": " + item['storage_id'] + " (массив:" + arr + ")" );
-                            // })
 
                         })
 

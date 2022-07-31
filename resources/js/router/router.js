@@ -1,24 +1,20 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home'
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
+
 import Welcome from "../views/Welcome";
 
 const router = createRouter({
-    history: createWebHistory(),
+    // history: createWebHistory(),
+    history: createWebHashHistory(),
     routes: [
         {
             path: '/',
             name: 'welcome',
-            // component: import('../views/Welcome.vue')
             component: Welcome
         },
         {
             path: '/home',
             name: 'home',
-            // route level code-splitting
-            // this generates a separate chunk (About.[hash].js) for this route
-            // which is lazy-loaded when the route is visited.
-            component: Home
-            //component: () => import('../views/AboutView.vue')
+            component: () => import('../views/Home.vue')
         },
         {
             path: '/selectStorage',
@@ -26,9 +22,19 @@ const router = createRouter({
             component: () => import('../views/SelectStorage')
         },
         {
-            path: '/pageOrders/:type/:status',
+            path: '/pageOrders/:dir/:status',
             name: 'pageOrders',
             component: () => import('../views/pageOrders')
+        },
+        {
+            path: '/pageMovements/:dir/:status',
+            name: 'pageMovements',
+            component: () => import('../views/pageMovements')
+        },
+        {
+            path: '/pageListGoods/:type',
+            name: 'pageListGoods',
+            component: () => import('../views/pageListGoods')
         },
         {
             path: '/makeOrder',
@@ -36,8 +42,8 @@ const router = createRouter({
             component: () => import('../views/pageMakeOrder')
         },
         {
-            path: '/moveGoods',
-            name: 'moveGoods',
+            path: '/makeMoveGoods',
+            name: 'makeMoveGoods',
             component: () => import('../views/pageMoveGoods')
         }
     ]
@@ -57,6 +63,7 @@ router.beforeEach((to, from, next)=>{
     }
 
     if((to.name==='welcome') && token){
+        console.log('(route.js) Redirect to home')
         return next({
             name: 'home'
         })
