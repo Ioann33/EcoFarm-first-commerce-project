@@ -208,7 +208,7 @@ class ApiController extends Controller
 
     }
 
-    public function setStatus(Request $request){
+    public function setOrderStatus(Request $request){
 
         $order = Orders::findOrFail($request->id);
         $order->status = $request->status;

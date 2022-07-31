@@ -21,7 +21,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/createOrder', [\App\Http\Controllers\ApiController::class, 'createOrder']);
     Route::get('/getMainStorage', [\App\Http\Controllers\ApiController::class, 'getMainStorage']);
     Route::get('/getListOrder/{dir}/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'getListOrder']);
-    Route::get('/setStatus/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'setStatus']);
+    Route::get('/setOrderStatus/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'setOrderStatus']);
     Route::get('/getStorageGoods/{key}/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageGoods']);
     Route::get('/getMovement/{dir}/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'getMovement']);
 });
