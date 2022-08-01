@@ -15,10 +15,10 @@ class getMovementResource extends JsonResource
     public function toArray($request)
     {
         if ($request->dir === 'in'){
-            $storageID = 'storage_id_from';
+            $storageID = $this->storage_id_from;
             $storageName = $this->storageFrom;
         }else{
-            $storageID = 'storage_id_to';
+            $storageID = $this->storage_id_to;
             $storageName = $this->storageFrom;
         }
 
@@ -26,6 +26,7 @@ class getMovementResource extends JsonResource
             'id'=>$this->id,
             'user_id_created' => $this->user_id_created,
             'user_name_created' => $this->user->name,
+            'date_created' => $this->date_created,
             'storage_id' => $storageID,
             'storage_name' => $storageName->name,
             'goods_id' => $this->goods_id,

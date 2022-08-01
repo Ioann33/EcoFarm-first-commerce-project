@@ -10,7 +10,8 @@ use App\Http\Resources\getMovementResource;
 use App\Http\Resources\OrderInResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
-use App\Http\Resources\StoragesResource;
+use App\Http\Resources\StorageResource;
+use App\Http\Resources\StoragesPropResource;
 use App\Http\Resources\UserStorageResource;
 use App\Models\MainStore;
 use App\Models\Movements;
@@ -32,7 +33,7 @@ class ApiController extends Controller
 
     public function getStorageProp(Request $request){
         $storage = Storages::all()->where('id', '=', $request->id);
-        return StoragesResource::collection($storage);
+        return StoragesPropResource::collection($storage);
     }
 
 //    public function getStorageGoodsAvailable(Request $request){
@@ -150,6 +151,9 @@ class ApiController extends Controller
         $newOrder->storage_id_to = $request->storage_id_to;
         $newOrder->goods_id = $request->goods_id;
         $newOrder->amount = $request->amount;
+        if (isset($request->order_main)){
+            $newOrder->order_main = $request->order_main;
+        }
 
         if (isset($request->order_main)){
             $newOrder->order_main = $request->order_main;
@@ -252,5 +256,10 @@ class ApiController extends Controller
         $movement = Movements::all()->where($dir, '=', $request->id)->where('user_id_accepted', $operator,null);
 
         return getMovementResource::collection($movement);
+    }
+
+    public function getListStorage(){
+        $storage = Storages::all();
+        return StorageResource::collection($storage);
     }
 }

@@ -38,7 +38,7 @@ class getListOrderProcessedResource extends JsonResource
             'date_created' => $this->date_created,
             'user_id_handler'=>$this->user_id_handler,
             'user_name_handler'=>$this->handler->name,
-            'date_status' => $this->date_created,
+            'date_status' => $this->date_status,
             'status' => $this->status,
         ];
     }
