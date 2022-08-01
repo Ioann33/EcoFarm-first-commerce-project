@@ -8,6 +8,7 @@ use App\Http\Resources\getListOrderOpenedResource;
 use App\Http\Resources\getListOrderOutResource;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\OrderInResource;
+use App\Http\Resources\OrderResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
 use App\Http\Resources\StorageResource;
@@ -266,4 +267,11 @@ class ApiController extends Controller
         $storage = Storages::all();
         return StorageResource::collection($storage);
     }
+
+    public function getOrder(Request $request){
+        $order = Orders::findOrFail($request->order_id);
+        return OrderResource::collection($order);
+    }
+
+
 }

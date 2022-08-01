@@ -19,7 +19,7 @@ class getMovementResource extends JsonResource
             $storageName = $this->storageFrom;
         }else{
             $storageID = $this->storage_id_to;
-            $storageName = $this->storageFrom;
+            $storageName = $this->storageTo;
         }
 
         return [
