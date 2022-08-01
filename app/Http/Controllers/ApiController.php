@@ -228,7 +228,11 @@ class ApiController extends Controller
 
     public function getStorageGoods(Request $request){
 
-        $goods = StorageGoods::all()->where('storage_id','=', $request->id);
+        if ($request->goods_id === 'all'){
+            $goods = StorageGoods::all()->where('storage_id','=', $request->id);
+        }else{
+            $goods = StorageGoods::all()->where('storage_id','=', $request->id)->where('goods_id', '=', $request->goods_id);
+        }
 
         if ($request->key === 'allowed'){
 
