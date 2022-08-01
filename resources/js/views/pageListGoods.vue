@@ -67,7 +67,7 @@ export default {
         this.storage_name = localStorage.getItem('my_storage_name')
 
         // Получить список продукции на складе
-        axios.get('/api/getStorageGoods/'+ this.type + '/' + this.storage_id).then(res => {
+        axios.get('/api/getStorageGoods/'+ this.type + '/' + this.storage_id+'/all').then(res => {
             this.listGoods = res.data.data
             console.log('sdfsdf')
             console.log(this.listGoods)

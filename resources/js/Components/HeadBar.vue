@@ -25,8 +25,9 @@
 <!--        </div>-->
 
         <div style="z-index:97!important" class="header gradient-green header-logo-center mb-3">
-            <a href="index.html" class="header-title color-white">{{ title }}</a>
-            <a href="#" class="header-icon color-white header-icon-1"><i class="fas fa-arrow-left"></i></a>
+            <router-link :to="{name: 'home'}" class="header-title color-white">{{ title }}</router-link>
+            <router-link :to="{name: 'home'}" class="header-icon color-white header-icon-1"><i class="fas fa-arrow-left"></i></router-link>
+
                         <a href="#" class="header-icon header-icon-2">
                             <i class="fas fa-envelope"></i>
                             <span class="badge bg-red-dark">2</span>

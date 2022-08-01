@@ -27,7 +27,7 @@ class getListOrderProcessedResource extends JsonResource
 
         return [
             'order_id' => $this->id,
-            'good_id' => $this->goods_id,
+            'goods_id' => $this->goods_id,
             'name' => $this->goods->name,
             'unit' => $this->goods->unit,
             'amount' => $this->amount,

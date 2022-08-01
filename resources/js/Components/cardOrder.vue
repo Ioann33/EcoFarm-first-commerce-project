@@ -46,7 +46,8 @@
                     </div>
                     <div class="col-6 pe-1">
                         <a href="#" v-if="canGetToProgress" @click.prevent="setOrderStatus(order.order_id, 'progress')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-yellow-dark">В работу</a>
-                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(order.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</a>
+                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(order.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">ggОтгрузить</a>
+                        <router-link :to="{name: 'makeMoveGoods'}" v-if="canMoveGoods"  class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</router-link>
                     </div>
 
                 </div>
@@ -162,6 +163,9 @@ export default {
     data(){
         return {
            //dir: null,
+            storage_id: null,
+            goods_available: null,
+            goods_enough: 'no'
         }
     },
     props: [
@@ -169,6 +173,24 @@ export default {
         'status',
         'dir'
     ],
+    mounted(){
+        this.storage_id = localStorage.getItem('my_storage_id')
+
+        axios.get('/api/getStorageGoods/available/'+ this.storage_id +'/'+ this.order.goods_id).then(res => {
+            // console.log(res.data.data)
+            this.goods_available = res.data.data[0].amount;
+            if((this.goods_available - this.order.amount) >0)
+                this.goods_enough = 'yes'
+            else
+                this.goods_enough = 'no'
+    // console.log('можно отгружать. есть товар на складе ')
+    //         else
+    // console.log('нет товара на складе')
+    //         // console.log('avail: '+ this.order.goods_id +'('+  res.data.data.goods_id +'): '+ this.goods_available +' kg')
+        }).catch(err => {
+            this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+        })
+    },
     computed:{
         canCancel(){
             //if( localStorage.getItem('my_storage_id') == localStorage.getItem('main_storage_id')
@@ -207,15 +229,31 @@ export default {
                 return 1
         },
         canMoveGoods(){
-            if(
-                (this.status == 'opened' || this.status == 'progress') &&
-                localStorage.getItem('my_storage_id') == localStorage.getItem('main_storage_id')
 
-            )
-                return 1
+if(localStorage.getItem('my_storage_id') == localStorage.getItem('main_storage_id'))
+{
+    if((this.status == 'opened' || this.status == 'progress') && this.goods_enough=="yes")
+        return 1
+} else {
+    if(this.dir == 'in' && this.status == 'progress')
+        return 1
+}
 
-            if(this.dir == 'in' && this.status == 'progress')
-                return 1
+            // if(
+            //     (this.status == 'opened' || this.status == 'progress')
+            //     && localStorage.getItem('my_storage_id') == localStorage.getItem('main_storage_id')
+            //     // && this.goods_enough == 'yes'
+            // )
+            //     return 1
+            //
+            // if(
+            //     this.dir == 'in'
+            //     && this.status == 'progress'
+            //     // && this.goods_enough == 'yes'
+            // )
+            //     return 1
+
+
         },
         canReOrder(){
             if(
@@ -225,10 +263,9 @@ export default {
             )
                 return 1
         }
-
     },
-  methods: {
-    setOrderStatus(order_id, status){
+    methods: {
+        setOrderStatus(order_id, status){
         console.log('(cardOrder.vue) order_id: '+order_id + '. set Status to '+status)
         //this.dir = this.$route.params.dir
         //this.status = this.$route.params.status
@@ -238,16 +275,9 @@ export default {
            // this.$router.push({name: 'pageOrders', params: {status: status, dir: dir}});
            this.$router.push({name: 'home'});
         }).catch(err => {
-            console.log(err.response)
-            console.log(err.response.data.message)
-            console.log(err.response.status)
             this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
         })
     }
 }
 }
 </script>
-
-<style scoped>
-
-</style>
