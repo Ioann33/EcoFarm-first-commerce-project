@@ -7,32 +7,33 @@
         <div class="page-content header-clear-medium">
 
             <!-- ERROR -->
-            <error
-                :message="message"
-            ></error>
+            <error :message="message"></error>
 
-            <div class="card card-style bg-green-dark shadow-bg shadow-bg-l">
-                <p class="content color-white mb-4">
-                    Передать продукцию
-                </p>
-            </div>
+
+
 
             <div class="card card-style">
-                <div class="content mb-0">
+                <div class="content-boxed bg-blue-dark mb-1 pb-3 text-center">
+                    <h4 class="color-white">Передать продукцию</h4>
+                </div>
+
+                <div class="content mb-0 p-0">
+
+
 
                     <div class="row mb-0">
 
-                        <div class="col-6">
+                        <div class="col-7 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
                                 <label for="f6" class="color-blue-dark">Выбрать продукцию для заказа</label>
-                                <select id="f6" v-model="selected_goods_id">
-                                    <option value="default" disabled selected>продукция</option>
+                                <select id="f6" v-model="selected_goods_id" class="form-control">
+                                    <option value="default"  selected>продукция</option>
 
                                     <option
                                         v-for="(goods, index) in listGoods"
                                         v-bind:value="goods.goods_id"
                                     >
-                                        {{ goods.name }} ({{ goods.goods_id }})
+                                        {{ goods.name }}
                                     </option>
 
                                 </select>
@@ -42,7 +43,7 @@
                             </div>
                         </div>
 
-                        <div class="col-3">
+                        <div class="col-3 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
                                 <input type="number" class="form-control focus-color focus-blue validate-name "
                                        id="f1"
@@ -55,14 +56,12 @@
                             </div>
                         </div>
 
-                        <div class="col-3">
+                        <div class="col-2 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
                                 <input type="number" disabled class="form-control focus-color focus-blue validate-name text-center"
-                                       id="f1"
-                                       v-bind:value="selected"
-                                       v-bind:placeholder="selected"
+                                       placeholder="кг"
                                 >
-                                <label for="f1" class="color-blue-dark" style="background: transparent;">ед.изм</label>
+
                                 <i class="fa fa-times disabled invalid color-red-dark"></i>
                                 <i class="fa fa-check disabled valid color-green-dark"></i>
                             </div>
@@ -70,11 +69,38 @@
 
                     </div>
 
-                    <a @click.prevent="makeMoveGoods" href="#" class="btn btn-xxl  shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-blue-dark">
-                        Передать на склад
-                    </a>
+                    <!--выбор склада/департамента. только для главного склада                    -->
+<!--                    <div class="row">-->
+<!--                        <div class="col-12 p-1">-->
+<!--                            <div class="input-style input-style-always-active has-borders no-icon">-->
+<!--                                <label for="f6" class="color-blue-dark">Выбрать склад</label>-->
+<!--                                <select id="f6" v-model="selected_goods_id">-->
+<!--                                    <option value="default" disabled selected>продукция</option>-->
+
+<!--                                    <option-->
+<!--                                        v-for="(goods, index) in listGoods"-->
+<!--                                        v-bind:value="goods.goods_id"-->
+<!--                                    >-->
+<!--                                        {{ goods.name }} ({{ goods.goods_id }})-->
+<!--                                    </option>-->
+
+<!--                                </select>-->
+<!--                                <span><i class="fa fa-chevron-down"></i></span>-->
+<!--                                <i class="fa fa-check disabled valid color-green-dark"></i>-->
+<!--                                <em></em>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
+
+
+                <a @click.prevent="makeMoveGoods" href="#">
+                    <div class="content-boxed bg-blue-dark mt-1 pb-3 text-center text-uppercase">
+                        <h4 class="color-white">Передать на склад</h4>
+                    </div>
+                </a>
             </div>
+
 
         </div>
 
@@ -101,39 +127,37 @@ export default {
         return {
             listGoods: null,
             storage_id: null,
+            storage_id_to: null,
+            main_storage_id: null,
             message: null,
             selected: null,
             selected_goods_id: null,
-            storage_id_to: null,
+
             goods_amount: 0 ,// количество товара
-            main_storage_id: null
+
 
         }
     },
     mounted() {
         //console.log('Component views/Home mounted....')
         this.storage_id = localStorage.getItem('my_storage_id')
+        this.main_storage_id = localStorage.getItem('main_storage_id')
 
-        this.getStorageGoodsAllowed(this.storage_id)
+        axios.get('/api/getStorageGoods/allowed/' + this.storage_id + '/all').then(res => {
+            this.listGoods = res.data.data
+        }).catch(err => {
+            this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            console.log(this.message)
+        })
 
     },
     updated() {
-        console.log('updated')
-        init_template2()
+        //console.log('updated')
+        //init_template2()
     },
     methods: {
-        getStorageGoodsAllowed(storage_id) {
-            axios.get('/api/getStorageGoods/allowed/'+storage_id).then(res => {
-                this.listGoods = res.data.data
-                console.log(this.listGoods)
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                console.log(this.message)
-            })
-        },
-        makeMoveGoods(){
-            this.main_storage_id = localStorage.getItem('main_storage_id')
 
+        makeMoveGoods(){
             axios.post('/api/goodsMovementPush',{
                 storage_id_from: this.storage_id,
                 storage_id_to: this.main_storage_id,

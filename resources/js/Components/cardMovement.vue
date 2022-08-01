@@ -8,7 +8,7 @@
                         <img src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">
                     </div>
                     <div class="ms-3">
-                        <h3 class="font-600">{{ movement.name }}
+                        <h3 class="font-600">{{ movement.goods_name }}
 <!--                            <span class="font-300" style="margin-left: 15px">{{ movement.amount }} {{ movement.unit }}</span>-->
                         </h3>
 <!--                        <h1 class="pt-3">$29.<sup>99</sup></h1>-->
