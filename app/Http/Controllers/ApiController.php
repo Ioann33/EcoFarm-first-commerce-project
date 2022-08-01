@@ -270,7 +270,7 @@ class ApiController extends Controller
 
     public function getOrder(Request $request){
         $order = Orders::findOrFail($request->order_id);
-        return OrderResource::collection($order);
+        return OrderResource::make($order);
     }
 
 
