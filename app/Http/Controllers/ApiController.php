@@ -17,6 +17,7 @@ use App\Http\Resources\UserStorageResource;
 use App\Models\MainStore;
 use App\Models\Movements;
 use App\Models\Orders;
+use App\Models\StockBalance;
 use App\Models\StorageGoods;
 use App\Models\Storages;
 use App\Models\UserStorages;
@@ -273,5 +274,48 @@ class ApiController extends Controller
         return OrderResource::make($order);
     }
 
+
+
+    public function stockGoodsBalance(Request $request){
+        $balance = StockBalance::all()->where('goods_id', '=', $request->goods_id)->sum('amount');
+        return $balance;
+    }
+
+    public function gaveGoods(Request $request){
+        $goods_id = $request->goods_id;
+        $amount = $request->amount;
+        $available = $this->stockGoodsBalance($request);
+        if ($request->amount<=$available){
+            $price = 0;
+            $balance = StockBalance::all()->where('goods_id', '=', $request->goods_id);
+            $result = $request->amount;
+            foreach ($balance as $value){
+//                $price += $this->price *
+                if ($result <= $value->amount){
+                    var_dump($value->amount);
+                    $price += $value->price * $request->amount;
+                    $stock = StockBalance::findOrFail($request->goods_id);
+                    $stock->amount = $value->amount - $request->amount;
+                    // делаем перемещение на это же количество товара и с этой ценой
+
+                    /**
+                     * average price
+                     */
+                    // делаем перемещение на это же количество товара и с этой ценой
+//                    $pricePerUnit = $price/$request->amount;
+//                    $amount;
+
+                    return $stock->save();
+                }else{
+                    $price += $value->price * $value->amount;
+                    $result-= $value->amount;
+                    $emptyBox = StockBalance::findOrFail($value->id);
+                    $emptyBox->delete();
+                }
+            }
+        }else{
+            return 'not enough goods in stock';
+        }
+    }
 
 }
