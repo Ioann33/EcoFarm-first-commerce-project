@@ -60,6 +60,9 @@ export default {
             storage_name: null, // имя текущего склада
         }
     },
+    updated() {
+        update_template()
+    },
     mounted() {
 
         this.type = this.$route.params.type

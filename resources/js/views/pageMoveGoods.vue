@@ -10,7 +10,7 @@
             <error :message="message"></error>
 
 
-
+Order_id: [{{ this.order.id }}]
 
             <div class="card card-style">
                 <div class="content-boxed bg-blue-dark mb-1 pb-3 text-center">
@@ -25,10 +25,9 @@
 
                         <div class="col-7 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
-                                <label for="f6" class="color-blue-dark">Выбрать продукцию для заказа</label>
+                                <label for="f6" class="color-blue-dark">Товар</label>
                                 <select id="f6" v-model="selected_goods_id" class="form-control">
-                                    <option value="default"  selected>продукция</option>
-
+                                    <option value="default"  selected>выбрать</option>
                                     <option
                                         v-for="(goods, index) in listGoods"
                                         v-bind:value="goods.goods_id"
@@ -49,7 +48,7 @@
                                        id="f1"
                                        v-model="goods_amount"
                                 >
-                                <label for="f1" class="color-blue-dark">кол-во</label>
+<!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                                 <i class="fa fa-times disabled invalid color-red-dark"></i>
                                 <i class="fa fa-check disabled valid color-green-dark"></i>
                                 <em>0</em>
@@ -69,28 +68,31 @@
 
                     </div>
 
+
+
                     <!--выбор склада/департамента. только для главного склада                    -->
-<!--                    <div class="row">-->
-<!--                        <div class="col-12 p-1">-->
-<!--                            <div class="input-style input-style-always-active has-borders no-icon">-->
-<!--                                <label for="f6" class="color-blue-dark">Выбрать склад</label>-->
-<!--                                <select id="f6" v-model="selected_goods_id">-->
-<!--                                    <option value="default" disabled selected>продукция</option>-->
+                    <div class="row" v-if="canSelectStorageTo">
+                        <div class="col-12 p-1">
+                            <div class="input-style input-style-always-active has-borders no-icon">
+                                <label for="f6" class="color-blue-dark">на склад</label>
+                                <select id="f6" v-model="selected_storage_id">
+                                    <option value="default" disabled selected>выбрать склад</option>
 
-<!--                                    <option-->
-<!--                                        v-for="(goods, index) in listGoods"-->
-<!--                                        v-bind:value="goods.goods_id"-->
-<!--                                    >-->
-<!--                                        {{ goods.name }} ({{ goods.goods_id }})-->
-<!--                                    </option>-->
+                                    <option
+                                        v-for="(storage, index) in listStorage"
+                                        v-bind:value="storage.id"
+                                    >
+                                        {{ storage.name }}
+                                    </option>
 
-<!--                                </select>-->
-<!--                                <span><i class="fa fa-chevron-down"></i></span>-->
-<!--                                <i class="fa fa-check disabled valid color-green-dark"></i>-->
-<!--                                <em></em>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
+                                </select>
+                                <span><i class="fa fa-chevron-down"></i></span>
+                                <i class="fa fa-check disabled valid color-green-dark"></i>
+                                <em></em>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
 
@@ -113,47 +115,94 @@
 import headBar from "../components/headBar";
 import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
-import StorageButton from "../Components/StorageButton";
+
 import error from "../Components/Error";
+import cardOrder from "../Components/cardOrder";
 
 export default {
     name: "SelectStorage",
     components:{
         headBar, NavBar, NavBarMenu,
-        StorageButton,
-        error
+        error,
+        cardOrder
     },
     data(){
         return {
             listGoods: null,
+            listStorage: null,
             storage_id: null,
             storage_id_to: null,
             main_storage_id: null,
             message: null,
             selected: null,
-            selected_goods_id: null,
+            selected_goods_id: 'default',
+            selected_storage_id: 'default',
 
-            goods_amount: 0 ,// количество товара
+            goods_amount: 0 ,   // количество товара
 
+            order_id: null,      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
+            order: [],     // массив. getOrder/order_id
 
+            dir: 'in',
+            status: 'progress',
         }
     },
     mounted() {
-        //console.log('Component views/Home mounted....')
-        this.storage_id = localStorage.getItem('my_storage_id')
-        this.main_storage_id = localStorage.getItem('main_storage_id')
+        this.order_id           = this.$route.params.order_id
+        this.storage_id         = localStorage.getItem('my_storage_id')
+        this.main_storage_id    = localStorage.getItem('main_storage_id')
 
         axios.get('/api/getStorageGoods/allowed/' + this.storage_id + '/all').then(res => {
             this.listGoods = res.data.data
         }).catch(err => {
-            this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
             console.log(this.message)
         })
 
+        // Если перешли на эту страницу без order_id
+        if(this.order_id == '') {
+            axios.get('/api/getStorageGoods/allowed/' + this.storage_id + '/all').then(res => {
+                this.listGoods = res.data.data
+            }).catch(err => {
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.log(this.message)
+            })
+        }else{
+            // получить параметры этого ордера, что бы автоматически заполнить поля отгрузки товара
+            axios.get('/api/getOrder/' + this.order_id).then(res => {
+                this.order = res.data.data
+                this.goods_amount = this.order.amount
+                this.selected_goods_id = this.order.goods_id
+                // установить скдад по-умолчанию на основании ордера/заказа
+                this.selected_storage_id=this.order.storage_id_from
+
+            }).catch(err => {
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.log(this.message)
+            })
+        }
+
+
+
+    },
+    computed: {
+        canSelectStorageTo() {
+            if(localStorage.getItem('my_storage_id') == localStorage.getItem('main_storage_id'))
+            {
+                axios.get('/api/getListStorage').then(res => {
+                    this.listStorage = res.data.data
+
+                }).catch(err => {
+                    this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                    console.log(this.message)
+                })
+                return 1
+            }
+        }
     },
     updated() {
         //console.log('updated')
-        //init_template2()
+        update_template
     },
     methods: {
 
@@ -171,8 +220,6 @@ export default {
                     ', \namount: '+ this.goods_amount
                 )
                 this.$router.push({name: 'home'});
-
-
 
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;

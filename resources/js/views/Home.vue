@@ -11,6 +11,8 @@
 // {{ store_message }}
 
 
+import ComponentA from "../Components/ComponentA";
+import ComponentB from "../Components/ComponentB";
 </script>
 
 <template>
@@ -25,6 +27,9 @@
     <error
         :message="message"
     ></error>
+
+    <component-a></component-a> <br>
+    <component-b></component-b>
 
 <!--{{ store_message }}-->
 <!--    {{ Storage.store_message }}-->
@@ -46,7 +51,8 @@
     </div>
 
 <!--ЗАКАЗЫ-->
-    <div class="card card-style" v-if="order_in=='true'">
+
+    <div class="card card-style" v-if="order_in=='0'">
         <div class="content mb-0 mt-0">
             <div class="list-group list-custom-small" >
                 <router-link :to="{name: 'makeOrder'}">
@@ -119,7 +125,8 @@
 <!--ЗАКАЗЫ-->
 
 <!--ВХОДЯЩИЕ ЗАЯВКИ-->
-    <div class="card card-style" v-if="order_out=='true'">
+
+    <div class="card card-style" v-if="order_out=='0'">
         <div class="content mb-3 mt-0">
             <div class="list-group list-custom-small" >
                 <a href="#">
@@ -162,6 +169,7 @@
             </div>
         </div>
     </div>
+
 <!--ВХОДЯЩИЕ ЗАЯВКИ-->
 
 
@@ -285,7 +293,7 @@ export default {
             money_out: false,
             storage_id: null,
             storage_name: null,
-            balance: 343.45,
+            balance: 1000,
 
 
             count_order_out_opened: 0,
@@ -327,7 +335,7 @@ export default {
         console.log('Component views/Home mounted......done!')
     },
     updated() {
-        init_template2()
+        update_template()
     },
     methods: {
         async loadStoragesParams(){

@@ -64,8 +64,7 @@ export default {
         //console.log('Component views/Home mounted......done!')
     },
     updated() {
-        console.log('updated')
-        init_template2()
+        update_template()
     },
     methods: {
         getMyStorages() {

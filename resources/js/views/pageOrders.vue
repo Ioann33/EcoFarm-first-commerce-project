@@ -233,7 +233,7 @@ export default {
     },
     updated() {
         console.log('updated')
-        init_template2()
+        update_template
     },
     methods: {
         getListOrders(storage_id) {

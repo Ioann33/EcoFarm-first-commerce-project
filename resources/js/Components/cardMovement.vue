@@ -157,9 +157,6 @@ export default {
 
     },
   methods: {
-        a(movement_id){
-            console.log('-----')
-        },
         pullGoods(movement_id){
 
             axios.post('/api/setPrice/', {
