@@ -9,6 +9,7 @@ use App\Http\Resources\getListOrderOutResource;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\OrderInResource;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
 use App\Http\Resources\StorageResource;
@@ -292,9 +293,8 @@ class ApiController extends Controller
     }
 
     public function gaveGoods(Request $request){
-        $goods_id = $request->goods_id;
+
         $amount = $request->amount;
-        $storage_id = $request->satorage_id_from;
         $available = $this->stockGoodsBalance($request);
 
         if ($request->amount<=$available) {
@@ -357,6 +357,7 @@ class ApiController extends Controller
             return 'not enough goods in stock';
         }
     }
+
 }
 
 
