@@ -102,7 +102,17 @@ class ApiController extends Controller
         $movement->user_id_accepted = Auth::id();
         $movement->date_accepted = date('Y-m-d H:i:s');
         //TODO handle possible error
-        if($movement->save()){
+        $movement->save();
+
+        $stockBalance = new StockBalance();
+        $stockBalance->storage_id = $movement->storage_id_to;
+        $stockBalance->goods_id = $movement->goods_id;
+        $stockBalance->price = $movement->price;
+        $stockBalance->amount = $movement->amount;
+        $stockBalance->date_accepted = date('Y-m-d H:i:s');
+        $stockBalance->save();
+
+        if($movement->save() && $stockBalance->save()) {
             return response()->json(['status'=>'ok']);
         }
     }
@@ -277,35 +287,65 @@ class ApiController extends Controller
 
 
     public function stockGoodsBalance(Request $request){
-        $balance = StockBalance::all()->where('goods_id', '=', $request->goods_id)->sum('amount');
+        $balance = StockBalance::all()->where('storage_id','=',$request->storage_id_from)->where('goods_id', '=', $request->goods_id)->sum('amount');
         return $balance;
     }
 
     public function gaveGoods(Request $request){
         $goods_id = $request->goods_id;
         $amount = $request->amount;
+        $storage_id = $request->satorage_id_from;
         $available = $this->stockGoodsBalance($request);
-        if ($request->amount<=$available){
+
+        if ($request->amount<=$available) {
             $price = 0;
-            $balance = StockBalance::all()->where('goods_id', '=', $request->goods_id);
+            $balance = StockBalance::all()->where('storage_id', '=', $request->storage_id_from)->where('goods_id', '=', $request->goods_id)->sort();
+
             $result = $request->amount;
-            foreach ($balance as $value){
-//                $price += $this->price *
+            foreach ($balance as $value) {
                 if ($result <= $value->amount){
-                    var_dump($value->amount);
-                    $price += $value->price * $request->amount;
-                    $stock = StockBalance::findOrFail($request->goods_id);
-                    $stock->amount = $value->amount - $request->amount;
-                    // делаем перемещение на это же количество товара и с этой ценой
 
-                    /**
-                     * average price
-                     */
-                    // делаем перемещение на это же количество товара и с этой ценой
-//                    $pricePerUnit = $price/$request->amount;
-//                    $amount;
+                    $price += $value->price * $result;
+                    $stock = StockBalance::findOrFail($value->id);
+                    $stock->amount = $value->amount - $result;
 
-                    return $stock->save();
+                    $stock->save();
+
+                    $pricePerUnit = $price/$amount;
+
+                    $newMovement = new Movements();
+                    $newMovement->user_id_created = Auth::id();
+                    $newMovement->date_created = date('Y-m-d H:i:s');
+                    $newMovement->storage_id_from = $request->storage_id_from;
+                    $newMovement->storage_id_to = $request->storage_id_to;
+                    $newMovement->goods_id = $request->goods_id;
+                    $newMovement->amount = $amount;
+                    if (isset($pricePerUnit)){
+                        $newMovement->price = $pricePerUnit;
+                    }
+
+                    if (isset($request->order_main)){
+                        $newMovement->order_main = $request->order_main;
+                        $order = Orders::findOrFail($request->order_main);
+                        if ($order->status === null || $order->status === 'progress'){
+                            $order->status = 'completed';
+                            $order->date_status = date('Y-m-d H:i:s');
+                            $order->user_id_handler = Auth::id();
+                            if ($order->save()){
+                                response()->json(['status'=>'ok']);
+                            }
+                        }else{
+                            return 'this order already completed or canceled';
+                        }
+                    }
+
+                    //TODO handle possible error
+
+                    if($newMovement->save()){
+                        return response()->json(['status'=>'ok']);
+                    }
+
+
                 }else{
                     $price += $value->price * $value->amount;
                     $result-= $value->amount;
@@ -317,5 +357,7 @@ class ApiController extends Controller
             return 'not enough goods in stock';
         }
     }
-
 }
+
+
+

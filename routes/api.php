@@ -31,7 +31,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
 
     Route::get('/getGoodsStockBalance/{goods_id}', [\App\Http\Controllers\ApiController::class, 'stockGoodsBalance']);
-    Route::get('/gaveGoods/{goods_id}/{amount}', [\App\Http\Controllers\ApiController::class, 'gaveGoods']);
+    Route::post('/gaveGoods', [\App\Http\Controllers\ApiController::class, 'gaveGoods']);
 
 
 
