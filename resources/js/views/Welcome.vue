@@ -120,7 +120,7 @@ export default {
     },
     mounted() {
         console.log('Component Welcome mounted.')
-        update_template
+        update_template()
     }
 
 }
