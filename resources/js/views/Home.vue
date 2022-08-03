@@ -175,12 +175,12 @@ import ComponentB from "../Components/ComponentB";
 
 
 <!--ПЕРЕДАТЬ ТОВАР    -->
-    <div class="card card-style" v-if="move_out=='true'">
+    <div class="card card-style" style="padding-top: 12px;" v-if="move_out=='true'">
         <div class="content mb-3 mt-0">
             <div class="list-group list-custom-small" >
 
 <!--сделать заказ на перемещение продукции                -->
-                <a href="#">
+                <a v-if="isMain" href="#">
                     <router-link :to="{name: 'makeMoveGoods'}">
                     <i class="fa bg-green-dark rounded-s"></i>
                     <span class="font-20">Передать продукцию</span>
@@ -333,6 +333,15 @@ export default {
 
         this.loadStoragesParams()
         console.log('Component views/Home mounted......done!')
+    },
+    computed: {
+      isMain(){
+          const main_id = localStorage.getItem('main_storage_id');
+          if(main_id === this.storage_id) {
+              return true;
+          }
+          return false;
+      }
     },
     updated() {
         update_template()
