@@ -30,8 +30,8 @@
                         </div>
 
                         <div class="d-flex mt-4 mb-4">
-                            <div class="w-50 font-11 pb-2 color text-start"><a href="page-signup-4.html">Хочу подключиться</a></div>
-                            <div class="w-50 font-11 pb-2 text-end"><a href="page-forgot-4.html">Забыл пароль</a></div>
+                            <div class="w-50 font-11 pb-2 color text-start"><a href="#">ссылка куда то</a></div>
+                            <div class="w-50 font-11 pb-2 text-end"><a href="#">Забыл пароль</a></div>
                         </div>
                         <a @click.prevent="login" href="#" class="back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-900 bg-highlight">Вход</a>
                     </div>

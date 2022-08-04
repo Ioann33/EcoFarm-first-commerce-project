@@ -6,4 +6,8 @@ export const store = reactive({
     // my_storage_name(){
     //     this.count++
     // }
+    title: 'title',
+    setTitle(title){
+        this.title = title
+    }
 })

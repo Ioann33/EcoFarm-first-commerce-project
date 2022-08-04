@@ -39,6 +39,8 @@
 </template>
 
 <script>
+//import {store} from "../stores/store";
+
 export default {
     name: "headBar",
     data(){
@@ -48,6 +50,10 @@ export default {
     },
     mounted() {
         //console.log('Component headBar mounted')
+        // this.title = store.title
+        this.title = localStorage.getItem('title')
+    },
+    updated() {
         this.title = localStorage.getItem('title')
     }
 }

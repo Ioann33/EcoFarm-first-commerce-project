@@ -11,8 +11,9 @@
 // {{ store_message }}
 
 
-import ComponentA from "../Components/ComponentA";
-import ComponentB from "../Components/ComponentB";
+// import ComponentA from "../Components/ComponentA";
+// import ComponentB from "../Components/ComponentB";
+
 </script>
 
 <template>
@@ -28,8 +29,8 @@ import ComponentB from "../Components/ComponentB";
         :message="message"
     ></error>
 
-    <component-a></component-a> <br>
-    <component-b></component-b>
+<!--    <component-a></component-a> <br>-->
+<!--    <component-b></component-b>-->
 
 <!--{{ store_message }}-->
 <!--    {{ Storage.store_message }}-->
@@ -180,7 +181,7 @@ import ComponentB from "../Components/ComponentB";
             <div class="list-group list-custom-small" >
 
 <!--сделать заказ на перемещение продукции                -->
-                <a v-if="isMain" href="#">
+                <a href="#">
                     <router-link :to="{name: 'makeMoveGoods'}">
                     <i class="fa bg-green-dark rounded-s"></i>
                     <span class="font-20">Передать продукцию</span>
@@ -328,11 +329,24 @@ export default {
         this.money_out = localStorage.getItem('money_out');
         this.move_in = localStorage.getItem('move_in');
         this.move_out = localStorage.getItem('move_out');
-        this.storage_name = localStorage.getItem('storage_name');
+        this.storage_name = localStorage.getItem('my_storage_name');
 
+        console.log('storage_name: '+this.storage_name)
+
+        // получим сумму перемещений на этом складе
+        this.date_from = '2022-08-01'
+        this.date_to = '2022-08-05'
+        axios.get('/api/getSumMoneyMovementGoods/'+ this.storage_id+'/'+this.date_from+'/'+this.date_to).then(res => {
+            this.balance = res.data.sum
+
+        }).catch(err => {
+            console.log(err)
+            this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+        })
 
         this.loadStoragesParams()
         console.log('Component views/Home mounted......done!')
+        update_template()
     },
     computed: {
       isMain(){
@@ -347,43 +361,37 @@ export default {
         update_template()
     },
     methods: {
-        async loadStoragesParams(){
+         loadStoragesParams(){
 
-            await axios.get('/api/getStorageOrder/out/'+ this.storage_id).then(res => {
+             axios.get('/api/getStorageOrder/out/'+ this.storage_id).then(res => {
                 //console.log(res.data)
                 this.count_order_out_opened = res.data.data.opened
                 this.count_order_out_canceled = res.data.data.canceled
                 this.count_order_out_progres = res.data.data.progress
 
             }).catch(err => {
-                console.log(err.response)
-                console.log(err.response.data.message)
-                console.log(err.response.status)
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
-            await axios.get('/api/getStorageOrder/in/'+ this.storage_id).then(res => {
+             axios.get('/api/getStorageOrder/in/'+ this.storage_id).then(res => {
                 //console.log(res.data)
                 this.count_order_in_opened = res.data.data.opened
                 this.count_order_in_canceled = res.data.data.canceled
                 this.count_order_in_progres = res.data.data.progress
 
             }).catch(err => {
-                console.log(err.response)
-                console.log(err.response.data.message)
-                console.log(err.response.status)
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
             // получить ОТКРЫТЫЕ ИСХОДЯЩИЕ заявки на ПЕРЕДАЧУ товара  (нужно только количество, для отображения на главной странице)
-            await axios.get('/api/getMovement/out/opened/'+ this.storage_id).then(res => {
+             axios.get('/api/getMovement/out/opened/'+ this.storage_id).then(res => {
                 this.count_movement_out_opened = res.data.data.length
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
             // получить ОТКРЫТЫЕ ВХОДЯЩИЕ заявки на ПОЛУЧЕНИЕ товара (нужно только количество, для отображения на главной странице)
-            await axios.get('/api/getMovement/in/opened/'+ this.storage_id).then(res => {
+             axios.get('/api/getMovement/in/opened/'+ this.storage_id).then(res => {
                 this.count_movement_in_opened = res.data.data.length
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;

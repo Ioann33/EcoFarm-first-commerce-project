@@ -10,7 +10,6 @@
             <error :message="message"></error>
 
 
-Order_id: [{{ this.order.id }}]
 
             <div class="card card-style">
                 <div class="content-boxed bg-blue-dark mb-1 pb-3 text-center">
@@ -106,7 +105,7 @@ Order_id: [{{ this.order.id }}]
 
 
         </div>
-
+<menu-set_price></menu-set_price>
         <nav-bar-menu></nav-bar-menu>
 
     </div>
@@ -157,28 +156,29 @@ export default {
 
         axios.get('/api/getStorageGoods/available/' + this.storage_id + '/all').then(res => {
             this.listGoods = res.data.data;
-            console.log(this.listGoods)
+                    console.log('listGoods:')
+                    console.log(this.listGoods)
         }).catch(err => {
             this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
             console.log(this.message)
         })
 
         // Если перешли на эту страницу без order_id
-        if(this.order_id == '') {
+        if(this.order_id.length ==  0) {
             axios.get('/api/getStorageGoods/allowed/' + this.storage_id + '/all').then(res => {
                 this.listGoods = res.data.data
             }).catch(err => {
                 this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                console.log(this.message)
+                    console.log(this.message)
             })
-        }else{
+        } else {
             // получить параметры этого ордера, что бы автоматически заполнить поля отгрузки товара
             axios.get('/api/getOrder/' + this.order_id).then(res => {
                 this.order = res.data.data
                 this.goods_amount = this.order.amount
                 this.selected_goods_id = this.order.goods_id
                 // установить скдад по-умолчанию на основании ордера/заказа
-                this.selected_storage_id=this.order.storage_id_from
+                this.selected_storage_id = this.order.storage_id_from
 
             }).catch(err => {
                 this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
