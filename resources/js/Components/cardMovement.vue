@@ -47,7 +47,7 @@
                     <div class="col-6 pe-1">
 
 <!--                        @click.prevent="pullGoods(movement.order_id)"-->
-                        <a href="#" v-if="canPullGoods" data-menu="menu-setPrice" @click='this.movement_id = movement.id' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
+                        <a href="#" v-if="canPullGoods" data-menu="menu-setPrice" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
 <!--                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(movement.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</a>-->
 
 
@@ -58,24 +58,7 @@
         </div>
     </div>
 
-    <!-- menu-subscribe -->
-    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-effect="menu-over" data-menu-height="200">
-        <div class="menu-title mt-n1">
-            <h1>Установить цену</h1>
-            <a href="#" class="close-menu"><i class="fa fa-times"></i></a>
-        </div>
-        <div class="content mb-0 mt-2">
-            <div class="divider mb-3"></div>
-            <div class="input-style no-borders no-icon validate-field">
-                <input type="text" class="form-control validate-text" id="form2a63" placeholder="0.00" v-model="price">
-                <label for="form2a63" class="color-highlight">цена</label>
-                <i class="fa fa-times disabled invalid color-red-dark"></i>
-                <i class="fa fa-check disabled valid color-green-dark"></i>
-                <em>(обязательно)</em>
-            </div>
-            <a href="#" @click.prevent="pullGoods(movement.id)" data-menu="menu-subscribe-confirm" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
-        </div>
-    </div>
+
 
 </template>
 
@@ -157,27 +140,7 @@ export default {
 
     },
   methods: {
-        pullGoods(movement_id){
 
-            axios.post('/api/setPrice/', {
-                movement_id,
-                price: this.price
-            }).then(res => {
-                console.log('price is set')
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-            })
-
-            axios.post('/api/goodsMovementPull/', {
-                movement_id
-            }).then(res => {
-                console.log('movements approve')
-                this.$router.push({name: 'home'});
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-            })
-            console.log('-dd----'+movement_id+' '+this.price)
-        },
     setOrderStatus(order_id, status){
         console.log('(cardMovement.vue) order_id: '+order_id + '. set Status to '+status)
         //this.dir = this.$route.params.dir
