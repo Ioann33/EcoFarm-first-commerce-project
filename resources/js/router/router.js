@@ -45,6 +45,11 @@ const router = createRouter({
             path: '/makeMoveGoods/:order_id?',
             name: 'makeMoveGoods',
             component: () => import('../views/pageMoveGoods')
+        },
+        {
+            path: '/makeProducts',
+            name: 'makeProducts',
+            component: () => import('../views/pageMakeProducts')
         }
     ]
 })
