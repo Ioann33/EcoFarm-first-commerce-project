@@ -9,29 +9,29 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/get', \App\Http\Controllers\GetController::class)->middleware('ioann');
-    Route::get('/getMyStorage', [\App\Http\Controllers\ApiController::class, 'getMyStorage']);
-    Route::get('/getStorageProp/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageProp']);
-//    Route::get('/getStorageGoodsAvailable/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageGoodsAvailable']);
-    Route::get('/getStorageOrder/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageOrder']);
+    Route::get('/getMyStorage', [\App\Http\Controllers\Storage\StorageController::class, 'getMyStorage']);
+    Route::get('/getStorageProp/{id}', [\App\Http\Controllers\Storage\StorageController::class, 'getStorageProp']);
 
-    Route::post('/goodsMovementPush', [\App\Http\Controllers\ApiController::class, 'goodsMovementPush']);
-    Route::post('/goodsMovementPull', [\App\Http\Controllers\ApiController::class, 'goodsMovementPull']);
-    Route::post('/setPrice', [\App\Http\Controllers\ApiController::class, 'setPrice']);
-//    Route::get('/getStorageGoodsAllowed/{id}', [\App\Http\Controllers\ApiController::class, 'getStorageGoodsAllowed']);
-    Route::post('/createOrder', [\App\Http\Controllers\ApiController::class, 'createOrder']);
-    Route::get('/getMainStorage', [\App\Http\Controllers\ApiController::class, 'getMainStorage']);
-    Route::get('/getListOrder/{dir}/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'getListOrder']);
-    Route::get('/setOrderStatus/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'setOrderStatus']);
-    Route::get('/getStorageGoods/{key}/{id}/{goods_id?}', [\App\Http\Controllers\ApiController::class, 'getStorageGoods']);
-    Route::get('/getMovement/{dir}/{status}/{id}', [\App\Http\Controllers\ApiController::class, 'getMovement']);
-    Route::get('/getListStorage', [\App\Http\Controllers\ApiController::class, 'getListStorage']);
-    Route::get('/getOrder/{order_id}', [\App\Http\Controllers\ApiController::class, 'getOrder']);
+    Route::get('/getStorageOrder/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'getStorageOrder']);
 
+    Route::post('/goodsMovementPush', [\App\Http\Controllers\Goods\GoodsController::class, 'goodsMovementPush']);
+    Route::post('/goodsMovementPull', [\App\Http\Controllers\Goods\GoodsController::class, 'goodsMovementPull']);
+    Route::post('/setPrice', [\App\Http\Controllers\Goods\GoodsController::class, 'setPrice']);
 
+    Route::post('/createOrder', [\App\Http\Controllers\Orders\OrderController::class, 'createOrder']);
+    Route::get('/getMainStorage', [\App\Http\Controllers\Storage\StorageController::class, 'getMainStorage']);
+    Route::get('/getListOrder/{dir}/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'getListOrder']);
+    Route::get('/setOrderStatus/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'setOrderStatus']);
+    Route::get('/getStorageGoods/{key}/{id}/{goods_id?}', [\App\Http\Controllers\Goods\GoodsController::class, 'getStorageGoods']);
+    Route::get('/getMovement/{dir}/{status}/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovement']);
+    Route::get('/getListStorage', [\App\Http\Controllers\Storage\StorageController::class, 'getListStorage']);
+    Route::get('/getOrder/{order_id}', [\App\Http\Controllers\Orders\OrderController::class, 'getOrder']);
 
 
-    Route::get('/getGoodsStockBalance/{goods_id}', [\App\Http\Controllers\ApiController::class, 'stockGoodsBalance']);
-    Route::post('/gaveGoods', [\App\Http\Controllers\ApiController::class, 'gaveGoods']);
+
+
+    Route::get('/getGoodsStockBalance/{goods_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'stockGoodsBalance']);
+    Route::post('/gaveGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'gaveGoods']);
 
 
 
