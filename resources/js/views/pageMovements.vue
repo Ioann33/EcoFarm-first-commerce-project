@@ -26,6 +26,7 @@
             :movement="movement"
             :dir='this.dir'
             :status="this.status"
+            @getMovementId="setMovementId"
         ></card-movement>
     </div>
 
@@ -34,6 +35,25 @@
 
 
 </div> <!-- page-contend -->
+
+    <!-- menu-subscribe -->
+    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-effect="menu-over" data-menu-height="200">
+        <div class="menu-title mt-n1">
+            <h1>Установить цену</h1>
+            <a href="#" class="close-menu"><i class="fa fa-times"></i></a>
+        </div>
+        <div class="content mb-0 mt-2">
+            <div class="divider mb-3"></div>
+            <div class="input-style no-borders no-icon validate-field">
+                <input type="text" class="form-control validate-text" id="form2a63" placeholder="0.00" v-model="price">
+                <label for="form2a63" class="color-highlight">цена</label>
+                <i class="fa fa-times disabled invalid color-red-dark"></i>
+                <i class="fa fa-check disabled valid color-green-dark"></i>
+                <em>(обязательно)</em>
+            </div>
+            <a href="#" @click.prevent="pullGoods(movement_id)" data-menu="menu-subscribe-confirm" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
+        </div>
+    </div>
 
     <nav-bar-menu></nav-bar-menu>
 
@@ -62,6 +82,7 @@ export default {
             dir: null,              // { in | out }
             status: null,           // { opened | canceled | progress }
             message: null,           // for error message
+            movement_id: ''
 
         }
     },
@@ -89,7 +110,11 @@ export default {
         update_template()
     },
     methods: {
-
+        setMovementId(e){
+            this.movement_id = e;
+            console.log('Получили вот такой movement id:')
+            console.log(this.movement_id)
+        },
         getListOrders(storage_id) {
             axios.get('/api/getStorageGoods/'+ this.dir +'/'+this.status+'/'+storage_id).then(res => {
                 this.listOrders = res.data.data
@@ -98,6 +123,27 @@ export default {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 console.log(this.message)
             })
+        },
+        pullGoods(movement_id){
+
+            axios.post('/api/setPrice/', {
+                movement_id,
+                price: this.price
+            }).then(res => {
+                console.log('price is set')
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            })
+
+            axios.post('/api/goodsMovementPull/', {
+                movement_id
+            }).then(res => {
+                console.log('movements approve')
+                this.$router.push({name: 'home'});
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            })
+            console.log('-dd----'+movement_id+' '+this.price)
         },
 
 
