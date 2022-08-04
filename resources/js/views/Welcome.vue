@@ -121,6 +121,9 @@ export default {
     mounted() {
         console.log('Component Welcome mounted.')
         update_template()
+    },
+    updated(){
+        update_template()
     }
 
 }
