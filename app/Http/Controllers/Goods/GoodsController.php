@@ -1,54 +1,40 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Goods;
 
-use App\Http\Resources\getListOrderAllResource;
-use App\Http\Resources\getListOrderProcessedResource;
-use App\Http\Resources\getListOrderOpenedResource;
-use App\Http\Resources\getListOrderOutResource;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\getMovementResource;
-use App\Http\Resources\OrderInResource;
-use App\Http\Resources\OrderResource;
-use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
-use App\Http\Resources\StorageResource;
-use App\Http\Resources\StoragesPropResource;
-use App\Http\Resources\UserStorageResource;
-use App\Models\MainStore;
 use App\Models\Movements;
 use App\Models\Orders;
 use App\Models\StockBalance;
 use App\Models\StorageGoods;
-use App\Models\Storages;
-use App\Models\UserStorages;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ApiController extends Controller
+class GoodsController extends Controller
 {
-    public function getMyStorage(){
-        $user_id = Auth::id();
-        $userStorage = UserStorages::all()->where('user_id', '=', $user_id);
-        return UserStorageResource::collection($userStorage);
-    }
+    public function setPrice(Request $request){
+        $this->validate($request,[
+            'movement_id'=>'required',
+            'price'=>'required',
+        ]);
 
-    public function getStorageProp(Request $request){
-        $storage = Storages::all()->where('id', '=', $request->id);
-        return StoragesPropResource::collection($storage);
-    }
+        try {
+            $movement = Movements::findOrFail($request->movement_id);
+        }catch (QueryException $e){
+            return response()->json(['message'=>$e->getMessage()]);
+        }
 
-//    public function getStorageGoodsAvailable(Request $request){
-//        $allGoods = StorageGoods::all()->where('storage_id', '=', $request->id);
-//
-//        return StorageGoodsResource::collection($allGoods);
-//    }
 
-    public function getStorageOrder(Request $request){
+        $movement->price = $request->price;
 
-        return new OrderInResource($request);
 
+        if($movement->save()) {
+            return response()->json(['status'=>'ok']);
+        }
     }
 
     public function goodsMovementPush(Request $request){
@@ -93,6 +79,25 @@ class ApiController extends Controller
 
     }
 
+    public function getMovement(Request $request){
+
+        if($request->status === 'opened'){
+            $operator = '=';
+        }else{
+            $operator = '!=';
+        }
+
+        if ($request->dir === 'in'){
+            $dir = 'storage_id_to';
+        }else{
+            $dir = 'storage_id_from';
+        }
+
+        $movement = Movements::all()->where($dir, '=', $request->id)->where('user_id_accepted', $operator,null);
+
+        return getMovementResource::collection($movement);
+    }
+
     public function goodsMovementPull(Request $request){
 
         $this->validate($request,[
@@ -118,127 +123,6 @@ class ApiController extends Controller
         }
     }
 
-    public function setPrice(Request $request){
-        $this->validate($request,[
-            'movement_id'=>'required',
-            'price'=>'required',
-        ]);
-
-        try {
-            $movement = Movements::findOrFail($request->movement_id);
-        }catch (QueryException $e){
-            return response()->json(['message'=>$e->getMessage()]);
-        }
-
-
-        $movement->price = $request->price;
-
-
-        if($movement->save()) {
-            return response()->json(['status'=>'ok']);
-        }
-    }
-
-//    public function getStorageGoodsAllowed(Request $request){
-//
-//
-//        $goods = StorageGoods::all()->where('storage_id','=', $request->id);
-//
-//        return StorageAllowedGoodsResource::collection($goods);
-//    }
-
-    public function createOrder(Request $request){
-
-        $this->validate($request,[
-            'storage_id_from'=>'required',
-            'storage_id_to'=>'required',
-            'goods_id'=>'required',
-            'amount'=>'required',
-        ]);
-
-        $newOrder = new Orders();
-
-        $newOrder->user_id_created = Auth::id();
-        $newOrder->date_created = date('Y-m-d H:i:s');
-        $newOrder->storage_id_from = $request->storage_id_from;
-        $newOrder->storage_id_to = $request->storage_id_to;
-        $newOrder->goods_id = $request->goods_id;
-        $newOrder->amount = $request->amount;
-        if (isset($request->order_main)){
-            $newOrder->order_main = $request->order_main;
-        }
-
-        if (isset($request->order_main)){
-            $newOrder->order_main = $request->order_main;
-        }
-
-        if ($newOrder->save()){
-            return response()->json(['status'=>'ok']);
-        }
-    }
-
-    public function getMainStorage(){
-        $mainStore = MainStore::all()->where('name', '=', 'main_storage')->toArray();
-        return response()->json(['storage_id'=>$mainStore[0]['param']]);
-    }
-
-    public function getListOrder(Request $request){
-
-
-        if($request->dir === 'in'){
-            $dir = 'storage_id_to';
-        }else{
-            $dir = 'storage_id_from';
-        }
-
-        if ($request->status === 'opened'){
-            $orderList = Orders::all()->where('status','=', null)->where($dir, '=', $request->id);
-
-            return getListOrderOpenedResource::collection($orderList);
-        }
-
-
-        if ($request->status === 'canceled'){
-            $orderList = Orders::all()->where('status','=', 'canceled')->where($dir, '=', $request->id);
-
-            return getListOrderProcessedResource::collection($orderList);
-        }
-
-        if ($request->status === 'progress'){
-            $orderList = Orders::all()->where('status','=', 'progress')->where($dir, '=', $request->id);
-
-            return getListOrderProcessedResource::collection($orderList);
-        }
-
-        if ($request->status === 'completed'){
-            $orderList = Orders::all()->where('status','=', 'completed')->where($dir, '=', $request->id);
-
-            return getListOrderProcessedResource::collection($orderList);
-        }
-
-        if ($request->status === 'all'){
-            $orderList = Orders::all()->where($dir, '=', $request->id);
-
-            return getListOrderAllResource::collection($orderList);
-        }
-
-
-    }
-
-    public function setOrderStatus(Request $request){
-
-        $order = Orders::findOrFail($request->id);
-        $order->status = $request->status;
-        $order->date_status = date('Y-m-d H:i:s');
-        $order->user_id_handler = Auth::id();
-        if($order->save()) {
-            return response()->json(['status' => 'ok']);
-        }else{
-            return response()->json(['status' => 'some problem with setStatus']);
-        }
-
-    }
-
     public function getStorageGoods(Request $request){
 
         if ($request->goods_id === 'all'){
@@ -255,36 +139,6 @@ class ApiController extends Controller
         return StorageGoodsResource::collection($goods);
 
     }
-
-    public function getMovement(Request $request){
-
-        if($request->status === 'opened'){
-            $operator = '=';
-        }else{
-            $operator = '!=';
-        }
-
-        if ($request->dir === 'in'){
-            $dir = 'storage_id_to';
-        }else{
-            $dir = 'storage_id_from';
-        }
-
-        $movement = Movements::all()->where($dir, '=', $request->id)->where('user_id_accepted', $operator,null);
-
-        return getMovementResource::collection($movement);
-    }
-
-    public function getListStorage(){
-        $storage = Storages::all();
-        return StorageResource::collection($storage);
-    }
-
-    public function getOrder(Request $request){
-        $order = Orders::findOrFail($request->order_id);
-        return OrderResource::make($order);
-    }
-
 
 
     public function stockGoodsBalance(Request $request){
@@ -357,8 +211,4 @@ class ApiController extends Controller
             return 'not enough goods in stock';
         }
     }
-
 }
-
-
-
