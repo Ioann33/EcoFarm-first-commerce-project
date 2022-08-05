@@ -14,6 +14,8 @@
 </template>
 
 <script>
+//import {store} from "../stores/store";
+
 export default {
     name: "StorageButton",
     props: [
@@ -30,7 +32,9 @@ export default {
             console.log('Set MyStorage to: '+storage_id)
             localStorage.setItem('my_storage_id', storage_id);
             localStorage.setItem('my_storage_name', storage_name);
-            localStorage.setItem('title',storage_name);
+            localStorage.setItem('title', storage_name);
+            //store.setTitle(storage_name)
+
 
             axios.get('/api/getStorageProp/'+storage_id).then(res => {
                 this.storage_prop = res.data.data

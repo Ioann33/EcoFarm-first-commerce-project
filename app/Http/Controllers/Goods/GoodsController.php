@@ -148,6 +148,7 @@ class GoodsController extends Controller
 
     public function gaveGoods(Request $request){
 
+
         $amount = $request->amount;
         $available = $this->stockGoodsBalance($request);
 
@@ -163,7 +164,7 @@ class GoodsController extends Controller
                     $stock = StockBalance::findOrFail($value->id);
                     $stock->amount = $value->amount - $result;
 
-                    $stock->save();
+
 
                     $pricePerUnit = $price/$amount;
 
@@ -211,4 +212,5 @@ class GoodsController extends Controller
             return 'not enough goods in stock';
         }
     }
+
 }

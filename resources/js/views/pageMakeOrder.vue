@@ -73,27 +73,27 @@
             </div>
 
 <!--выбор склада/департамента. только для главного склада                    -->
-                    <div class="row">
-                        <div class="col-12 p-1">
-                            <div class="input-style input-style-always-active has-borders no-icon">
-                                <label for="f6" class="color-blue-dark">Выбрать склад</label>
-                                <select id="f6" v-model="selected_goods_id">
-                                    <option value="default" disabled selected>продукция</option>
+<!--                    <div class="row">-->
+<!--                        <div class="col-12 p-1">-->
+<!--                            <div class="input-style input-style-always-active has-borders no-icon">-->
+<!--                                <label for="f6" class="color-blue-dark">Выбрать склад</label>-->
+<!--                                <select id="f6" v-model="selected_goods_id">-->
+<!--                                    <option value="default" disabled selected>продукция</option>-->
 
-                                    <option
-                                        v-for="(goods, index) in listGoods"
-                                        v-bind:value="goods.goods_id"
-                                    >
-                                        {{ goods.name }} ({{ goods.goods_id }})
-                                    </option>
+<!--                                    <option-->
+<!--                                        v-for="(goods, index) in listGoods"-->
+<!--                                        v-bind:value="goods.goods_id"-->
+<!--                                    >-->
+<!--                                        {{ goods.name }} ({{ goods.goods_id }})-->
+<!--                                    </option>-->
 
-                                </select>
-                                <span><i class="fa fa-chevron-down"></i></span>
-                                <i class="fa fa-check disabled valid color-green-dark"></i>
-                                <em></em>
-                            </div>
-                        </div>
-                    </div>
+<!--                                </select>-->
+<!--                                <span><i class="fa fa-chevron-down"></i></span>-->
+<!--                                <i class="fa fa-check disabled valid color-green-dark"></i>-->
+<!--                                <em></em>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
 <!--                    <a  href="#" class="btn btn-xxl shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-blue-dark">-->
 <!--                        Подать заявку-->
@@ -146,11 +146,11 @@ export default {
     },
     updated() {
         console.log('updated')
-        init_template2()
+        update_template()
     },
     methods: {
         getStorageGoodsAllowed(storage_id) {
-            axios.get('/api/getStorageGoods/allowed/'+storage_id).then(res => {
+            axios.get('/api/getStorageGoods/allowed/'+storage_id+'/all').then(res => {
                 this.listGoods = res.data.data
                 console.log(this.listGoods)
             }).catch(err => {

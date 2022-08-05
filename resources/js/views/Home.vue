@@ -11,6 +11,9 @@
 // {{ store_message }}
 
 
+// import ComponentA from "../Components/ComponentA";
+// import ComponentB from "../Components/ComponentB";
+
 </script>
 
 <template>
@@ -25,6 +28,9 @@
     <error
         :message="message"
     ></error>
+
+<!--    <component-a></component-a> <br>-->
+<!--    <component-b></component-b>-->
 
 <!--{{ store_message }}-->
 <!--    {{ Storage.store_message }}-->
@@ -46,7 +52,8 @@
     </div>
 
 <!--ЗАКАЗЫ-->
-    <div class="card card-style" v-if="order_in=='true'">
+
+    <div class="card card-style" v-if="order_in=='0'">
         <div class="content mb-0 mt-0">
             <div class="list-group list-custom-small" >
                 <router-link :to="{name: 'makeOrder'}">
@@ -119,7 +126,8 @@
 <!--ЗАКАЗЫ-->
 
 <!--ВХОДЯЩИЕ ЗАЯВКИ-->
-    <div class="card card-style" v-if="order_out=='true'">
+
+    <div class="card card-style" v-if="order_out=='0'">
         <div class="content mb-3 mt-0">
             <div class="list-group list-custom-small" >
                 <a href="#">
@@ -162,12 +170,13 @@
             </div>
         </div>
     </div>
+
 <!--ВХОДЯЩИЕ ЗАЯВКИ-->
 
 
 
 <!--ПЕРЕДАТЬ ТОВАР    -->
-    <div class="card card-style" v-if="move_out=='true'">
+    <div class="card card-style" style="padding-top: 12px;" v-if="move_out=='true'">
         <div class="content mb-3 mt-0">
             <div class="list-group list-custom-small" >
 
@@ -248,6 +257,13 @@
                     <i class="fa fa-angle-right"></i>
                 </a>
 
+                <router-link :to="{name: 'makeProducts'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                    <span>Приготовить ГТ</span>
+                    <strong>Готовая продукция и ингредиенты</strong>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+
             </div>
         </div>
     </div>
@@ -285,7 +301,7 @@ export default {
             money_out: false,
             storage_id: null,
             storage_name: null,
-            balance: 343.45,
+            balance: 1000,
 
 
             count_order_out_opened: 0,
@@ -320,53 +336,69 @@ export default {
         this.money_out = localStorage.getItem('money_out');
         this.move_in = localStorage.getItem('move_in');
         this.move_out = localStorage.getItem('move_out');
-        this.storage_name = localStorage.getItem('storage_name');
+        this.storage_name = localStorage.getItem('my_storage_name');
 
+        console.log('storage_name: '+this.storage_name)
+
+        // получим сумму перемещений на этом складе
+        this.date_from = '2022-08-01'
+        this.date_to = '2022-08-05'
+        axios.get('/api/getSumMoneyMovementGoods/'+ this.storage_id+'/'+this.date_from+'/'+this.date_to).then(res => {
+            this.balance = res.data.sum
+
+        }).catch(err => {
+            console.log(err)
+            this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+        })
 
         this.loadStoragesParams()
         console.log('Component views/Home mounted......done!')
+        update_template()
+    },
+    computed: {
+      isMain(){
+          const main_id = localStorage.getItem('main_storage_id');
+          if(main_id === this.storage_id) {
+              return true;
+          }
+          return false;
+      }
     },
     updated() {
-        init_template2()
+        update_template()
     },
     methods: {
-        async loadStoragesParams(){
+         loadStoragesParams(){
 
-            await axios.get('/api/getStorageOrder/out/'+ this.storage_id).then(res => {
+             axios.get('/api/getStorageOrder/out/'+ this.storage_id).then(res => {
                 //console.log(res.data)
                 this.count_order_out_opened = res.data.data.opened
                 this.count_order_out_canceled = res.data.data.canceled
                 this.count_order_out_progres = res.data.data.progress
 
             }).catch(err => {
-                console.log(err.response)
-                console.log(err.response.data.message)
-                console.log(err.response.status)
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
-            await axios.get('/api/getStorageOrder/in/'+ this.storage_id).then(res => {
+             axios.get('/api/getStorageOrder/in/'+ this.storage_id).then(res => {
                 //console.log(res.data)
                 this.count_order_in_opened = res.data.data.opened
                 this.count_order_in_canceled = res.data.data.canceled
                 this.count_order_in_progres = res.data.data.progress
 
             }).catch(err => {
-                console.log(err.response)
-                console.log(err.response.data.message)
-                console.log(err.response.status)
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
             // получить ОТКРЫТЫЕ ИСХОДЯЩИЕ заявки на ПЕРЕДАЧУ товара  (нужно только количество, для отображения на главной странице)
-            await axios.get('/api/getMovement/out/opened/'+ this.storage_id).then(res => {
+             axios.get('/api/getMovement/out/opened/'+ this.storage_id).then(res => {
                 this.count_movement_out_opened = res.data.data.length
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
             // получить ОТКРЫТЫЕ ВХОДЯЩИЕ заявки на ПОЛУЧЕНИЕ товара (нужно только количество, для отображения на главной странице)
-            await axios.get('/api/getMovement/in/opened/'+ this.storage_id).then(res => {
+             axios.get('/api/getMovement/in/opened/'+ this.storage_id).then(res => {
                 this.count_movement_in_opened = res.data.data.length
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;

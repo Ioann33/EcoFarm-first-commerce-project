@@ -30,11 +30,16 @@
                         </div>
 
                         <div class="d-flex mt-4 mb-4">
-                            <div class="w-50 font-11 pb-2 color text-start"><a href="page-signup-4.html">Хочу подключиться</a></div>
-                            <div class="w-50 font-11 pb-2 text-end"><a href="page-forgot-4.html">Забыл пароль</a></div>
+                            <div class="w-50 font-11 pb-2 color text-start"><a href="#">ссылка куда то</a></div>
+                            <div class="w-50 font-11 pb-2 text-end"><a href="#">Забыл пароль</a></div>
                         </div>
                         <a @click.prevent="login" href="#" class="back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-900 bg-highlight">Вход</a>
                     </div>
+                </div>
+                <div v-if="error" class="mt-5 mx-3 alert alert-small rounded-s shadow-xl bg-red-dark login-error" role="alert">
+                    <span><i class="fa fa-times"></i></span>
+                    <strong>{{ message_error ? message_error.message : 'Unfortunately error. Please try again!'}}</strong>
+                    <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert" aria-label="Close">×</button>
                 </div>
                 <div class="card-overlay-infinite preload-img" data-src="images/pictures/_bg-infinite.jpg"></div>
             </div>
@@ -49,11 +54,15 @@ export default {
     data() {
         return {
             user_login: 'djeklu',
-            user_password: '12345678'
+            user_password: '12345678',
+            error: false,
+            message_error: ''
         }
     },
     methods: {
         login(){
+            this.error = false;
+            this.message_error = '';
             console.log('Auth...');
             axios.get('/sanctum/csrf-cookie').then(response => {
                 axios.post('/login', {
@@ -63,6 +72,7 @@ export default {
                     .then(r => {
                         console.log('Auth...ok');
                         console.log(r);
+                        console.log(r.code);
                         //console.log('token: '+r.config.headers['X-XSRF-TOKEN']);
 
                         localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN']);
@@ -108,11 +118,15 @@ export default {
                     })
                     .catch(err => {
                         console.log('Auth...no');
+                        this.message_error = err.response.data;
+                        this.error = true;
                         console.log(err.response.data);
                     })
             })
                 .catch(err => {
                     console.log('Auth...no');
+                    this.message_error = err.response.data;
+                    this.error = true;
                     console.log(err.response.data);
                 });
 
@@ -120,9 +134,18 @@ export default {
     },
     mounted() {
         console.log('Component Welcome mounted.')
-        //init_template2()
+        update_template()
+    },
+    updated(){
+        update_template()
     }
 
 }
 </script>
 
+<style>
+    .login-error {
+        z-index: 10;
+        overflow: hidden;
+    }
+</style>

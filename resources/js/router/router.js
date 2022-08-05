@@ -3,7 +3,7 @@ import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router
 import Welcome from "../views/Welcome";
 
 const router = createRouter({
-    // history: createWebHistory(),
+    //history: createWebHistory(),
     history: createWebHashHistory(),
     routes: [
         {
@@ -42,9 +42,14 @@ const router = createRouter({
             component: () => import('../views/pageMakeOrder')
         },
         {
-            path: '/makeMoveGoods',
+            path: '/makeMoveGoods/:order_id?',
             name: 'makeMoveGoods',
             component: () => import('../views/pageMoveGoods')
+        },
+        {
+            path: '/makeProducts',
+            name: 'makeProducts',
+            component: () => import('../views/pageMakeProducts')
         }
     ]
 })
