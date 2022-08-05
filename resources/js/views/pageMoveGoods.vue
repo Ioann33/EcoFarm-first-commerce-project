@@ -31,7 +31,7 @@
                                         v-for="(goods, index) in listGoods"
                                         v-bind:value="goods.goods_id"
                                     >
-                                        {{ goods.name }}
+                                        {{ goods.name }} <span v-if="this.rule==='available'">{{ goods.amount }} {{ goods.unit }}</span>
                                     </option>
 
                                 </select>
@@ -105,7 +105,7 @@
 
 
         </div>
-<menu-set_price></menu-set_price>
+
         <nav-bar-menu></nav-bar-menu>
 
     </div>
@@ -143,7 +143,7 @@ export default {
             max_amount: 0,  // максимальное количество товара
             unit: 'кг',  // единица измерения товара
 
-            order_id: null,      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
+            order_id: '',      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
             order: [],     // массив. getOrder/order_id
 
             dir: 'in',
@@ -152,7 +152,14 @@ export default {
         }
     },
     mounted() {
-        this.order_id           = this.$route.params.order_id
+
+        // при переходе на эту страницу в роуте не обязательный параметр  path: '/makeMoveGoods/:order_id?',
+        // возникает ошибка, если этот параметр не указан, но к нему обращаемся
+        //this.order_id           = this.$route.params.order_id
+        this.order_id           = ''
+        //-----------------
+
+
         this.storage_id         = localStorage.getItem('my_storage_id')
         this.selected_storage_id    = localStorage.getItem('main_storage_id')
 
