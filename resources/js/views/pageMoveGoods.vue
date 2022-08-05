@@ -131,6 +131,7 @@ export default {
             listGoods: null,
             listStorage: null,
             storage_id: null,
+            storage_id_prop: [],
             storage_id_to: null,
             main_storage_id: null,
             message: null,
@@ -147,44 +148,63 @@ export default {
 
             dir: 'in',
             status: 'progress',
+            rule: 'allowed'     // правило подгрузки списка товаров, на основании storage.type= {теплица, склад, продажи,... }
         }
     },
     mounted() {
         this.order_id           = this.$route.params.order_id
         this.storage_id         = localStorage.getItem('my_storage_id')
-        this.main_storage_id    = localStorage.getItem('main_storage_id')
+        this.selected_storage_id    = localStorage.getItem('main_storage_id')
 
-        axios.get('/api/getStorageGoods/available/' + this.storage_id + '/all').then(res => {
-            this.listGoods = res.data.data;
-                    console.log('listGoods:')
-                    console.log(this.listGoods)
+
+        axios.get('/api/getStorageProp/'+this.storage_id).then(res => {
+            this.storage_id_prop = res.data.data[0]
+
+            if(this.storage_id_prop.type === 'теплица')
+                this.rule = 'allowed'
+            else
+                this.rule = 'available'
+
+            axios.get('/api/getStorageGoods/' + this.rule + '/' + this.storage_id + '/all').then(res => {
+
+                if(this.rule === 'available')
+                    this.listGoods = res.data.data.filter(el => el.amount >0)   // отобразим только те товары, которые есть на складе: amount >0
+                else // allowed
+                    this.listGoods = res.data.data  // отобразим все разрешенные товары
+            }).catch(err => {
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.log(this.message)
+            })
+
         }).catch(err => {
             this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
             console.log(this.message)
         })
 
         // Если перешли на эту страницу без order_id
-        if(this.order_id.length ==  0) {
-            axios.get('/api/getStorageGoods/allowed/' + this.storage_id + '/all').then(res => {
-                this.listGoods = res.data.data
-            }).catch(err => {
-                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                    console.log(this.message)
-            })
-        } else {
-            // получить параметры этого ордера, что бы автоматически заполнить поля отгрузки товара
-            axios.get('/api/getOrder/' + this.order_id).then(res => {
-                this.order = res.data.data
-                this.goods_amount = this.order.amount
-                this.selected_goods_id = this.order.goods_id
-                // установить скдад по-умолчанию на основании ордера/заказа
-                this.selected_storage_id = this.order.storage_id_from
-
-            }).catch(err => {
-                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                console.log(this.message)
-            })
-        }
+        // if(this.order_id.length ===  0) {
+        //
+        //     axios.get('/api/getStorageGoods/'+rule+'/' + this.storage_id + '/all').then(res => {
+        //         // отобразим только те товары, которые есть на складе
+        //         this.listGoods = res.data.data.filter(el => el.amount >0)
+        //     }).catch(err => {
+        //         this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+        //             console.log(this.message)
+        //     })
+        // } else {
+        //     // получить параметры этого ордера, что бы автоматически заполнить поля отгрузки товара
+        //     axios.get('/api/getOrder/' + this.order_id).then(res => {
+        //         this.order = res.data.data
+        //         this.goods_amount = this.order.amount
+        //         this.selected_goods_id = this.order.goods_id
+        //         // установить скдад по-умолчанию на основании ордера/заказа
+        //         this.selected_storage_id = this.order.storage_id_from
+        //
+        //     }).catch(err => {
+        //         this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+        //         console.log(this.message)
+        //     })
+        // }
 
 
 
@@ -205,10 +225,18 @@ export default {
         }
     },
     updated() {
-        //console.log('updated')
         update_template()
     },
     methods: {
+        getStorageProp(storage_id){
+            axios.get('/api/getStorageProp/'+storage_id).then(res => {
+                this.storage_id_prop = res.data.data[0]
+                console.log(this.storage_id_prop )
+            }).catch(err => {
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.log(this.message)
+            })
+        },
         checkAmount(){
             if(this.goods_amount > this.max_amount){
                 this.goods_amount = this.max_amount;
@@ -223,16 +251,22 @@ export default {
             }
         },
         makeMoveGoods(){
+            // console.log(
+            //     'from: ' + this.storage_id +' \n' +
+            //     'to: '   + this.selected_storage_id +' \n' +
+            //     'goods:' + this.selected_goods_id + ' amount: ' + this.goods_amount + '' + this.unit
+            // )
             axios.post('/api/goodsMovementPush',{
                 storage_id_from: this.storage_id,
-                storage_id_to: this.main_storage_id,
+                // storage_id_to: this.main_storage_id,
+                storage_id_to: this.selected_storage_id,
                 goods_id: this.selected_goods_id,
                 amount: this.goods_amount
             }).then(res => {
                 console.log('Move Goods Succesful:' +
-                    '\ngood_id:' + this.selected_goods_id +
-                    ', \nstorage_to: '+ this.main_storage_id +
-                    ', \nstorage_from: '+ localStorage.getItem('my_storage_id')+
+                    'goods:' + this.selected_goods_id + ' amount: ' + this.goods_amount + '' + this.unit +
+                    ', \nstorage_to: '+ this.selected_storage_id +
+                    ', \nstorage_from: '+ this.storage_id +
                     ', \namount: '+ this.goods_amount
                 )
                 this.$router.push({name: 'home'});

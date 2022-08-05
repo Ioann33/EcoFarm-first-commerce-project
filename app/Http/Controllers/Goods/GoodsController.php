@@ -148,6 +148,8 @@ class GoodsController extends Controller
 
     public function gaveGoods(Request $request){
 
+        DB::beginTransaction();
+
         $amount = $request->amount;
         $available = $this->stockGoodsBalance($request);
 
@@ -163,7 +165,7 @@ class GoodsController extends Controller
                     $stock = StockBalance::findOrFail($value->id);
                     $stock->amount = $value->amount - $result;
 
-                    $stock->save();
+
 
                     $pricePerUnit = $price/$amount;
 
@@ -187,7 +189,7 @@ class GoodsController extends Controller
                             $order->user_id_handler = Auth::id();
                             if ($order->save()){
                                 response()->json(['status'=>'ok']);
-                            }
+                            } else DB::rollBack();
                         }else{
                             return 'this order already completed or canceled';
                         }
@@ -196,8 +198,9 @@ class GoodsController extends Controller
                     //TODO handle possible error
 
                     if($newMovement->save()){
+
                         return response()->json(['status'=>'ok']);
-                    }
+                    }else DB::rollBack();
 
 
                 }else{
@@ -211,4 +214,5 @@ class GoodsController extends Controller
             return 'not enough goods in stock';
         }
     }
+
 }
