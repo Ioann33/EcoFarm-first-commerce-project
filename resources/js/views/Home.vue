@@ -257,6 +257,13 @@
                     <i class="fa fa-angle-right"></i>
                 </a>
 
+                <router-link :to="{name: 'makeProducts'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                    <span>Приготовить ГТ</span>
+                    <strong>Готовая продукция и ингредиенты</strong>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+
             </div>
         </div>
     </div>
