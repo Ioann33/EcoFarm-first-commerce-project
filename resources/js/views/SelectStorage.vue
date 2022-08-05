@@ -44,6 +44,8 @@ import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
 import StorageButton from "../Components/StorageButton";
 
+import {store} from "../stores/store";
+
 export default {
     name: "SelectStorage",
     components:{
@@ -56,12 +58,13 @@ export default {
             test: null
         }
     },
+    beforeMount() {
+        localStorage.setItem('title', 'Выбор склада');
+    },
     mounted() {
-        //console.log('Component views/Home mounted....')
-        localStorage.setItem('title','Выбор склада');
         this.getMyStorages()
 
-        //console.log('Component views/Home mounted......done!')
+        update_template()
     },
     updated() {
         update_template()
@@ -83,9 +86,6 @@ export default {
 
 
             }).catch(err => {
-                console.log(err.response)
-                console.log(err.response.data.message)
-                console.log(err.response.status)
                 this.test = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
         },

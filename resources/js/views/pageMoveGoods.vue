@@ -10,7 +10,6 @@
             <error :message="message"></error>
 
 
-Order_id: [{{ this.order.id }}]
 
             <div class="card card-style">
                 <div class="content-boxed bg-blue-dark mb-1 pb-3 text-center">
@@ -32,7 +31,7 @@ Order_id: [{{ this.order.id }}]
                                         v-for="(goods, index) in listGoods"
                                         v-bind:value="goods.goods_id"
                                     >
-                                        {{ goods.name }}
+                                        {{ goods.name }} <span v-if="this.rule==='available'">{{ goods.amount }} {{ goods.unit }}</span>
                                     </option>
 
                                 </select>
@@ -97,11 +96,14 @@ Order_id: [{{ this.order.id }}]
                 </div>
 
 
-                <a @click.prevent="makeMoveGoods" href="#">
+                <a @click.prevent="makeMoveGoods" href="#" v-if="this.selected_storage_id!=='default'">
                     <div class="content-boxed bg-blue-dark mt-1 pb-3 text-center text-uppercase">
                         <h4 class="color-white">Передать на склад</h4>
                     </div>
                 </a>
+                <div v-else class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase">
+                    <h4 class="color-white">Необходимо выбрать склад</h4>
+                </div>
             </div>
 
 
@@ -132,6 +134,7 @@ export default {
             listGoods: null,
             listStorage: null,
             storage_id: null,
+            storage_id_prop: [],
             storage_id_to: null,
             main_storage_id: null,
             message: null,
@@ -143,48 +146,79 @@ export default {
             max_amount: 0,  // максимальное количество товара
             unit: 'кг',  // единица измерения товара
 
-            order_id: null,      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
+            order_id: '',      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
             order: [],     // массив. getOrder/order_id
 
             dir: 'in',
             status: 'progress',
+            rule: 'allowed'     // правило подгрузки списка товаров, на основании storage.type= {теплица, склад, продажи,... }
         }
     },
     mounted() {
-        this.order_id           = this.$route.params.order_id
-        this.storage_id         = localStorage.getItem('my_storage_id')
-        this.main_storage_id    = localStorage.getItem('main_storage_id')
 
-        axios.get('/api/getStorageGoods/available/' + this.storage_id + '/all').then(res => {
-            this.listGoods = res.data.data;
-            console.log(this.listGoods)
+        // при переходе на эту страницу в роуте не обязательный параметр  path: '/makeMoveGoods/:order_id?',
+        // возникает ошибка, если этот параметр не указан, но к нему обращаемся
+        //this.order_id           = this.$route.params.order_id
+        this.order_id           = ''
+        //-----------------
+
+
+        this.storage_id         = localStorage.getItem('my_storage_id')
+
+
+
+        axios.get('/api/getStorageProp/'+this.storage_id).then(res => {
+            this.storage_id_prop = res.data.data[0]
+
+            if(this.storage_id_prop.type === 'теплица')
+            {
+                this.selected_storage_id    = localStorage.getItem('main_storage_id')
+
+                this.rule = 'allowed'
+            }
+            else
+                this.rule = 'available'
+
+            axios.get('/api/getStorageGoods/' + this.rule + '/' + this.storage_id + '/all').then(res => {
+
+                if(this.rule === 'available')
+                    this.listGoods = res.data.data.filter(el => el.amount >0)   // отобразим только те товары, которые есть на складе: amount >0
+                else // allowed
+                    this.listGoods = res.data.data  // отобразим все разрешенные товары
+            }).catch(err => {
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.log(this.message)
+            })
+
         }).catch(err => {
             this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
             console.log(this.message)
         })
 
         // Если перешли на эту страницу без order_id
-        if(this.order_id == '') {
-            axios.get('/api/getStorageGoods/allowed/' + this.storage_id + '/all').then(res => {
-                this.listGoods = res.data.data
-            }).catch(err => {
-                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                console.log(this.message)
-            })
-        }else{
-            // получить параметры этого ордера, что бы автоматически заполнить поля отгрузки товара
-            axios.get('/api/getOrder/' + this.order_id).then(res => {
-                this.order = res.data.data
-                this.goods_amount = this.order.amount
-                this.selected_goods_id = this.order.goods_id
-                // установить скдад по-умолчанию на основании ордера/заказа
-                this.selected_storage_id=this.order.storage_id_from
-
-            }).catch(err => {
-                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                console.log(this.message)
-            })
-        }
+        // if(this.order_id.length ===  0) {
+        //
+        //     axios.get('/api/getStorageGoods/'+rule+'/' + this.storage_id + '/all').then(res => {
+        //         // отобразим только те товары, которые есть на складе
+        //         this.listGoods = res.data.data.filter(el => el.amount >0)
+        //     }).catch(err => {
+        //         this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+        //             console.log(this.message)
+        //     })
+        // } else {
+        //     // получить параметры этого ордера, что бы автоматически заполнить поля отгрузки товара
+        //     axios.get('/api/getOrder/' + this.order_id).then(res => {
+        //         this.order = res.data.data
+        //         this.goods_amount = this.order.amount
+        //         this.selected_goods_id = this.order.goods_id
+        //         // установить скдад по-умолчанию на основании ордера/заказа
+        //         this.selected_storage_id = this.order.storage_id_from
+        //
+        //     }).catch(err => {
+        //         this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+        //         console.log(this.message)
+        //     })
+        // }
 
 
 
@@ -205,10 +239,18 @@ export default {
         }
     },
     updated() {
-        //console.log('updated')
         update_template()
     },
     methods: {
+        getStorageProp(storage_id){
+            axios.get('/api/getStorageProp/'+storage_id).then(res => {
+                this.storage_id_prop = res.data.data[0]
+                console.log(this.storage_id_prop )
+            }).catch(err => {
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.log(this.message)
+            })
+        },
         checkAmount(){
             if(this.goods_amount > this.max_amount){
                 this.goods_amount = this.max_amount;
@@ -223,16 +265,23 @@ export default {
             }
         },
         makeMoveGoods(){
-            axios.post('/api/goodsMovementPush',{
+            // console.log(
+            //     'from: ' + this.storage_id +' \n' +
+            //     'to: '   + this.selected_storage_id +' \n' +
+            //     'goods:' + this.selected_goods_id + ' amount: ' + this.goods_amount + '' + this.unit
+            // )
+             axios.post('/api/goodsMovementPush',{
+           // axios.post('/api/gaveGoods',{
                 storage_id_from: this.storage_id,
-                storage_id_to: this.main_storage_id,
+                            // storage_id_to: this.main_storage_id,
+                storage_id_to: this.selected_storage_id,
                 goods_id: this.selected_goods_id,
                 amount: this.goods_amount
             }).then(res => {
                 console.log('Move Goods Succesful:' +
-                    '\ngood_id:' + this.selected_goods_id +
-                    ', \nstorage_to: '+ this.main_storage_id +
-                    ', \nstorage_from: '+ localStorage.getItem('my_storage_id')+
+                    'goods:' + this.selected_goods_id + ' amount: ' + this.goods_amount + '' + this.unit +
+                    ', \nstorage_to: '+ this.selected_storage_id +
+                    ', \nstorage_from: '+ this.storage_id +
                     ', \namount: '+ this.goods_amount
                 )
                 this.$router.push({name: 'home'});
