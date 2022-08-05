@@ -96,11 +96,14 @@
                 </div>
 
 
-                <a @click.prevent="makeMoveGoods" href="#">
+                <a @click.prevent="makeMoveGoods" href="#" v-if="this.selected_storage_id!=='default'">
                     <div class="content-boxed bg-blue-dark mt-1 pb-3 text-center text-uppercase">
                         <h4 class="color-white">Передать на склад</h4>
                     </div>
                 </a>
+                <div v-else class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase">
+                    <h4 class="color-white">Необходимо выбрать склад</h4>
+                </div>
             </div>
 
 
@@ -161,14 +164,18 @@ export default {
 
 
         this.storage_id         = localStorage.getItem('my_storage_id')
-        this.selected_storage_id    = localStorage.getItem('main_storage_id')
+
 
 
         axios.get('/api/getStorageProp/'+this.storage_id).then(res => {
             this.storage_id_prop = res.data.data[0]
 
             if(this.storage_id_prop.type === 'теплица')
+            {
+                this.selected_storage_id    = localStorage.getItem('main_storage_id')
+
                 this.rule = 'allowed'
+            }
             else
                 this.rule = 'available'
 
@@ -263,9 +270,10 @@ export default {
             //     'to: '   + this.selected_storage_id +' \n' +
             //     'goods:' + this.selected_goods_id + ' amount: ' + this.goods_amount + '' + this.unit
             // )
-            axios.post('/api/goodsMovementPush',{
+             axios.post('/api/goodsMovementPush',{
+           // axios.post('/api/gaveGoods',{
                 storage_id_from: this.storage_id,
-                // storage_id_to: this.main_storage_id,
+                            // storage_id_to: this.main_storage_id,
                 storage_id_to: this.selected_storage_id,
                 goods_id: this.selected_goods_id,
                 amount: this.goods_amount
