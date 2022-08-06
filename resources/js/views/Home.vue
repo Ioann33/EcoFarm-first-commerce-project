@@ -279,6 +279,13 @@
                     <i class="fa fa-angle-right"></i>
                 </router-link>
 
+                <router-link :to="{name: 'transferMoney'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                    <span>Передать деньги</span>
+                    <strong>Передать деньги</strong>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+
             </div>
         </div>
     </div>
