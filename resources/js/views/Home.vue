@@ -30,8 +30,7 @@
     ></error>
 
 
-<!--    <component-a></component-a> <br>-->
-<!--    <component-b></component-b>-->
+
 
 <!--{{ store_message }}-->
 <!--    {{ Storage.store_message }}-->
