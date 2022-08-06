@@ -45,7 +45,7 @@
         <div class="content mb-0 mt-2">
             <div class="divider mb-3"></div>
             <div class="input-style no-borders no-icon validate-field">
-                <input type="text" class="form-control validate-text" id="form2a63" placeholder="0.00" v-model="price">
+                <input type="text" class="form-control validate-text" id="form2a63" :disabled="editPrice" placeholder="0.00" v-model="price">
                 <label for="form2a63" class="color-highlight">цена</label>
                 <i class="fa fa-times disabled invalid color-red-dark"></i>
                 <i class="fa fa-check disabled valid color-green-dark"></i>
@@ -82,7 +82,8 @@ export default {
             dir: null,              // { in | out }
             status: null,           // { opened | canceled | progress }
             message: null,           // for error message
-            movement_id: ''
+            movement_id: '',
+            price: ''
 
         }
     },
@@ -94,16 +95,18 @@ export default {
         this.storage_id = localStorage.getItem('my_storage_id');
         console.log('my_storage_id: ' + this.storage_id)
 
+        // получить основной склад
+        this.main_storage_id = localStorage.getItem('main_storage_id');
 
-        // получить все заказы на перемещение входящие/исходящие открытые/выполненные
+        this.editPrice = this.storage_id !== this.main_storage_id;
+
+            // получить все заказы на перемещение входящие/исходящие открытые/выполненные
         axios.get('/api/getMovement/' + this.dir + '/opened/'+ this.storage_id).then(res => {
             console.log(res.data)
             this.listMovements = res.data.data
         }).catch(err => {
             this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
         })
-
-
     },
     updated() {
         console.log('updated')

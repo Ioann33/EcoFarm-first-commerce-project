@@ -20,4 +20,9 @@ class Goods extends Model
     public function movements(){
         return $this->hasMany(Movements::class, 'goods_id');
     }
+
+//    public function price(){
+//        return $this->hasMany(StockBalance::class, 'goods_id');
+//
+//    }
 }

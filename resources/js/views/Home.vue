@@ -29,8 +29,8 @@
         :message="message"
     ></error>
 
-<!--    <component-a></component-a> <br>-->
-<!--    <component-b></component-b>-->
+
+
 
 <!--{{ store_message }}-->
 <!--    {{ Storage.store_message }}-->
@@ -261,6 +261,13 @@
                     <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
                     <span>Приготовить ГТ</span>
                     <strong>Готовая продукция и ингредиенты</strong>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+
+                <router-link :to="{name: 'utilizeProducts'}" v-if="isMain">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                    <span>Утилизация продукта</span>
+                    <strong>Утилизация</strong>
                     <i class="fa fa-angle-right"></i>
                 </router-link>
 
