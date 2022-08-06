@@ -2,11 +2,11 @@
     <div class="p-1" :class="{class: true}">
         <div class="input-style input-style-always-active has-borders no-icon">
             <label v-if="label" for="storage-list-from" class="color-blue-dark">{{label}}</label>
-            <select id="storage-list-from" :disabled="disabled" v-model="selected" class="form-control">
+            <select id="storage-list-from" :disabled="disabled" v-model="selected_goods" class="form-control">
                 <option value="default" selected>{{ defaultOption }}</option>
                 <option
                     v-for="(item, index) in data"
-                    v-bind:value="item[value]"
+                    v-bind:value="item.goods_id"
                 >
                     {{ item.name }}
                 </option>
@@ -26,6 +26,7 @@
 <script>
     export default {
         name: "SelectInput",
+        emits: ['getSelected'],
         props: {
             label: {
               type: String,
@@ -40,8 +41,7 @@
                 default: []
             },
             value: {
-                type: String,
-                default: 'id'
+              required: true
             },
             loading: {
                 type: Boolean,
@@ -58,7 +58,12 @@
         },
         data() {
             return {
-                selected: 'default',
+            }
+        },
+        computed: {
+            selected_goods: {
+                get() { return this.value },
+                set(value) { this.$emit('getSelected', value) }
             }
         },
         methods: {

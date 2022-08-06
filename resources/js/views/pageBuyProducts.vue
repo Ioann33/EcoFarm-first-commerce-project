@@ -6,12 +6,11 @@
         <div class="page-content header-clear-medium text-center">
             <div class="card card-style p-4 overflow-visible">
                 <h3 class="card-title">Купить</h3>
-                {{buy_goods}}
                 <div class="row mb-0" v-for="(item, index) in buy_goods" :key="item.goods_id">
                     <select-input :data="list_goods"
                                   :label="'Товар '+ (index+1)"
-                                  :value="'goods_id'"
-                                  @selected="getGoodsId($event, index)">
+                                  :value="item.goods_id"
+                                  @getSelected="getGoodsId($event, index)">
                     </select-input>
                     <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
