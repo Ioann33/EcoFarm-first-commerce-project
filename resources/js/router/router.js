@@ -55,6 +55,11 @@ const router = createRouter({
             path: '/utilizeProducts',
             name: 'utilizeProducts',
             component: () => import('../views/pageUtilizationProducts')
+        },
+        {
+            path: '/saleProducts',
+            name: 'saleProducts',
+            component: () => import('../views/pageSaleProducts')
         }
     ]
 })

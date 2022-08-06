@@ -5,7 +5,7 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium" style="text-align: center">
-            <div class="card card-style card-custom-products">
+            <div class="card card-style overflow-visible card-custom-products">
                 <div class="row mb-0">
                     <div class="col-10 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
@@ -189,7 +189,6 @@ export default {
 <style>
     .card-custom-products {
         padding: 25px;
-        overflow: visible;
     }
     .add-ingredient-btn {
         position: absolute;
