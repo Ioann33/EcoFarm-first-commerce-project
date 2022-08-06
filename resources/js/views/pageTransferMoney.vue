@@ -5,13 +5,13 @@
 
         <div class="page-content header-clear-medium">
             <div class="card card-style p-4">
-                <h3 class="card-title">Передать деньги</h3>
+                <h3 class="card-title text-center">Передать деньги</h3>
                 <div class="row mb-0">
                     <div class="col-10 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <label for="storage-list-from" class="color-blue-dark">Товар</label>
-                            <select id="storage-list-from" v-model="storage_id" @change="selectedGoods(item.goods_id, i)" class="form-control">
-                                <option value="default" selected>выбрать товар</option>
+<!--                            <label for="storage-list-from" class="color-blue-dark">Товар</label>-->
+                            <select id="storage-list-from" :disabled="true" v-model="storage_id" class="form-control">
+                                <option value="default" selected>выбрать склад</option>
                                 <option
                                     v-for="(storage, index) in list_storage"
                                     v-bind:value="storage.id"
@@ -58,7 +58,7 @@
                 <div class="row mb-0">
                     <div class="col-10 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <label for="storage-list-to" class="color-blue-dark">Товар</label>
+                            <label for="storage-list-to" class="color-blue-dark">На склад</label>
                             <select id="storage-list-to" v-model="storage_to.id" @change="getMoney(storage_to.id, true)" class="form-control">
                                 <option value="default" selected>выбрать склад</option>
                                 <option
@@ -92,7 +92,7 @@
                 </div>
                 <textarea name="transfer-money-comment"
                           v-model="comment"
-                          class="p-2"
+                          class="p-2 mb-3"
                           id=""
                           cols="30"
                           rows="3"
@@ -143,7 +143,7 @@
             }
         },
        async  mounted() {
-          this.storage_id = localStorage.getItem('my_local_storage');
+          this.storage_id = localStorage.getItem('my_storage_id');
           await this.getMoney(this.storage_id);
           await this.getStorageList();
         },
@@ -198,6 +198,14 @@
 </script>
 
 <style>
+    .btn-default {
+        background-color: #A0D468;
+        border-radius: 10px;
+        color: #fff;
+    }
+    .btn-default:hover {
+        color: #fff;
+    }
     .select-input-spinner{
         position: absolute;
         right: 35px;
