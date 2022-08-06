@@ -154,7 +154,7 @@
                 } else {
                     this.loading_balance_from = true;
                 }
-                const res = await axios.get(`/api/getMoney/${storage_id}`);
+                const res = await axios.get(`/api/getFinance/${storage_id}`);
                 if(storage_to){
                     this.loading_balance_to = false;
                 } else {
@@ -168,7 +168,7 @@
                 } else {
                     this.balance = res.data.balance;
                 }
-
+                console.log(this.storage_to.balance)
             },
             async getStorageList(){
                 const res = await axios.get(`/api/getListStorage/`);

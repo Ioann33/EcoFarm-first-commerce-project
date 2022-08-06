@@ -8,6 +8,6 @@ use Illuminate\Http\Request;
 class FinanceController extends Controller
 {
     function getFinance(Request $request){
-        return array('balacne' => 432);
+        return array('balance' => 432);
     }
 }
