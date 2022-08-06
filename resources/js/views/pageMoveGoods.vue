@@ -170,7 +170,7 @@ export default {
         axios.get('/api/getStorageProp/'+this.storage_id).then(res => {
             this.storage_id_prop = res.data.data[0]
 
-            if(this.storage_id_prop.type === 'теплица')
+            if(this.storage_id_prop.type === 'grow')
             {
                 this.selected_storage_id    = localStorage.getItem('main_storage_id')
 
