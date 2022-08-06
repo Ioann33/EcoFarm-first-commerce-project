@@ -55,6 +55,16 @@ const router = createRouter({
             path: '/utilizeProducts',
             name: 'utilizeProducts',
             component: () => import('../views/pageUtilizationProducts')
+        },
+        {
+            path: '/saleProducts',
+            name: 'saleProducts',
+            component: () => import('../views/pageSaleProducts')
+        },
+        {
+            path: '/transferMoney',
+            name: 'transferMoney',
+            component: () => import('../views/pageTransferMoney')
         }
     ]
 })
