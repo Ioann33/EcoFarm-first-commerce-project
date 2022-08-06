@@ -11,8 +11,6 @@
 // {{ store_message }}
 
 
-// import ComponentA from "../Components/ComponentA";
-// import ComponentB from "../Components/ComponentB";
 
 </script>
 
