@@ -40,6 +40,9 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getSalary/{type}/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSalary']);
     Route::get('/getSaldo/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSaldo']);
 
+    Route::get('/getFinance/{storage_id}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
+
+
 });
 
 
