@@ -3,9 +3,9 @@ import './bootstrap.min'
 import './custom'
 
 import { createApp } from 'vue';
-import { createPinia } from 'pinia'
+// import { createPinia } from 'pinia'
 
-import App from './Page/App.vue'
+import App from './Page/App'
 import router from './router/router'
 
 // import Home from "./views/Home.vue";
@@ -26,7 +26,7 @@ import router from './router/router'
 
 createApp(App)
     .use(router)
-    .use(createPinia())
+//    .use(createPinia())
     .mount("#app")
 
 

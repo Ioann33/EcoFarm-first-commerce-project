@@ -70,6 +70,11 @@ const router = createRouter({
             path: '/buyProducts',
             name: 'buyProducts',
             component: () => import('../views/pageBuyProducts')
+        },
+        {
+            path: '/Grow',
+            name: 'grow',
+            component: () => import('../views/pageGrow')
         }
     ]
 })
