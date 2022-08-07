@@ -29,6 +29,10 @@ export default {
     name: "navBar",
     components: {
     },
+    date(){
+       return {
+       }
+    },
     mounted() {
         //console.log('Component navBar mounted')
     }

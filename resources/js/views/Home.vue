@@ -283,6 +283,13 @@
                     <i class="fa fa-angle-right"></i>
                 </router-link>
 
+                <router-link :to="{name: 'buyProducts'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                    <span>Купить товар</span>
+                    <strong>Купить товар</strong>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+
             </div>
         </div>
     </div>

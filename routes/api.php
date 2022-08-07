@@ -9,8 +9,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/get', \App\Http\Controllers\GetController::class)->middleware('ioann');
-    Route::get('/getMyStorage', [\App\Http\Controllers\Storage\StorageController::class, 'getMyStorage']);
-    Route::get('/getStorageProp/{id}', [\App\Http\Controllers\Storage\StorageController::class, 'getStorageProp']);
+
+    Route::get('/getListMyStorages',    [\App\Http\Controllers\Storage\StorageController::class, 'getListMyStorages']);
+    Route::get('/getListStorages',      [\App\Http\Controllers\Storage\StorageController::class, 'getListStorages']);
+    Route::get('/getStorageProp/{id}',  [\App\Http\Controllers\Storage\StorageController::class, 'getStorageProp']);
 
     Route::get('/getStorageOrder/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'getStorageOrder']);
 
@@ -24,7 +26,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/setOrderStatus/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'setOrderStatus']);
     Route::get('/getStorageGoods/{key}/{id}/{goods_id?}', [\App\Http\Controllers\Goods\GoodsController::class, 'getStorageGoods']);
     Route::get('/getMovement/{dir}/{status}/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovement']);
-    Route::get('/getListStorage', [\App\Http\Controllers\Storage\StorageController::class, 'getListStorage']);
+
     Route::get('/getOrder/{order_id}', [\App\Http\Controllers\Orders\OrderController::class, 'getOrder']);
 
 

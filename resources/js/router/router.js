@@ -19,7 +19,7 @@ const router = createRouter({
         {
             path: '/selectStorage',
             name: 'selectStorage',
-            component: () => import('../views/SelectStorage')
+            component: () => import('../views/pageSelectStorage')
         },
         {
             path: '/pageOrders/:dir/:status',
@@ -65,6 +65,16 @@ const router = createRouter({
             path: '/transferMoney',
             name: 'transferMoney',
             component: () => import('../views/pageTransferMoney')
+        },
+        {
+            path: '/buyProducts',
+            name: 'buyProducts',
+            component: () => import('../views/pageBuyProducts')
+        },
+        {
+            path: '/Grow',
+            name: 'grow',
+            component: () => import('../views/pageGrow')
         }
     ]
 })

@@ -24,7 +24,7 @@ export const useStorage = defineStore({
             // this.storages_id = await fetch('/api/getMyStorage')
             //     .then((response) => response.json())
 
-            await axios.get('/api/getMyStorage').then(res => {
+            await axios.get('/api/getListMyStorages').then(res => {
                 this.storages_id = res.data.data
                 this.store_message = 'new test message2'
 

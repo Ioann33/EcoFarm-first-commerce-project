@@ -73,7 +73,6 @@ export default {
                         console.log('Auth...ok');
                         console.log(r);
                         console.log(r.code);
-                        //console.log('token: '+r.config.headers['X-XSRF-TOKEN']);
 
                         localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN']);
 
@@ -81,7 +80,7 @@ export default {
                             localStorage.setItem('main_storage_id', res.data.storage_id)
                         })
 
-                        axios.get('/api/getMyStorage').then(res => {
+                        axios.get('/api/getListMyStorages').then(res => {
 
                             if(res.data.data.length>1)
                             {
@@ -104,6 +103,7 @@ export default {
                                     localStorage.setItem('move_out', this.storage_prop[0]['money_out'])
                                     localStorage.setItem('order_in', this.storage_prop[0]['money_in'])
                                     localStorage.setItem('order_out', this.storage_prop[0]['money_out'])
+                                    localStorage.setItem('type', this.storage_prop[0]['type'])
                                 })
                                 localStorage.setItem('my_storage_id', a[0]['storage_id']);
 

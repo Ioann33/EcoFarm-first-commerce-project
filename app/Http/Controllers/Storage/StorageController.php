@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class StorageController extends Controller
 {
-    public function getMyStorage(){
+    public function getListMyStorages(){
         $user_id = Auth::id();
         $userStorage = UserStorages::all()->where('user_id', '=', $user_id);
         return UserStorageResource::collection($userStorage);
@@ -30,7 +30,7 @@ class StorageController extends Controller
         return response()->json(['storage_id'=>$mainStore[0]['param']]);
     }
 
-    public function getListStorage(){
+    public function getListStorages(){
         $storage = Storages::all();
         return StorageResource::collection($storage);
     }

@@ -170,7 +170,7 @@ export default {
         axios.get('/api/getStorageProp/'+this.storage_id).then(res => {
             this.storage_id_prop = res.data.data[0]
 
-            if(this.storage_id_prop.type === 'теплица')
+            if(this.storage_id_prop.type === 'grow')
             {
                 this.selected_storage_id    = localStorage.getItem('main_storage_id')
 
@@ -227,7 +227,7 @@ export default {
         canSelectStorageTo() {
             if(localStorage.getItem('my_storage_id') == localStorage.getItem('main_storage_id'))
             {
-                axios.get('/api/getListStorage').then(res => {
+                axios.get('/api/getListStorages').then(res => {
                     this.listStorage = res.data.data.filter(el => el.id !== Number.parseInt(this.storage_id))
 
                 }).catch(err => {
