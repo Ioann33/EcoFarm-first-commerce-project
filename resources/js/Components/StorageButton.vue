@@ -6,7 +6,7 @@
                 <i class="fa fa-eye color-blue-dark fa-3x mt-3"></i>
             </p>
             <h1 class="color-white text-center mb-n1">{{ storage_name }} - {{ storage_id}}</h1>
-            <p class="color-white text-center opacity-60 ">A beautiful sunset at the docks!</p>
+<!--            <p class="color-white text-center opacity-60 ">A beautiful sunset at the docks!</p>-->
         </div>
         <div class="card-overlay bg-black opacity-80"></div>
     </div>

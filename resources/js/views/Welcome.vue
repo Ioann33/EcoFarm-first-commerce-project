@@ -81,7 +81,7 @@ export default {
                             localStorage.setItem('main_storage_id', res.data.storage_id)
                         })
 
-                        axios.get('/api/getMyStorage').then(res => {
+                        axios.get('/api/getListMyStorages').then(res => {
 
                             if(res.data.data.length>1)
                             {

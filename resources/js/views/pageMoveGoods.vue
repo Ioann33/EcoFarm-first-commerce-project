@@ -227,7 +227,7 @@ export default {
         canSelectStorageTo() {
             if(localStorage.getItem('my_storage_id') == localStorage.getItem('main_storage_id'))
             {
-                axios.get('/api/getListStorage').then(res => {
+                axios.get('/api/getListStorages').then(res => {
                     this.listStorage = res.data.data.filter(el => el.id !== Number.parseInt(this.storage_id))
 
                 }).catch(err => {

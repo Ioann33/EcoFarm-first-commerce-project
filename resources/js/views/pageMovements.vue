@@ -36,7 +36,7 @@
 
 </div> <!-- page-contend -->
 
-    <!-- menu-subscribe -->
+    <!-- меню Установить цену -->
     <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-effect="menu-over" data-menu-height="200">
         <div class="menu-title mt-n1">
             <h1>Установить цену</h1>
@@ -51,7 +51,8 @@
                 <i class="fa fa-check disabled valid color-green-dark"></i>
                 <em>(обязательно)</em>
             </div>
-            <a href="#" @click.prevent="pullGoods(movement_id)" data-menu="menu-subscribe-confirm" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
+
+            <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-subscribe-confirm" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
         </div>
     </div>
 
@@ -83,7 +84,8 @@ export default {
             status: null,           // { opened | canceled | progress }
             message: null,           // for error message
             movement_id: '',
-            price: ''
+            price: '',
+            editPrice: false
 
         }
     },
@@ -98,7 +100,9 @@ export default {
         // получить основной склад
         this.main_storage_id = localStorage.getItem('main_storage_id');
 
-        this.editPrice = this.storage_id !== this.main_storage_id;
+        // если выбранный склад - главный - то можно менять цену
+        this.editPrice = this.storage_id == this.main_storage_id;
+
 
             // получить все заказы на перемещение входящие/исходящие открытые/выполненные
         axios.get('/api/getMovement/' + this.dir + '/opened/'+ this.storage_id).then(res => {
@@ -115,8 +119,7 @@ export default {
     methods: {
         setMovementId(e){
             this.movement_id = e;
-            console.log('Получили вот такой movement id:')
-            console.log(this.movement_id)
+            console.log('Получили вот такой movement_id из карточки товара : ' + this.movement_id)
         },
         getListOrders(storage_id) {
             axios.get('/api/getStorageGoods/'+ this.dir +'/'+this.status+'/'+storage_id).then(res => {
@@ -129,24 +132,27 @@ export default {
         },
         pullGoods(movement_id){
 
-            axios.post('/api/setPrice/', {
-                movement_id,
-                price: this.price
-            }).then(res => {
-                console.log('price is set')
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-            })
+            // если выбранный склад - это главный склад, то оприходование товара прошло через модальное окно "установить цену"
+            if(this.editPrice) {
+                axios.post('/api/setPrice/', {
+                    movement_id,
+                    price: this.price
+                }).then(res => {
+                    console.log('price: '+this.price+' is set')
+                }).catch(err => {
+                    this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                })
+            }
 
             axios.post('/api/goodsMovementPull/', {
                 movement_id
             }).then(res => {
-                console.log('movements approve')
+                console.log('movements #'+movement_id+' pull is approve')
                 this.$router.push({name: 'home'});
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
-            console.log('-dd----'+movement_id+' '+this.price)
+
         },
 
 

@@ -19,7 +19,7 @@ const router = createRouter({
         {
             path: '/selectStorage',
             name: 'selectStorage',
-            component: () => import('../views/SelectStorage')
+            component: () => import('../views/pageSelectStorage')
         },
         {
             path: '/pageOrders/:dir/:status',
