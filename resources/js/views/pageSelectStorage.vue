@@ -16,11 +16,14 @@ const Storage = useStorage()
     <div id="page">
 
         <head-bar></head-bar>
-        <nav-bar></nav-bar>
+<!--        <nav-bar></nav-bar>-->
 
         <div class="page-content header-clear-medium">
 
-{{ test }}
+            <!-- ERROR -->
+            <error
+                :message="message"
+            ></error>
 
             <div  v-for="(storage_id, index) in listStorage">
 <!--                    index:{{ index }} - storage_id:{{storage_id['storage_id']}}-->
@@ -55,7 +58,7 @@ export default {
     data(){
         return {
             listStorage: null,
-            test: null
+            message: null
         }
     },
     beforeMount() {
@@ -71,7 +74,7 @@ export default {
     },
     methods: {
         getMyStorages() {
-            axios.get('/api/getMyStorage').then(res => {
+            axios.get('/api/getMyStorages').then(res => {
                 this.listStorage = res.data.data
                 // console.log(this.listStorage)
                 // console.log(this.listStorage.length)
@@ -86,7 +89,7 @@ export default {
 
 
             }).catch(err => {
-                this.test = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
         },
 
