@@ -2,10 +2,12 @@
 
 namespace App\Models\MyModel;
 
+use App\Exceptions\NotEnoughGoods;
 use App\Models\Movements;
 use App\Models\Orders;
 use App\Models\StockBalance;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HandleGoods
 {
@@ -68,6 +70,7 @@ class HandleGoods
      * @param $link_id
      * @param $order_main
      * @return \Illuminate\Http\JsonResponse|string|void
+     * @throws NotEnoughGoods
      */
     static public function moveGoods($storage_id_from = null, $storage_id_to = null, $goods_id = null, $amount = null, $category = null, $link_id = null, $order_main = null, $user = null, $data =null){
 
@@ -110,7 +113,8 @@ class HandleGoods
                     }
                 }
             }else{
-                return 'not enough goods in stock';
+                throw new NotEnoughGoods();
+//                return 'not enough goods in stock';
             }
         }else{
 

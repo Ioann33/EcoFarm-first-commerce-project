@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Goods;
 
+use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
@@ -15,6 +16,7 @@ use App\Models\StorageGoods;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GoodsController extends Controller
 {
@@ -151,32 +153,42 @@ class GoodsController extends Controller
     }
 
     public function goodsMovementPush(Request $request){
+        DB::beginTransaction();
 
-        $res = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
-        if ($res === true){
-            return response()->json(['status'=>'ok']);
-        }else{
-            return response()->json(['status'=>$res]);
+        try {
+            HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json(['status'=>$e->resMess()]);
         }
-
+        DB::commit();
+        return response()->json(['status'=>'ok']);
     }
 
     public function makeProduct(Request $request){
 
+
+        DB::beginTransaction();
         $user_id = Auth::id();
         $dateNow = date('Y-m-d H:i:s');
         $request = json_decode($request->getContent());
         $ingridients = $request->ingridients;
 
-
-        $moveResult = HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
-
 //        $stockResult = HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $request->amount, $dateNow);
 
-        foreach ($ingridients as $ingridient){
-            HandleGoods::moveGoods($request->storage_id, null, $ingridient->goods_id, $ingridient->amount, 'trash', $request->goods_id, null, $user_id, $dateNow);
-        }
+        try {
 
+            HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
+
+            foreach ($ingridients as $ingridient){
+                HandleGoods::moveGoods($request->storage_id, null, $ingridient->goods_id, $ingridient->amount, 'trash', $request->goods_id, null, $user_id, $dateNow);
+            }
+
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json(['status'=>$e->resMess()]);
+        }
+        DB::commit();
         return response()->json(['status'=>'ok']);
     }
 }
