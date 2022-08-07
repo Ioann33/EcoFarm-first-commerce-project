@@ -17,6 +17,7 @@ class UserStorageResource extends JsonResource
         return [
             'storage_id' => $this->storage_id,
             'name'=> $this->storage->name,
+            'type' => $this->storage->type
         ];
     }
 }
