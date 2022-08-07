@@ -14,9 +14,14 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    public $allOrdersModel;
+
+    public function __construct()
+    {
+        $this->allOrdersModel = Orders::all();
+    }
 
     public function getListOrder(Request $request){
-
 
         if($request->dir === 'in'){
             $dir = 'storage_id_to';
@@ -25,32 +30,41 @@ class OrderController extends Controller
         }
 
         if ($request->status === 'opened'){
-            $orderList = Orders::all()->where('status','=', null)->where($dir, '=', $request->id);
+            $orderList = $this->allOrdersModel
+                ->where('status','=', null)
+                ->where($dir, '=', $request->id);
 
             return getListOrderOpenedResource::collection($orderList);
         }
 
 
         if ($request->status === 'canceled'){
-            $orderList = Orders::all()->where('status','=', 'canceled')->where($dir, '=', $request->id);
+            $orderList = $this->allOrdersModel
+                ->where('status','=', 'canceled')
+                ->where($dir, '=', $request->id);
 
             return getListOrderProcessedResource::collection($orderList);
         }
 
         if ($request->status === 'progress'){
-            $orderList = Orders::all()->where('status','=', 'progress')->where($dir, '=', $request->id);
+            $orderList = $this->allOrdersModel
+                ->where('status','=', 'progress')
+                ->where($dir, '=', $request->id);
 
             return getListOrderProcessedResource::collection($orderList);
         }
 
         if ($request->status === 'completed'){
-            $orderList = Orders::all()->where('status','=', 'completed')->where($dir, '=', $request->id);
+            $orderList = $this->allOrdersModel
+                ->where('status','=', 'completed')
+                ->where($dir, '=', $request->id);
 
             return getListOrderProcessedResource::collection($orderList);
         }
 
         if ($request->status === 'all'){
-            $orderList = Orders::all()->where($dir, '=', $request->id);
+            $orderList = $this->allOrdersModel
+                ->where($dir, '=', $request->id);
 
             return getListOrderAllResource::collection($orderList);
         }

@@ -19,6 +19,7 @@ class StorageGoodsResource extends JsonResource
           'goods_id' => $this->goods_id,
           'name' => $this->goods->name,
           'unit' => $this->goods->unit,
+          'type' => $this->goods->type,
           'amount' => $this->goods->movements->where('storage_id_to', '=', $this->storage_id)->where('user_id_accepted','!=', null)->sum('amount'),
         ];
     }
