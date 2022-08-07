@@ -140,7 +140,6 @@ export default {
 
     },
   methods: {
-
     setOrderStatus(order_id, status){
         console.log('(cardMovement.vue) order_id: '+order_id + '. set Status to '+status)
         //this.dir = this.$route.params.dir

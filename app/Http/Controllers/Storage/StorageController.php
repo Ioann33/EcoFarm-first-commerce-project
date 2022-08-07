@@ -30,7 +30,7 @@ class StorageController extends Controller
         return response()->json(['storage_id'=>$mainStore[0]['param']]);
     }
 
-    public function getListStorage(){
+    public function getListStorages(){
         $storage = Storages::all();
         return StorageResource::collection($storage);
     }
