@@ -3,13 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
-    Route::get('/get', \App\Http\Controllers\GetController::class)->middleware('ioann');
-    Route::get('/getMyStorage', [\App\Http\Controllers\Storage\StorageController::class, 'getMyStorage']);
+    Route::get('/get', \App\Http\Controllers\GetController::class);
+    Route::get('/getListMyStorages', [\App\Http\Controllers\Storage\StorageController::class, 'getListMyStorages']);
     Route::get('/getStorageProp/{id}', [\App\Http\Controllers\Storage\StorageController::class, 'getStorageProp']);
 
     Route::get('/getStorageOrder/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'getStorageOrder']);
@@ -44,5 +47,3 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
 
 });
-
-
