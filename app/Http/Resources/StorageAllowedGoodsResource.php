@@ -18,6 +18,7 @@ class StorageAllowedGoodsResource extends JsonResource
             'goods_id' => $this->goods_id,
             'name' => $this->goods->name,
             'unit' => $this->goods->unit,
+            'type' => $this->goods->type,
         ];
     }
 }
