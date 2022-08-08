@@ -42,10 +42,10 @@
                     <div class="col-7 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label for="prod_2" class="color-blue-dark">Ингредиент {{i + 1}}</label>
-                            <select id="prod_2" v-model="ingredients[i].goods_id" @change="changeIngredient(i)" class="form-control">
+                            <select id="prod_2" v-model="ingredients[i].goods_id" :value="ingredients[i].goods_id" @change="changeIngredient(i)" class="form-control">
                                 <option value="default" selected>выбрать</option>
                                 <option
-                                    v-for="(goods, index) in listIngredients"
+                                    v-for="(goods, index) in listIngredients.filter(el => ![...selected_ingredients.slice(0, i), ...selected_ingredients.slice(i+1, selected_ingredients.length)].includes(el.goods_id))"
                                     v-bind:value="goods.goods_id"
                                 >
                                     {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}
@@ -118,6 +118,15 @@ export default {
                 unit: 'кг'
             }]
         }
+    },
+    computed: {
+      selected_ingredients(){
+          let arr = [];
+          this.ingredients.forEach(el => {
+              arr.push(el.goods_id)
+          });
+          return arr;
+      }
     },
     beforeMount() {
         this.my_storage_id = localStorage.getItem('my_storage_id')

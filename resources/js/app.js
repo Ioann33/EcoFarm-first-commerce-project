@@ -1,5 +1,6 @@
 import './bootstrap';
-import './bootstrap.min'
+// import './bootstrap.min'
+// import './custom'
 import './custom'
 
 import { createApp } from 'vue';
