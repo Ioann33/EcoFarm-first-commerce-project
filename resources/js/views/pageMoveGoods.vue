@@ -96,7 +96,7 @@
                 </div>
 
 
-                <a @click.prevent="makeMoveGoods" href="#" v-if="this.selected_storage_id!=='default'">
+                <a v-if="this.selected_storage_id!=='default'" @click.prevent="makeMoveGoods" href="#" >
                     <div class="content-boxed bg-blue-dark mt-1 pb-3 text-center text-uppercase">
                         <h4 class="color-white">Передать на склад</h4>
                     </div>
@@ -133,7 +133,7 @@ export default {
         return {
             listGoods: null,
             listStorage: null,
-            storage_id: null,
+            my_storage_id: null,
             storage_id_prop: [],
             storage_id_to: null,
             main_storage_id: null,
@@ -163,11 +163,11 @@ export default {
         //-----------------
 
 
-        this.storage_id         = localStorage.getItem('my_storage_id')
+        this.my_storage_id         = localStorage.getItem('my_storage_id')
 
 
 
-        axios.get('/api/getStorageProp/'+this.storage_id).then(res => {
+        axios.get('/api/getStorageProp/'+this.my_storage_id).then(res => {
             this.storage_id_prop = res.data.data[0]
 
             if(this.storage_id_prop.type === 'grow')
@@ -179,7 +179,7 @@ export default {
             else
                 this.rule = 'available'
 
-            axios.get('/api/getStorageGoods/' + this.rule + '/' + this.storage_id + '/all').then(res => {
+            axios.get('/api/getStorageGoods/' + this.rule + '/' + this.my_storage_id + '/all').then(res => {
 
                 if(this.rule === 'available')
                     this.listGoods = res.data.data.filter(el => el.amount >0)   // отобразим только те товары, которые есть на складе: amount >0
@@ -225,7 +225,7 @@ export default {
     },
     computed: {
         canSelectStorageTo() {
-            if(localStorage.getItem('my_storage_id') == localStorage.getItem('main_storage_id'))
+            if(this.my_storage_id == localStorage.getItem('main_storage_id'))
             {
                 axios.get('/api/getListStorages').then(res => {
                     this.listStorage = res.data.data.filter(el => el.id !== Number.parseInt(this.storage_id))
@@ -235,6 +235,10 @@ export default {
                     console.log(this.message)
                 })
                 return 1
+            } else
+            {
+                this.selected_storage_id = localStorage.getItem('main_storage_id')
+                return 0
             }
         }
     },
@@ -272,7 +276,7 @@ export default {
             // )
              axios.post('/api/goodsMovementPush',{
            // axios.post('/api/gaveGoods',{
-                storage_id_from: this.storage_id,
+                storage_id_from: this.my_storage_id,
                             // storage_id_to: this.main_storage_id,
                 storage_id_to: this.selected_storage_id,
                 goods_id: this.selected_goods_id,

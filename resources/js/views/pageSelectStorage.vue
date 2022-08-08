@@ -6,14 +6,12 @@
     <div id="page">
 
         <head-bar></head-bar>
-<!--        <nav-bar></nav-bar>-->
+
 
         <div class="page-content header-clear-medium">
 
             <!-- ERROR -->
-            <error
-                :message="message"
-            ></error>
+<error :message="message"></error>
 
             <div  v-for="(storage_id, index) in listStorage">
 <!--                    index:{{ index }} - storage_id:{{storage_id['storage_id']}}-->
@@ -26,15 +24,14 @@
 
         </div>
 
-<!--        <nav-bar-menu></nav-bar-menu>-->
+
 
     </div>
 </template>
 
 <script>
 import headBar from "../components/headBar";
-// import NavBar from "../Components/NavBar";
-// import NavBarMenu from "../Components/NavBarMenu";
+import error from "../Components/Error";
 import StorageButton from "../Components/StorageButton";
 
 
@@ -42,6 +39,7 @@ export default {
     name: "SelectStorage",
     components:{
         headBar,
+        error,
         // NavBar, NavBarMenu,
         StorageButton
     },
@@ -58,8 +56,6 @@ export default {
 
         axios.get('/api/getListMyStorages').then(res => {
             this.listStorage = res.data.data
-            console.log(this.listStorage)
-            console.log(this.listStorage.length)
             if (this.listStorage.length > 1) {
                 console.log('need select Storage')
             } else {

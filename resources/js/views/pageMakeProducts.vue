@@ -48,7 +48,7 @@
                                     v-for="(goods, index) in listIngredients"
                                     v-bind:value="goods.goods_id"
                                 >
-                                    {{ goods.name }}
+                                    {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}
                                 </option>
 
                             </select>
@@ -119,31 +119,35 @@ export default {
             }]
         }
     },
+    beforeMount() {
+        this.my_storage_id = localStorage.getItem('my_storage_id')
+        this.my_storage_name = localStorage.getItem('my_storage_name')
+    },
     async mounted() {
         await this.getGoodsAllowed();
         await this.getGoodsAvailable();
     },
     methods: {
         async getGoodsAllowed(){
-            let res = await axios.get('/api/getStorageGoods/allowed/1/all');
+            let res = await axios.get('/api/getStorageGoods/allowed/'+this.my_storage_id+'/all');
 
             if(!res.data) {
                 return ;
             }
 
-            this.listGoods = res.data.data;
+            this.listGoods = res.data.data.filter(el => el.type === 2);
             console.log(this.listGoods)
 
         },
         async getGoodsAvailable(){
-            let res = await axios.get('/api/getStorageGoods/available/1/all');
+            let res = await axios.get('/api/getStorageGoods/available/'+this.my_storage_id+'/all');
 
             if(!res.data) {
                 return ;
             }
 
-            this.listIngredients = res.data.data;
-            console.log(this.listGoods)
+            this.listIngredients = res.data.data.filter(el => el.type === 1).filter(el => el.amount > 0);
+            console.log(this.listIngredients)
 
         },
         changeIngredient(i, value){

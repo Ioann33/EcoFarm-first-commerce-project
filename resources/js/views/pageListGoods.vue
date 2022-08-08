@@ -87,7 +87,7 @@ export default {
 
         // Получить список продукции на складе
         axios.get('/api/getStorageGoods/'+ this.type + '/' + this.storage_id+'/all').then(res => {
-            this.listGoods = res.data.data
+            this.listGoods = res.data.data.filter(el => el.amount >0)
             console.log('listGoods:')
             console.log(this.listGoods)
         }).catch(err => {

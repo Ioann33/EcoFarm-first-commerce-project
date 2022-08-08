@@ -3,8 +3,19 @@
         <head-bar></head-bar>
         <nav-bar></nav-bar>
 
+
         <div class="page-content header-clear-medium text-center">
-            <div class="card card-style overflow-visible p-4">
+
+            <error
+                message="нужно сделать API: https://homenet.youtrack.cloud/issue/EF-20/sozdat-apidoSale"
+            ></error>
+
+
+<title-page title_main="Продажа"></title-page>
+
+
+            <div class="card card-style overflow-visible p-4 pt-3 mt-3">
+
 
                 <div class="row mb-0" v-for="(item, i) in sale_goods" :key="item.goods_id">
                     <div class="col-12 p-1">
@@ -16,7 +27,7 @@
                                     v-for="(goods, index) in available_goods"
                                     v-bind:value="goods.goods_id"
                                 >
-                                    {{ goods.name }}
+                                    {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}
                                 </option>
 
                             </select>
@@ -96,11 +107,12 @@
     import NavBar from "../Components/NavBar";
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
-
+import TitlePage from "../Components/Title";
     export default {
         name: "pageSaleProducts",
         components:{
             error,
+            TitlePage,
             headBar, NavBar, NavBarMenu,
         },
         data() {
@@ -127,9 +139,12 @@
           }
         },
         async mounted() {
-            this.storage_id = localStorage.getItem('my_storage_id');
-            await this.getStorageGoods(this.storage_id);
+            this.my_storage_id = localStorage.getItem('my_storage_id');
+            await this.getStorageGoods(this.my_storage_id);
 
+        },
+        updated() {
+            update_template()
         },
         methods: {
             selectedGoods(id, index){
@@ -149,7 +164,7 @@
                 if(!res.data){
                     return ;
                 }
-                this.available_goods = res.data.data;
+                this.available_goods = res.data.data.filter(el => el.amount >0);
             },
             checkAmount(i){
                 if(this.sale_goods[i].amount > this.sale_goods[i].max_amount){
@@ -171,7 +186,7 @@
                 let prepareData = this.sale_goods.map(el => {
                     if(Number.isInteger(el.goods_id)){
                         return {
-                            storage_id: this.storage_id,
+                            storage_id: this.my_storage_id,
                             goods_id: el.goods_id,
                             amount: el.amount
                         }

@@ -4,8 +4,15 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium text-center">
+
+            <error
+                message="нужно сделать API: https://homenet.youtrack.cloud/issue/EF-21/sozdat-apidoBuy"
+            ></error>
+
+            <title-page title_main="Покупка"></title-page>
+
             <div class="card card-style p-4 overflow-visible">
-                <h3 class="card-title">Купить</h3>
+
                 <div class="row mb-0" v-for="(item, index) in buy_goods" :key="item.goods_id">
                     <select-input :data="list_goods"
                                   :label="'Товар '+ (index+1)"
@@ -21,7 +28,8 @@
                             <label :for="'price'+index" class="color-blue-dark">цена за ед.</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
                             <i class="fa fa-check disabled valid color-green-dark"></i>
-                            <em></em>
+                            <em>грн</em>
+
                         </div>
                     </div>
                     <div class="col-4 p-1">
@@ -81,13 +89,14 @@
     import NavBar from "../Components/NavBar";
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
-
+    import TitlePage from '../Components/Title'
     import SelectInput from "../Components/SelectInput"
 
     export default {
         name: "pageBuyProducts",
         components:{
             error,
+            TitlePage,
             headBar, NavBar, NavBarMenu, SelectInput
         },
         data() {
@@ -110,8 +119,8 @@
           }
         },
         mounted() {
-            this.storage_id = localStorage.getItem('my_storage_id');
-            this.getAllowedGoods(this.storage_id)
+            this.my_storage_id = localStorage.getItem('my_storage_id');
+            this.getAllowedGoods(this.my_storage_id)
         },
         methods: {
             async getAllowedGoods(storage_id){
@@ -120,7 +129,9 @@
                     console.log('Some error');
                     return ;
                 }
-                this.list_goods = res.data.data;
+
+                // из списка покупаемого продукта исклчюим готовую продукцию (type=2)
+                this.list_goods = res.data.data.filter(el => el.type!=2);
                 console.log(res)
             },
             getGoodsId(e, index) {
@@ -148,12 +159,13 @@
                        goods_id: el.goods_id,
                        amount: el.amount,
                        price: el.price,
+                       storage_id: this.my_storage_id
                    }
                 }).filter(el => el !== false);
                 console.log(filtered)
                 return;
                 const res = await axios.post('/api/buyGoods', {
-                    storage_id: this.storage_id,
+                    storage_id: this.my_storage_id,
                     goods: filtered
                 })
             }
