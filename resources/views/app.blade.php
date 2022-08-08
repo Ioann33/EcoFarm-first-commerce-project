@@ -19,16 +19,25 @@
         <link rel="apple-touch-icon" sizes="180x180" href="{{asset('app/icons/icon-192x192.png')}}">
 
     </head>
-    <body class="theme-light" data-highlight="highlight-red" data-gradient="body-default">
+<body class="theme-light" data-highlight="highlight-red" data-gradient="body-default">
     <div id="preloader"><div class="spinner-border color-highlight" role="status"></div></div>
 
     <div id="app"></div>
 
     @vite(['resources/js/app.js'])
-    <script type="text/javascript" src="{{ asset('custom.js?v=51')}}"></script>
-    <script type="text/javascript" src="{{ asset('bootstrap.min.js?v=51')}}"></script>
+{{--    так не хочет работать --}}
+{{--    @vite(['resources/js/bootstrap.min.js'])--}}
+{{--    @vite(['resources/js/custom.js'])--}}
 
-    </body>
+{{--    так работает --}}
+{{--    <script type="text/javascript" src="{{ asset('custom.js')}}"></script>--}}
+{{--    <script type="text/javascript" src="{{ asset('bootstrap.min.js')}}"></script>--}}
+
+{{--    и так работает --}}
+    <script type="text/javascript" src="custom.js"></script>
+    <script type="text/javascript" src="bootstrap.min.js"></script>
+
+</body>
 
 
 </html>

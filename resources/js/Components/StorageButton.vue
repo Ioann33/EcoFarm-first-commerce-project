@@ -47,9 +47,12 @@ export default {
                 localStorage.setItem('order_in', this.storage_prop[0]['money_in'])
                 localStorage.setItem('order_out', this.storage_prop[0]['money_out'])
                 localStorage.setItem('type', this.storage_prop[0]['type'])
+
+                this.$router.push({name: 'home'});
             })
 
-             this.$router.push({name: 'home'});
+             //this.$router.push({name: 'home'});
+
             //this.$router.push({name: this.storage_prop[0]['type']});
         }
     }

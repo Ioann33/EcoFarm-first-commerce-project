@@ -54,7 +54,10 @@ export default {
 
         }
     },
-    mounted() {},
+    mounted() {
+
+        update_template()
+    },
     computed: {
         typeTemplate(){
           const type = localStorage.getItem('type');
@@ -67,6 +70,10 @@ export default {
     },
     methods: {
 
+    },
+    updated() {
+
+        update_template()
     }
 }
 </script>
