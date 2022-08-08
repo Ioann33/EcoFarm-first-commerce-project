@@ -9,7 +9,9 @@ class FinanceController extends Controller
 {
     function getFinance(Request $request): array
     {
-        return array('balance' => 432);
+        return array(
+            'balance' => 432,
+        );
     }
 
     function doSalary(Request $request): array

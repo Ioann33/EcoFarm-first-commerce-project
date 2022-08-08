@@ -1,9 +1,9 @@
 <template>
     <a href="#" @click.prevent="changeStorage(storage_id, storage_name)">
-    <div class="card card-style bg-20" data-card-height="175">
+    <div class="card card-style bg-20" data-card-height="100">
         <div class="card-center">
             <p class="text-center mb-0">
-                <i class="fa fa-eye color-blue-dark fa-3x mt-3"></i>
+                <i class="fa fa-eye color-blue-dark fa-3x mt-0"></i>
             </p>
             <h1 class="color-white text-center mb-n1">{{ storage_name }}  <sup class="opacity-20 font-400">{{ storage_id}}</sup></h1>
 <!--            <p class="color-white text-center opacity-60 ">A beautiful sunset at the docks!</p>-->

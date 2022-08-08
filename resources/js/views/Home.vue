@@ -31,12 +31,12 @@ import NavBarMenu from "../Components/NavBarMenu";
 import error from "../Components/Error";
 
 import pageStorage from "./type-templates/pageStorage";
-import pageProduce from "./type-templates/pageProduce";
+import pageCook from "./type-templates/pageCook";
 import pageGrow from "./type-templates/pageGrow";
 import pageFinance from "./type-templates/pageFinance";
 import pageCreditor from "./type-templates/pageCreditor";
 import pageServices from "./type-templates/pageServices";
-import pageService from "./type-templates/pageService";
+
 import pageSale from "./type-templates/pageSale";
 import pageBuy from "./type-templates/pageBuy";
 
@@ -47,7 +47,7 @@ export default {
         headBar, NavBar, NavBarMenu,
 
         // types
-        pageStorage, pageProduce, pageGrow, pageFinance, pageCreditor, pageServices, pageService, pageSale, pageBuy
+        pageStorage, pageCook, pageGrow, pageFinance, pageCreditor, pageServices,  pageSale, pageBuy
     },
     data(){
         return {
@@ -61,6 +61,7 @@ export default {
           if(!type){
               return false;
           }
+            console.log('page-'+type)
           return `page-${type}`;
         },
     },
