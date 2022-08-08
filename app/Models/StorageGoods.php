@@ -15,4 +15,8 @@ class StorageGoods extends Model
     public function goods(){
         return $this->belongsTo(Goods::class, 'goods_id');
     }
+
+    public function storage(){
+        return $this->belongsTo(Storages::class, 'storage_id');
+    }
 }

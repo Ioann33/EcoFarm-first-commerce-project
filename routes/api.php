@@ -42,6 +42,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getSaldo/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSaldo']);
 
     Route::get('/getFinance/{storage_id}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
+    Route::post('/doTransferMoney', [\App\Http\Controllers\Finance\FinanceController::class, 'doTransferMoney']);
     Route::post('/doSalary', [\App\Http\Controllers\Finance\FinanceController::class, 'doSalary']);
 
 });

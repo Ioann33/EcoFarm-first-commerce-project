@@ -17,18 +17,20 @@ class StorageGoodsResource extends JsonResource
     public function toArray($request)
     {
         $stockBalance = StockBalance::all();
-        $count = $stockBalance
+        $totalPriceSum = $stockBalance
             ->where('storage_id', '=', $this->storage_id)
             ->where('goods_id','=', $this->goods_id)
-            ->count('price');
+            ->sum(function ($item){
+                return $item->amount * $item->price;
+            });
 
-        $sum = $stockBalance
+        $sumGoods = $stockBalance
             ->where('storage_id', '=', $this->storage_id)
             ->where('goods_id','=', $this->goods_id)
-            ->sum('price');
+            ->sum('amount');
 
-        if ($sum !== 0){
-            $averagePrice = $sum / $count;
+        if ($totalPriceSum !== 0){
+            $averagePrice = $totalPriceSum / $sumGoods;
         }else{
             $averagePrice = 0;
         }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Goods;
 use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\getMovementResource;
+use App\Http\Resources\Reports\getAllowedStoragesResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
 use App\Models\Goods;
@@ -125,6 +126,11 @@ class GoodsController extends Controller
     }
 
     public function getStorageGoods(Request $request){
+
+        if ($request->id === 'all'){
+            $storages = StorageGoods::all()->where('goods_id', '=', $request->goods_id);
+            return getAllowedStoragesResource::collection($storages);
+        }
 
         if ($request->goods_id === 'all'){
             $goods = StorageGoods::all()
