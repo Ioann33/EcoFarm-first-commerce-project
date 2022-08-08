@@ -131,6 +131,9 @@
             await this.getStorageGoods(this.storage_id);
 
         },
+        updated() {
+            update_template()
+        },
         methods: {
             selectedGoods(id, index){
                 if(!Number.isInteger(id)) return ;
