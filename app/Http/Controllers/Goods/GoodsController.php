@@ -131,7 +131,8 @@ class GoodsController extends Controller
                 ->where('storage_id','=', $request->id);
         }else{
             $goods = StorageGoods::all()
-                ->where('storage_id','=', $request->id)->where('goods_id', '=', $request->goods_id);
+                ->where('storage_id','=', $request->id)
+                ->where('goods_id', '=', $request->goods_id);
         }
 
         if ($request->key === 'allowed'){
@@ -152,17 +153,25 @@ class GoodsController extends Controller
         return $balance;
     }
 
-    public function goodsMovementPush(Request $request){
+    public function goodsMovementPush(Request $request)
+    {
         DB::beginTransaction();
 
         try {
             HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
         }catch (NotEnoughGoods $e){
             DB::rollBack();
-            return response()->json(['status'=>$e->resMess()]);
+            return response()->json([
+                    'message'=>$e->resMess(),
+                    'status'=> 'error'
+                ]);
         }
         DB::commit();
-        return response()->json(['status'=>'ok']);
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount
+
+        ]);
     }
 
     public function makeProduct(Request $request){

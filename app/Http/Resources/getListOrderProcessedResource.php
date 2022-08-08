@@ -15,8 +15,6 @@ class getListOrderProcessedResource extends JsonResource
     public function toArray($request)
     {
 
-        $storageID = '';
-        $storageName = '';
         if($request->dir === 'in'){
             $storageID = $this->storage_id_from;
             $storageName = $this->storageFrom;
