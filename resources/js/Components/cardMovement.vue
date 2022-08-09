@@ -9,12 +9,11 @@
                     </div>
                     <div class="ms-3">
                         <h3 class="font-600">{{ movement.goods_name }}
-<!--                            <span class="font-300" style="margin-left: 15px">{{ movement.amount }} {{ movement.unit }}</span>-->
+<!--                            <span class="font-300" style="margin-left: 15px">{{ movement.amount }} <sup>{{ movement.unit }}</sup></span>-->
                         </h3>
-<!--                        <h1 class="pt-3">$29.<sup>99</sup></h1>-->
                         <h4 class="pt-3 font-600">{{ movement.amount }} <sup>{{ movement.unit }}</sup></h4>
-<!--                        <h4 class="pt-3 font-600" v-if="movement.price>0">{{ movement.price }} <sup>₴</sup></h4>-->
-                        <h4 class="pt-3 font-600">{{ movement.price }} <sup>₴</sup></h4>
+                        <h4 class="pt-3 font-600" v-if="movement.price>0">{{ movement.price }} <sup>₴</sup></h4>
+                        <div v-else class="opacity-20">цена не установленна</div>
 <p></p>
                         Отгрузка <span v-if="dir=='in'">из</span> <span v-else>в</span> <br> <i class="fa-fw select-all fas "></i> {{ movement.storage_name }}
                     </div>
@@ -49,8 +48,9 @@
                     <div class="col-6 pe-1">
 
 <!--                        @click.prevent="pullGoods(movement.order_id)"-->
+
                         <a href="#" v-if="editPrice" data-menu="menu-setPrice" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену и Оприходовать</a>
-                        <a href="#" v-else @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
+                        <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
 <!--                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(movement.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</a>-->
 
 

@@ -58,7 +58,7 @@
 
                     <!--сделать заказ на перемещение продукции                -->
                     <a href="#">
-                        <router-link :to="{name: 'makeMoveGoods'}">
+                        <router-link :to="{name: 'MoveGoods'}">
                             <i class="fa bg-green-dark rounded-s"></i>
                             <span class="font-20">Передать продукцию</span>
                         </router-link>

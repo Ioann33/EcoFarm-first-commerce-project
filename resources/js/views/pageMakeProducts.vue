@@ -170,8 +170,9 @@ export default {
         },
         async createProduct(){
             const res = axios.post('/api/makeProduct', {
+                storage_id: this.my_storage_id,
                 goods_id: this.selected_goods_id,
-                amount: '',
+                amount: this.amount,
                 ingredients: this.ingredients
             });
 

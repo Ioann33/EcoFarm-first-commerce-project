@@ -35,19 +35,26 @@
 </div> <!-- page-contend -->
 
     <!-- меню Установить цену -->
-    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-effect="menu-over" data-menu-height="200">
+    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached bg-orange-light rounded-m" data-menu-effect="menu-over" data-menu-height="200">
         <div class="menu-title mt-n1">
             <h1>Установить цену</h1>
             <a href="#" class="close-menu"><i class="fa fa-times"></i></a>
         </div>
         <div class="content mb-0 mt-2">
             <div class="divider mb-3"></div>
-            <div class="input-style no-borders no-icon validate-field">
-                <input type="text" class="form-control validate-text" id="form2a63" :disabled="editPrice" placeholder="0.00" v-model="price">
-                <label for="form2a63" class="color-highlight">цена</label>
-                <i class="fa fa-times disabled invalid color-red-dark"></i>
-                <i class="fa fa-check disabled valid color-green-dark"></i>
-                <em>(обязательно)</em>
+<!--            <div class="input-style no-borders no-icon validate-field">-->
+<!--                <input type="text" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">-->
+<!--                <label for="form2a63" class="color-highlight">цена</label>-->
+<!--                <i class="fa fa-times disabled invalid color-red-dark"></i>-->
+<!--                <i class="fa fa-check disabled valid color-green-dark"></i>-->
+<!--                <em>(обязательно)</em>-->
+<!--            </div>-->
+
+            <div class="input-group input-group-lg">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-lg">₴</span>
+                </div>
+                <input type="text" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">
             </div>
 
             <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-subscribe-confirm" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
@@ -121,6 +128,16 @@ export default {
             // если editPrice == false т.е. это не главный склад - то сразу перейти к процедуре - перемещение товара, без установления цены
             if(!this.editPrice){
                 this.pullGoods(this.movement_id)
+            }else {
+                //this.price = '0000'
+                // установить цену на товар "по умолчанию" взятую из этого перемещения
+                axios.get('/api/getMovementInfo/' + this.movement_id).then(res => {
+                    this.price = res.data.price
+                    console.log(this.listOrders)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.log(this.message)
+                })
             }
         },
         getListOrders(storage_id) {

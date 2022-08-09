@@ -1,31 +1,9 @@
 <template>
     <div class="page-content header-clear-medium">
+        <!-- ERROR -->  <error :message="message"></error>
 
-        <!-- ERROR -->
-        <error
-            :message="message"
-        ></error>
+        <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
-
-        <!--{{ store_message }}-->
-        <!--    {{ Storage.store_message }}-->
-        <!--    {{ Storage.storages_id }}-->
-        <!--    ddddd{{ Storage.my_storage_id }}-->
-        <!--    {{ message }}-->
-
-        <div data-card-height="150" style="height: 150px" class="card card-style rounded-m shadow-xl preload-img"
-             data-src="images/teplitsa.webp">
-            <div class="card-top mt-3 ms-3">
-                <h1 class="color-white mb-0 mb-n2 font-22">{{ storage_name }} </h1>
-                <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">{{storage_name}}</p>
-            </div>
-            <div class="card-center text-center">
-                <h1 class="color-white fa-4x">{{ balance }} ₴ </h1>
-                <p class="color-white opacity-70 font-11 mb-n5">Баланс</p>
-            </div>
-
-            <div class="card-overlay bg-black opacity-40"></div>
-        </div>
 
         <!--ЗАКАЗЫ-->
 
@@ -163,7 +141,7 @@
 
                     <!--сделать заказ на перемещение продукции                -->
                     <a href="#">
-                        <router-link :to="{name: 'makeMoveGoods'}">
+                        <router-link :to="{name: 'MoveGoods'}">
                             <i class="fa bg-green-dark rounded-s"></i>
                             <span class="font-20">Передать продукцию</span>
                         </router-link>
@@ -281,9 +259,15 @@
 </template>
 
 <script>
+import CardBalance from "../../Components/cardBalance";
+import Error from "../../Components/Error";
+
     export default {
         name: "pageStorage",
-        components: {},
+        components: {
+            CardBalance,
+            Error
+        },
         data() {
             return {
                 message: '',
@@ -314,21 +298,22 @@
         computed: {
             isMain(){
                 const main_id = localStorage.getItem('main_storage_id');
-                if(main_id === this.storage_id) {
+                if(main_id === this.my_storage_id) {
                     return true;
                 }
                 return false;
             }
         },
+        beforeMount() {
+            this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.my_storage_name = localStorage.getItem('my_storage_name')
+        },
         mounted() {
-            console.log('Component views/Home mounted....')
+            console.log('     Component views/Home mounted....')
 
-            // получить мой склад
-            this.storage_id = localStorage.getItem('my_storage_id');
-            console.log('my_storage_id: ' + this.storage_id)
 
             // если склад не выбран - перекинуть на страницу выбор склада
-            if(this.storage_id == null) {
+            if(this.my_storage_id == null) {
                 console.log('my_storage_id is null \nRedirect to /selectStorage')
                 this.$router.push({name: 'selectStorage'});
             }
@@ -345,15 +330,15 @@
             console.log('storage_name: '+this.storage_name)
 
             // получим сумму перемещений на этом складе
-            this.date_from = '2022-08-01'
-            this.date_to = '2022-08-05'
-            axios.get('/api/getSumMoneyMovementGoods/'+ this.storage_id+'/'+this.date_from+'/'+this.date_to).then(res => {
-                this.balance = res.data.sum
-
-            }).catch(err => {
-                console.log(err)
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-            })
+            // this.date_from = '2022-08-01'
+            // this.date_to = '2022-08-05'
+            // axios.get('/api/getSumMoneyMovementGoods/'+ this.my_storage_id+'/'+this.date_from+'/'+this.date_to).then(res => {
+            //     this.balance = res.data.sum
+            //
+            // }).catch(err => {
+            //     console.log(err)
+            //     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            // })
 
             this.loadStoragesParams()
             console.log('Component views/Home mounted......done!')
@@ -365,7 +350,7 @@
         methods: {
             loadStoragesParams(){
 
-                axios.get('/api/getStorageOrder/out/'+ this.storage_id).then(res => {
+                axios.get('/api/getStorageOrder/out/'+ this.my_storage_id).then(res => {
                     //console.log(res.data)
                     this.count_order_out_opened = res.data.data.opened
                     this.count_order_out_canceled = res.data.data.canceled
@@ -375,7 +360,7 @@
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
 
-                axios.get('/api/getStorageOrder/in/'+ this.storage_id).then(res => {
+                axios.get('/api/getStorageOrder/in/'+ this.my_storage_id).then(res => {
                     //console.log(res.data)
                     this.count_order_in_opened = res.data.data.opened
                     this.count_order_in_canceled = res.data.data.canceled
@@ -386,20 +371,20 @@
                 })
 
                 // получить ОТКРЫТЫЕ ИСХОДЯЩИЕ заявки на ПЕРЕДАЧУ товара  (нужно только количество, для отображения на главной странице)
-                axios.get('/api/getMovement/out/opened/'+ this.storage_id).then(res => {
+                axios.get('/api/getMovement/out/opened/'+ this.my_storage_id).then(res => {
                     this.count_movement_out_opened = res.data.data.length
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
 
                 // получить ОТКРЫТЫЕ ВХОДЯЩИЕ заявки на ПОЛУЧЕНИЕ товара (нужно только количество, для отображения на главной странице)
-                axios.get('/api/getMovement/in/opened/'+ this.storage_id).then(res => {
+                axios.get('/api/getMovement/in/opened/'+ this.my_storage_id).then(res => {
                     this.count_movement_in_opened = res.data.data.length
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
 
-                console.log('loaded all params for storage: ' + this.storage_id)
+                console.log('loaded all params for storage: ' + this.my_storage_id)
             }
         }
     }
