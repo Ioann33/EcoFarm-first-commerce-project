@@ -71,8 +71,6 @@ export default {
     data(){
         return {
             price: null
-           //dir: null,
-           // movement_id: null, // перед установкой цены
         }
     },
     props: [
@@ -145,20 +143,20 @@ export default {
 
 
     },
-  methods: {
-    setOrderStatus(order_id, status){
-        console.log('(cardMovement.vue) order_id: '+order_id + '. set Status to '+status)
-        //this.dir = this.$route.params.dir
-        //this.status = this.$route.params.status
-
-        axios.get('/api/setOrderStatus/'+ status +'/'+ order_id).then(res => {
-            console.log(res.data)
-           // this.$router.push({name: 'pageOrders', params: {status: status, dir: dir}});
-           this.$router.push({name: 'home'});
-        }).catch(err => {
-            this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-        })
-    }
+    methods: {
+    // setOrderStatus(order_id, status){
+    //     console.log('(cardMovement.vue) order_id: '+order_id + '. set Status to '+status)
+    //     //this.dir = this.$route.params.dir
+    //     //this.status = this.$route.params.status
+    //
+    //     axios.get('/api/setOrderStatus/'+ status +'/'+ order_id).then(res => {
+    //         console.log(res.data)
+    //        // this.$router.push({name: 'pageOrders', params: {status: status, dir: dir}});
+    //        this.$router.push({name: 'home'});
+    //     }).catch(err => {
+    //         this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+    //     })
+    // }
 }
 }
 </script>

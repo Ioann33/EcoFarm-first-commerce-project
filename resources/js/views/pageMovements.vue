@@ -89,7 +89,7 @@ export default {
             status: null,           // { opened | canceled | progress }
             message: null,           // for error message
             movement_id: '',
-            price: '',
+            price: -0,
             editPrice: false
         }
     },
@@ -123,17 +123,19 @@ export default {
     methods: {
         setMovementId(e){
             this.movement_id = e;
-            console.log('Получили вот такой movement_id из карточки товара : ' + this.movement_id)
+            console.log('Получили movement_id из карточки товара : ' + this.movement_id)
 
             // если editPrice == false т.е. это не главный склад - то сразу перейти к процедуре - перемещение товара, без установления цены
             if(!this.editPrice){
                 this.pullGoods(this.movement_id)
-            }else {
+            } else {
                 //this.price = '0000'
+                // если отгрузка из type=grow - то цену не нужно брать
                 // установить цену на товар "по умолчанию" взятую из этого перемещения
                 axios.get('/api/getMovementInfo/' + this.movement_id).then(res => {
-                    this.price = res.data.price
-                    console.log(this.listOrders)
+                    //this.price = res.data.price
+                    console.log('цена продукта взять из базы: ' + this.price)
+
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                     console.log(this.message)
