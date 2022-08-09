@@ -1,35 +1,12 @@
 <template>
     <div class="page-content header-clear-medium">
-
-        <!-- ERROR -->
-        <error
-            :message="message"
-        ></error>
+        <!-- ERROR -->  <error :message="message"></error>
+        <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
 
-        <!--{{ store_message }}-->
-        <!--    {{ Storage.store_message }}-->
-        <!--    {{ Storage.storages_id }}-->
-        <!--    ddddd{{ Storage.my_storage_id }}-->
-        <!--    {{ message }}-->
 
-        <div data-card-height="150" style="height: 150px" class="card card-style rounded-m shadow-xl preload-img"
-             data-src="images/teplitsa.webp">
-            <div class="card-top mt-3 ms-3">
-                <h1 class="color-white mb-0 mb-n2 font-22">{{ storage_name }} </h1>
-                <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">{{storage_name}}</p>
-            </div>
-            <div class="card-center text-center">
-                <h1 class="color-white fa-4x">{{ balance }} ₴ </h1>
-                <p class="color-white opacity-70 font-11 mb-n5">Баланс</p>
-            </div>
-
-            <div class="card-overlay bg-black opacity-40"></div>
-        </div>
-
-        <!--ЗАКАЗЫ-->
-
-        <div class="card card-style" v-if="order_in=='0'">
+        <!--ИСХОДЯЩИЕ ЗАКАЗЫ-->
+        <div class="card card-style" v-if="0">
             <div class="content mb-0 mt-0">
                 <div class="list-group list-custom-small">
                     <router-link :to="{name: 'makeOrder'}">
@@ -105,11 +82,10 @@
                 </div>
             </div>
         </div>
-        <!--ЗАКАЗЫ-->
+        <!--ИСХОДЯЩИЕ ЗАКАЗЫ-->
 
         <!--ВХОДЯЩИЕ ЗАЯВКИ-->
-
-        <div class="card card-style" v-if="order_out=='0'">
+        <div class="card card-style" v-if="0">
             <div class="content mb-3 mt-0">
                 <div class="list-group list-custom-small">
                     <a href="#">
@@ -152,7 +128,6 @@
                 </div>
             </div>
         </div>
-
         <!--ВХОДЯЩИЕ ЗАЯВКИ-->
 
 
@@ -163,7 +138,7 @@
 
                     <!--сделать заказ на перемещение продукции                -->
                     <a href="#">
-                        <router-link :to="{name: 'makeMoveGoods'}">
+                        <router-link :to="{name: 'MoveGoods'}">
                             <i class="fa bg-green-dark rounded-s"></i>
                             <span class="font-20">Передать продукцию</span>
                         </router-link>
@@ -173,32 +148,24 @@
 
                         <!-- кнопка - Список продукции - на рассмотрении      -->
                         <div class="col-6 ps-2 pe-2">
-                            <router-link :to="{name: 'pageMovements', params: { dir: 'out', status: 'opened' }}">
-                                <div class="card card-style mx-0 mb-3">
-                                    <div class="p-3 bg-blue-dark">
-                                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">на
-                                            рассмотрении</h4>
-                                        <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                            {{count_movement_out_opened}}</h1>
+                            <card-movement-out-opened :storage_id="this.storage_id"></card-movement-out-opened>
+<!--                            <router-link :to="{name: 'pageMovements', params: { dir: 'out', status: 'opened' }}">-->
+<!--                                <div class="card card-style mx-0 mb-3">-->
+<!--                                    <div class="p-3 bg-blue-dark">-->
+<!--                                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">на-->
+<!--                                            рассмотрении</h4>-->
+<!--                                        <h1 class="font-700 font-34  opacity-60 mb-0 text-center">-->
+<!--                                            {{count_movement_out_opened}}</h1>-->
 
-                                    </div>
-                                </div>
-                            </router-link>
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </router-link>-->
                         </div>
 
 
                         <!-- кнопка -  Список продукции, которую нужно принять -->
                         <div class="col-6 ps-2" v-if="move_in=='true'">
-                            <router-link :to="{name: 'pageMovements', params: { dir: 'in', status: 'opened' }}">
-                                <div class="card card-style mx-0 mb-3">
-                                    <div class="p-3 bg-yellow-dark ">
-                                        <i class="fa bg-yellow-light rounded-s">  </i>
-                                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Принять </h4>
-                                        <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
-                                            {{count_movement_in_opened}}</h1>
-                                    </div>
-                                </div>
-                            </router-link>
+
                         </div>
 
 
@@ -281,9 +248,18 @@
 </template>
 
 <script>
+    import cardMovementInOpened from "../../Components/cardMovementInOpened";
+    import cardMovementOutOpened from "../../Components/cardMovementOutOpened";
+    import Error from "../../Components/Error";
+    import CardBalance from "../../Components/cardBalance";
+
     export default {
         name: "pageStorage",
-        components: {},
+        components: {
+            Error,
+            CardBalance,
+            cardMovementInOpened, cardMovementOutOpened
+        },
         data() {
             return {
                 message: '',
@@ -320,8 +296,12 @@
                 return false;
             }
         },
+        beforeMount() {
+            this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.my_storage_name = localStorage.getItem('my_storage_name')
+        },
         mounted() {
-            console.log('Component views/Home mounted....')
+            console.log('     Component views/Home mounted....')
 
             // получить мой склад
             this.storage_id = localStorage.getItem('my_storage_id');
@@ -356,7 +336,7 @@
             })
 
             this.loadStoragesParams()
-            console.log('Component views/Home mounted......done!')
+            console.log('     Component views/Home mounted......done!')
             update_template()
         },
         updated() {

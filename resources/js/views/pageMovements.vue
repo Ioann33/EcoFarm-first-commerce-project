@@ -6,10 +6,7 @@
 
 <div class="page-content header-clear-medium">
 
-    <!-- ERROR -->
-    <error
-        :message="message"
-    ></error>
+    <!-- ERROR -->  <error :message="message"></error>
 
 
     <div class="content-boxed bg-blue-dark mb-3 pb-3 text-uppercase">
@@ -26,6 +23,7 @@
             :movement="movement"
             :dir='this.dir'
             :status="this.status"
+            :editPrice="this.editPrice"
             @getMovementId="setMovementId"
         ></card-movement>
     </div>
@@ -37,19 +35,26 @@
 </div> <!-- page-contend -->
 
     <!-- меню Установить цену -->
-    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-effect="menu-over" data-menu-height="200">
+    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached bg-orange-light rounded-m" data-menu-effect="menu-over" data-menu-height="200">
         <div class="menu-title mt-n1">
             <h1>Установить цену</h1>
             <a href="#" class="close-menu"><i class="fa fa-times"></i></a>
         </div>
         <div class="content mb-0 mt-2">
             <div class="divider mb-3"></div>
-            <div class="input-style no-borders no-icon validate-field">
-                <input type="text" class="form-control validate-text" id="form2a63" :disabled="editPrice" placeholder="0.00" v-model="price">
-                <label for="form2a63" class="color-highlight">цена</label>
-                <i class="fa fa-times disabled invalid color-red-dark"></i>
-                <i class="fa fa-check disabled valid color-green-dark"></i>
-                <em>(обязательно)</em>
+<!--            <div class="input-style no-borders no-icon validate-field">-->
+<!--                <input type="text" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">-->
+<!--                <label for="form2a63" class="color-highlight">цена</label>-->
+<!--                <i class="fa fa-times disabled invalid color-red-dark"></i>-->
+<!--                <i class="fa fa-check disabled valid color-green-dark"></i>-->
+<!--                <em>(обязательно)</em>-->
+<!--            </div>-->
+
+            <div class="input-group input-group-lg">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-lg">₴</span>
+                </div>
+                <input type="text" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">
             </div>
 
             <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-subscribe-confirm" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
@@ -86,7 +91,6 @@ export default {
             movement_id: '',
             price: '',
             editPrice: false
-
         }
     },
     mounted() {
@@ -95,17 +99,18 @@ export default {
 
         // получить мой склад
         this.storage_id = localStorage.getItem('my_storage_id');
-        console.log('my_storage_id: ' + this.storage_id)
+        //console.log('my_storage_id: ' + this.storage_id)
 
         // получить основной склад
         this.main_storage_id = localStorage.getItem('main_storage_id');
 
         // если выбранный склад - главный - то можно менять цену
         this.editPrice = this.storage_id == this.main_storage_id;
-
+        console.log('editPrice: ' + this.editPrice)
 
             // получить все заказы на перемещение входящие/исходящие открытые/выполненные
         axios.get('/api/getMovement/' + this.dir + '/opened/'+ this.storage_id).then(res => {
+            console.log('listGoods:')
             console.log(res.data)
             this.listMovements = res.data.data
         }).catch(err => {
@@ -113,13 +118,27 @@ export default {
         })
     },
     updated() {
-        console.log('updated')
         update_template()
     },
     methods: {
         setMovementId(e){
             this.movement_id = e;
             console.log('Получили вот такой movement_id из карточки товара : ' + this.movement_id)
+
+            // если editPrice == false т.е. это не главный склад - то сразу перейти к процедуре - перемещение товара, без установления цены
+            if(!this.editPrice){
+                this.pullGoods(this.movement_id)
+            }else {
+                //this.price = '0000'
+                // установить цену на товар "по умолчанию" взятую из этого перемещения
+                axios.get('/api/getMovementInfo/' + this.movement_id).then(res => {
+                    this.price = res.data.price
+                    console.log(this.listOrders)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.log(this.message)
+                })
+            }
         },
         getListOrders(storage_id) {
             axios.get('/api/getStorageGoods/'+ this.dir +'/'+this.status+'/'+storage_id).then(res => {

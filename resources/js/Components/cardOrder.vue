@@ -46,7 +46,7 @@
                     </div>
                     <div class="col-6 pe-1">
                         <a href="#" v-if="canGetToProgress" @click.prevent="setOrderStatus(order.order_id, 'progress')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-yellow-dark">В работу</a>
-                        <router-link :to="{name: 'makeMoveGoods', params: {order_id: order.order_id}}" v-if="canMoveGoods"  class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</router-link>
+                        <router-link :to="{name: 'MoveGoods', params: {order_id: order.order_id}}" v-if="canMoveGoods"  class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</router-link>
                     </div>
 
                 </div>

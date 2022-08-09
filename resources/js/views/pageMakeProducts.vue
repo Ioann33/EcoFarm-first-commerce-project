@@ -42,10 +42,10 @@
                     <div class="col-7 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label for="prod_2" class="color-blue-dark">Ингредиент {{i + 1}}</label>
-                            <select id="prod_2" v-model="ingredients[i].goods_id" @change="changeIngredient(i)" class="form-control">
+                            <select id="prod_2" v-model="ingredients[i].goods_id" :value="ingredients[i].goods_id" @change="changeIngredient(i)" class="form-control">
                                 <option value="default" selected>выбрать</option>
                                 <option
-                                    v-for="(goods, index) in listIngredients"
+                                    v-for="(goods, index) in listIngredients.filter(el => ![...selected_ingredients.slice(0, i), ...selected_ingredients.slice(i+1, selected_ingredients.length)].includes(el.goods_id))"
                                     v-bind:value="goods.goods_id"
                                 >
                                     {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}
@@ -86,7 +86,7 @@
                 <button @click="addIngredient" style="padding: 15px 24px; background-color: #A0D468; border-radius: 28px; color: #fff;" class="add-ingredient-btn">+</button>
             </div>
 
-            <button type="button" class="btn btn-success btn-lg create-product-btn" @click="createProduct">Создать ГТ</button>
+            <button type="button" class="btn btn-success btn-lg create-product-btn" @click="createProduct">Создать ГТ и передать ее на главный склад</button>
 
         </div>
 
@@ -118,6 +118,15 @@ export default {
                 unit: 'кг'
             }]
         }
+    },
+    computed: {
+      selected_ingredients(){
+          let arr = [];
+          this.ingredients.forEach(el => {
+              arr.push(el.goods_id)
+          });
+          return arr;
+      }
     },
     beforeMount() {
         this.my_storage_id = localStorage.getItem('my_storage_id')
@@ -161,8 +170,9 @@ export default {
         },
         async createProduct(){
             const res = axios.post('/api/makeProduct', {
+                storage_id: this.my_storage_id,
                 goods_id: this.selected_goods_id,
-                amount: '',
+                amount: this.amount,
                 ingredients: this.ingredients
             });
 

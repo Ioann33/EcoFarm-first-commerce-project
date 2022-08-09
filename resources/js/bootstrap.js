@@ -1,3 +1,4 @@
+import router from "./router/router";
 import _ from 'lodash';
 window._ = _;
 
@@ -12,6 +13,23 @@ window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // axios.defaults.withCredentials = true;
+
+window.axios.defaults.withCredentials = true;
+
+window.axios.interceptors.response.use({},err => {
+    if(err.response.status===401 || err.response.status===419){
+        console.log('Auth is expire')
+        const token = localStorage.getItem('x_xsrf_token')
+        if(token){
+            localStorage.removeItem('x_xsrf_token')
+        }
+        console.log('Go to Welcome')
+        router.push({ name: 'welcome'})
+        //location.reload()
+
+    }
+    return Promise.reject(err);
+})
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

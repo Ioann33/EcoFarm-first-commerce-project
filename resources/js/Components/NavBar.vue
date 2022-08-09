@@ -15,10 +15,10 @@
 <!--    <div id="footer-bar" class="footer-bar-1">-->
     <div id="footer-bar" class="footer-bar-1 footer-bar-white bg-dark-dark gradient-green">
 
-        <router-link :to="{name: 'selectStorage'}"><i class="fa-fw select-all fas"></i><span>Выбор склада</span></router-link>
         <router-link :to="{name: 'home'}"><i class="fa fa-home"></i><span>Главная</span></router-link>
         <router-link :to="{name: 'home'}"><i class="fa fa-heart"></i><span>page-3</span></router-link>
         <router-link :to="{name: 'home'}"><i class="fa fa-search"></i><span>page-4</span></router-link>
+        <router-link :to="{name: 'selectStorage'}"><i class="fa-fw select-all fas"></i><span>Выбор склада</span></router-link>
         <a href="#" data-menu="menu-settings"><i class="fa fa-cog"></i><span>Настройки</span></a>
     </div>
 

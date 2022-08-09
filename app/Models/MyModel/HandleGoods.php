@@ -57,7 +57,9 @@ class HandleGoods
 
         //TODO handle possible error
 
-        return $newMovement->save();
+        $newMovement->save();
+        return $newMovement->id;
+
     }
 
 
@@ -69,7 +71,7 @@ class HandleGoods
      * @param $category
      * @param $link_id
      * @param $order_main
-     * @return \Illuminate\Http\JsonResponse|string|void
+     * @return \Illuminate\Http\JsonResponse|mixed
      * @throws NotEnoughGoods
      */
     static public function moveGoods($storage_id_from = null, $storage_id_to = null, $goods_id = null, $amount = null, $category = null, $link_id = null, $order_main = null, $user = null, $data =null){
@@ -100,7 +102,7 @@ class HandleGoods
 
                         $stock->save();
 
-                        $pricePerUnit = $price/$amount;
+                        $pricePerUnit = number_format($price/$amount, 2);
 
 
                         return self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main, $pricePerUnit, $user, $data);
@@ -120,9 +122,14 @@ class HandleGoods
 
             $user = Auth::id();
             $data = date('Y-m-d H:i:s');
-            self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main,null, $user, $data);
+            $productID = self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main,null, $user, $data);
 
-            return self::addGoodsOnStockBalance($storage_id_to, $goods_id, $amount, $data);
+            $stockBalanceID = self::addGoodsOnStockBalance($storage_id_to, $goods_id, $amount, $data);
+
+            return [
+               'productID'=>$productID,
+                'stockBalanceID'=>$stockBalanceID,
+            ];
         }
 
 
@@ -138,14 +145,15 @@ class HandleGoods
      * @param $price
      * @return bool
      */
-    static public function addGoodsOnStockBalance($storage_id, $goods_id, $amount ,  $date = null , $price = null,){
+    static public function addGoodsOnStockBalance($storage_id, $goods_id, $amount ,  $date = null , $price = null){
         $stockBalance = new StockBalance();
         $stockBalance->storage_id = $storage_id;
         $stockBalance->goods_id = $goods_id;
         $stockBalance->price = $price;
         $stockBalance->amount = $amount;
         $stockBalance->date_accepted = $date;
-         return $stockBalance->save();
+        $stockBalance->save();
+        return $stockBalance->id;
     }
 
 }

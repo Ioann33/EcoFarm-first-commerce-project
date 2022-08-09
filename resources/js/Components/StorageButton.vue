@@ -38,7 +38,7 @@ export default {
 
             axios.get('/api/getStorageProp/'+storage_id).then(res => {
                 this.storage_prop = res.data.data
-                console.log(this.storage_prop)
+                //console.log(this.storage_prop)
                 localStorage.setItem('storage_name', this.storage_prop[0]['name'])
                 localStorage.setItem('money_in', this.storage_prop[0]['money_in'])
                 localStorage.setItem('money_out', this.storage_prop[0]['money_out'])

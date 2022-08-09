@@ -33,6 +33,7 @@ class FinanceController extends Controller
     }
 
     public function doTransferMoney(Request $request){
+        $request = json_decode($request->getContent());
         DB::beginTransaction();
 
         $finance = $this->balance

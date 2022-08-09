@@ -4,6 +4,8 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
+            <!-- ERROR -->  <error :message="message"></error>
+
             <div class="card card-style p-4">
                 <h3 class="card-title text-center">Передать деньги</h3>
                 <div class="row mb-0">
@@ -128,6 +130,7 @@
         },
         data(){
             return {
+                message: '',
                 balance: 0,
                 amount: '',
                 list_storage: [],
@@ -142,8 +145,11 @@
                 loading_balance_to: false,
             }
         },
-       async  mounted() {
-          this.storage_id = localStorage.getItem('my_storage_id');
+        beforeMount() {
+            this.storage_id = localStorage.getItem('my_storage_id');
+        },
+        async  mounted() {
+
           await this.getMoney(this.storage_id);
           await this.getStorageList();
         },
@@ -171,11 +177,13 @@
                 console.log(this.storage_to.balance)
             },
             async getStorageList(){
-                const res = await axios.get(`/api/getListStorage/`);
+                const res = await axios.get(`/api/getListStorages/`);
                 if(!res.data){
                     console.log('Unfortunately some error')
                 }
                 this.list_storage = res.data.data;
+                console.log('list_storage:')
+                console.log(this.list_storage)
             },
             async doTransfer(){
                 const res = await axios.post(`/api/doTransferMoney`, {
@@ -187,6 +195,7 @@
                 if(!res.data){
                     console.log('Unfortunately some error')
                 }
+                this.$router.push({name: 'home'});
             },
             checkAmount(){
                 if(this.amount > this.balance){

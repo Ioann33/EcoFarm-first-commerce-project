@@ -70,9 +70,8 @@ export default {
                     password: this.user_password
                 })
                     .then(r => {
-                        console.log('Auth...ok');
+                        console.log('Auth...ok:');
                         console.log(r);
-                        console.log(r.code);
 
                         localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN']);
 

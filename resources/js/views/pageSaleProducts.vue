@@ -24,7 +24,7 @@
                             <select id="storage-list" v-model="item.goods_id" @change="selectedGoods(item.goods_id, i)" class="form-control">
                                 <option value="default" selected>выбрать товар</option>
                                 <option
-                                    v-for="(goods, index) in available_goods"
+                                    v-for="(goods, index) in available_goods.filter(el => ![...selected_goods.slice(0,i), ...selected_goods.slice(i+1,selected_goods.length)].includes(el.goods_id))"
                                     v-bind:value="goods.goods_id"
                                 >
                                     {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}
@@ -130,13 +130,20 @@ import TitlePage from "../Components/Title";
             }
         },
         computed: {
-          total(){
-              let total = 0;
-              this.sale_goods.forEach(el => {
-                  total += el.total;
-              })
-              return total;
-          }
+            total() {
+                let total = 0;
+                this.sale_goods.forEach(el => {
+                    total += el.total;
+                })
+                return total;
+            },
+            selected_goods(){
+                let arr = [];
+                this.sale_goods.forEach(el => {
+                    arr.push(el.goods_id);
+                })
+                return arr;
+            }
         },
         async mounted() {
             this.my_storage_id = localStorage.getItem('my_storage_id');

@@ -18,4 +18,8 @@ class StockBalance extends Model
         'amount',
         'date_accepted',
     ];
+
+    public function goods(){
+        return $this->belongsTo(Goods::class, 'goods_id');
+    }
 }
