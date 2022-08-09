@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Goods;
 
 use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Storage\StorageController;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsResource;
 use App\Models\Goods;
+use App\Models\MainStore;
 use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\Orders;
@@ -189,15 +191,33 @@ class GoodsController extends Controller
         $request = json_decode($request->getContent());
         $ingridients = $request->ingridients;
 
-//        $stockResult = HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $request->amount, $dateNow);
-
         try {
 
-            HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
+            $readyProductID = HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
 
             foreach ($ingridients as $ingridient){
-                HandleGoods::moveGoods($request->storage_id, null, $ingridient->goods_id, $ingridient->amount, 'trash', $request->goods_id, null, $user_id, $dateNow);
+
+                HandleGoods::moveGoods($request->storage_id, null, $ingridient->goods_id, $ingridient->amount, 'ingredients', $readyProductID['productID'], null, $user_id, $dateNow);
+
             }
+
+            $getSelfCostProduct = Movements::all()->where('link_id', '=', $readyProductID['productID'])->sum(function ($item){
+                return $item->price * $item->amount;
+            });
+
+            $setSelfCostProduct = StockBalance::findOrFail($readyProductID['stockBalanceID']);
+            $setSelfCostProduct->price = number_format($getSelfCostProduct/$request->amount,2);
+            $setSelfCostProduct->save();
+
+            $updateMovements = Movements::findOrFail($readyProductID['productID']);
+            $updateMovements->price = number_format($getSelfCostProduct/$request->amount,2);
+            $updateMovements->save();
+
+            $mainStore = MainStore::all()
+                ->where('name', '=', 'main_storage')
+                ->toArray();
+
+            HandleGoods::moveGoods($request->storage_id, $mainStore[0]['param'], $request->goods_id, $request->amount,'move', $readyProductID['productID']);
 
         }catch (NotEnoughGoods $e){
             DB::rollBack();
@@ -206,4 +226,31 @@ class GoodsController extends Controller
         DB::commit();
         return response()->json(['status'=>'ok']);
     }
+
+    public function costGoods(Request $request){
+
+        $costGoods = StockBalance::all()->where('storage_id', '=', $request->storage_id);
+
+        if ($request->type === 'ready'){
+            $res = $costGoods->sum(function ($item){
+                if ($item->goods->type === 2){
+                    return number_format($item->amount * $item->price, 2);
+                }
+            });
+        }else{
+            $res = $costGoods->sum(function ($item){
+                if ($item->goods->type === 1){
+                    return number_format($item->amount * $item->price, 2);
+                }
+            });
+        }
+
+
+        return response()->json(['sum' => $res]);
+    }
+
+    public function getMovementInfo(Request $request){
+        return response()->json(Movements::findOrFail($request->id));
+    }
+
 }
