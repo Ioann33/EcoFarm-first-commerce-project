@@ -86,7 +86,7 @@
                 <button @click="addIngredient" style="padding: 15px 24px; background-color: #A0D468; border-radius: 28px; color: #fff;" class="add-ingredient-btn">+</button>
             </div>
 
-            <button type="button" class="btn btn-success btn-lg create-product-btn" @click="createProduct">Создать ГТ</button>
+            <button type="button" class="btn btn-success btn-lg create-product-btn" @click="createProduct">Создать ГТ и передать ее на главный склад</button>
 
         </div>
 

@@ -6,7 +6,7 @@
 export default {
     name: "App",
     mounted() {
-        console.log('Component App mounted.')
+        console.log('     Component App mounted.')
     }
 }
 </script>

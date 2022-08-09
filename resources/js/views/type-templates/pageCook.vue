@@ -1,58 +1,54 @@
 <template>
     <div class="page-content header-clear-medium">
-        <!-- ERROR -->
-        <error :message="message"></error>
+        <!-- ERROR -->  <error :message="message"></error>
 
 
-        <card-balance
-            :storage_id="my_storage_id"
-        >
-        </card-balance>
+        <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
 
+        <!-- ПРИГОТОВИТЬ -->
+        <div class="row mb-n2 align-content-center p-3">
+            <div class="col-12 ">
+                <router-link :to="{name: 'makeProducts'}">
+                    <div class="card card-style mx-0 mb-5">
+                        <div class="p-3 bg-grass-light text-center">
+                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                Приготовить </h1>
+                        </div>
+                    </div>
+                </router-link>
+            </div>
+        </div>
 
-            <div class="row mb-n2 align-content-center p-3">
+        <!-- КУПИТЬ / ПРОДАТЬ -->
+        <div class="card card-style" style="padding-top: 12px;">
+            <div class="row mb-n2">
 
-                <div class="col-12 ">
-                    <router-link :to="{name: 'makeProducts'}">
-                        <div class="card card-style mx-0 mb-5">
-                            <div class="p-3 bg-grass-light text-center">
+                <div class="col-6 ps-3 pe-2">
+                    <!-- КУПИТЬ -->
+                    <router-link :to="{name: 'buyProducts'}">
+                        <div class="card card-style mx-0 mb-3">
+                            <div class="p-3 bg-blue-dark text-center">
                                 <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                    Приготовить </h1>
+                                    Купить </h1>
                             </div>
                         </div>
                     </router-link>
                 </div>
-        </div>
 
 
-        <div class="card card-style" style="padding-top: 12px;">
-        <div class="row mb-n2">
-
-            <div class="col-6 ps-3 pe-2">
-                <router-link :to="{name: 'buyProducts'}">
-                    <div class="card card-style mx-0 mb-3">
-                        <div class="p-3 bg-blue-dark text-center">
-                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                Купить </h1>
+                <div class="col-6 ps-2 pe-3">
+                    <!-- ПРОДАТЬ -->
+                    <router-link :to="{name: 'saleProducts'}">
+                        <div class="card card-style mx-0 mb-3">
+                            <div class="p-3 bg-blue-dark text-center">
+                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                    Продать </h1>
+                            </div>
                         </div>
-                    </div>
-                </router-link>
+                    </router-link>
+                </div>
             </div>
-
-
-
-            <div class="col-6 ps-2 pe-3">
-                <router-link :to="{name: 'saleProducts'}">
-                    <div class="card card-style mx-0 mb-3">
-                        <div class="p-3 bg-blue-dark text-center">
-                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                Продать </h1>
-                        </div>
-                    </div>
-                </router-link>
-            </div>
-        </div>
         </div>
 
         <!--ПЕРЕДАТЬ ТОВАР    -->
@@ -69,38 +65,14 @@
                     </a>
 
                     <div class="row mb-n2">
-
-                        <!-- кнопка - Список продукции - на рассмотрении      -->
                         <div class="col-6 ps-2 pe-2">
-                            <router-link :to="{name: 'pageMovements', params: { dir: 'out', status: 'opened' }}">
-                                <div class="card card-style mx-0 mb-3">
-                                    <div class="p-3 bg-blue-dark">
-                                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">на
-                                            рассмотрении</h4>
-                                        <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                            {{count_movement_out_opened}}</h1>
-
-                                    </div>
-                                </div>
-                            </router-link>
+                            <!-- кнопка - Список продукции - на рассмотрении      -->
+                            <!-- на рассмотрении --><card-movement-out-opened :storage_id="my_storage_id"></card-movement-out-opened>
                         </div>
-
-
-                        <!-- кнопка -  Список продукции, которую нужно принять -->
                         <div class="col-6 ps-2" >
-                            <router-link :to="{name: 'pageMovements', params: { dir: 'in', status: 'opened' }}">
-                                <div class="card card-style mx-0 mb-3">
-                                    <div class="p-3 bg-yellow-dark ">
-                                        <i class="fa bg-yellow-light rounded-s">  </i>
-                                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Принять </h4>
-                                        <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
-                                            {{count_movement_in_opened}}</h1>
-                                    </div>
-                                </div>
-                            </router-link>
+                            <!-- кнопка -  Список продукции, которую нужно принять -->
+                            <!-- принять --> <card-movement-in-opened :storage_id="my_storage_id"></card-movement-in-opened>
                         </div>
-
-
                     </div>
 
                     <!--Список продукции на складе-->
@@ -166,22 +138,21 @@
 <script>
     import Error from "../../Components/Error";
     import CardBalance from "../../Components/cardBalance";
-
+    import cardMovementOutOpened from "../../Components/cardMovementOutOpened";
+    import cardMovementInOpened from "../../Components/cardMovementInOpened";
     export default {
         name: "pageProduce",
         components: {
             Error,
-            CardBalance
+            CardBalance,
+            cardMovementOutOpened,
+            cardMovementInOpened
         },
         data() {
             return {
                 my_storage_id: 0,
                 my_storage_name: '',
-                count_movement_out_opened: 0,
-                count_movement_in_opened: 0,
-                balance: '0',
                 message: ''
-
             }
         },
         computed: {},
@@ -190,19 +161,6 @@
             this.my_storage_name = localStorage.getItem('my_storage_name')
         },
         mounted() {
-            // получить ОТКРЫТЫЕ ИСХОДЯЩИЕ заявки на ПЕРЕДАЧУ товара  (нужно только количество, для отображения на главной странице)
-            axios.get('/api/getMovement/out/opened/'+ this.my_storage_id).then(res => {
-                this.count_movement_out_opened = res.data.data.length
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-            })
-
-            // получить ОТКРЫТЫЕ ВХОДЯЩИЕ заявки на ПОЛУЧЕНИЕ товара (нужно только количество, для отображения на главной странице)
-            axios.get('/api/getMovement/in/opened/'+ this.my_storage_id).then(res => {
-                this.count_movement_in_opened = res.data.data.length
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-            })
             update_template()
         },
         updated() {

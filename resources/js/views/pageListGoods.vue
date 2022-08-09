@@ -21,6 +21,26 @@
             </div>
 
 
+
+            <div class="content mb-0">
+                    <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
+                        <thead>
+                        <tr class="bg-grass-light">
+                            <th scope="col" class="color-black opacity-50">Продукт</th>
+                            <th scope="col" class="color-black opacity-50">Цена</th>
+                            <th scope="col" class="color-black opacity-50">Количество</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(goods, index) in listGoods" :key="goods.id">
+                            <th scope="row" class="align-self-center">{{ goods.name }}</th>
+                            <td ><h4 class="pt-3 font-600">{{ goods.price }} <sup class="font-400">₴</sup></h4></td>
+                            <td><h4 class="pt-3 font-600">{{ goods.amount }} <sup class="font-400">{{ goods.unit }}</sup></h4></td>
+                        </tr>
+                        </tbody>
+                    </table>
+            </div>
+
             <div class="card card-style mt-2">
                 <div class="content mb-0">
 
@@ -35,11 +55,13 @@
             </div>
 
 
-<!--            <div v-for="(goods, index) in listGoods" :key="goods.id">-->
-<!--                <card-goods-->
-<!--                    :goods="goods"-->
-<!--                ></card-goods>-->
-<!--            </div>-->
+
+
+            <div v-for="(goods, index) in listGoods" :key="goods.id">
+                <card-goods
+                    :goods="goods"
+                ></card-goods>
+            </div>
 
 
 

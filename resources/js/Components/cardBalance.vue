@@ -24,25 +24,21 @@ export default {
         return{
             my_storage_id: null,
             my_storage_name: '',
-            balance: 10101
+            balance: -0
         }
     },
     props: [
         'storage_id'
     ],
-    beforeMount() {
-
-    },
-
     mounted() {
-        console.log('card for storage_id: '+this.storage_id)
+        console.log('[cardBalance]     load cardBalance for storage_id: '+this.storage_id)
         this.getBalance(this.storage_id)
     },
     methods: {
         getBalance(storage_id){
             axios.get('/api/getFinance/'+ storage_id).then(res => {
                 this.balance=res.data.balance;
-                console.log("balace ("+storage_id+") = " + this.balance)
+                console.log("[cardBalance]     balace ("+storage_id+") = " + this.balance)
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })

@@ -321,7 +321,7 @@
             }
         },
         mounted() {
-            console.log('Component views/Home mounted....')
+            console.log('     Component views/Home mounted....')
 
             // получить мой склад
             this.storage_id = localStorage.getItem('my_storage_id');
@@ -356,7 +356,7 @@
             })
 
             this.loadStoragesParams()
-            console.log('Component views/Home mounted......done!')
+            console.log('     Component views/Home mounted......done!')
             update_template()
         },
         updated() {

@@ -6,10 +6,7 @@
 
 <div class="page-content header-clear-medium">
 
-    <!-- ERROR -->
-    <error
-        :message="message"
-    ></error>
+    <!-- ERROR -->  <error :message="message"></error>
 
 
     <div class="content-boxed bg-blue-dark mb-3 pb-3 text-uppercase">
@@ -26,6 +23,7 @@
             :movement="movement"
             :dir='this.dir'
             :status="this.status"
+            :editPrice="this.editPrice"
             @getMovementId="setMovementId"
         ></card-movement>
     </div>
@@ -86,7 +84,6 @@ export default {
             movement_id: '',
             price: '',
             editPrice: false
-
         }
     },
     mounted() {
@@ -95,17 +92,18 @@ export default {
 
         // получить мой склад
         this.storage_id = localStorage.getItem('my_storage_id');
-        console.log('my_storage_id: ' + this.storage_id)
+        //console.log('my_storage_id: ' + this.storage_id)
 
         // получить основной склад
         this.main_storage_id = localStorage.getItem('main_storage_id');
 
         // если выбранный склад - главный - то можно менять цену
         this.editPrice = this.storage_id == this.main_storage_id;
-
+        console.log('editPrice: ' + this.editPrice)
 
             // получить все заказы на перемещение входящие/исходящие открытые/выполненные
         axios.get('/api/getMovement/' + this.dir + '/opened/'+ this.storage_id).then(res => {
+            console.log('listGoods:')
             console.log(res.data)
             this.listMovements = res.data.data
         }).catch(err => {
@@ -113,13 +111,17 @@ export default {
         })
     },
     updated() {
-        console.log('updated')
         update_template()
     },
     methods: {
         setMovementId(e){
             this.movement_id = e;
             console.log('Получили вот такой movement_id из карточки товара : ' + this.movement_id)
+
+            // если editPrice == false т.е. это не главный склад - то сразу перейти к процедуре - перемещение товара, без установления цены
+            if(!this.editPrice){
+                this.pullGoods(this.movement_id)
+            }
         },
         getListOrders(storage_id) {
             axios.get('/api/getStorageGoods/'+ this.dir +'/'+this.status+'/'+storage_id).then(res => {

@@ -81,7 +81,6 @@ const router = createRouter({
 
 router.beforeEach((to, from, next)=>{
     const token = localStorage.getItem('x_xsrf_token')
-
     if(!token){
         if(to.name==='welcome'){
             return next()
