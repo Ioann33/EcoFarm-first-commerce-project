@@ -5,6 +5,9 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium" style="text-align: center">
+
+            <!-- ERROR -->  <error :message="message"></error>
+
             <div class="card card-style overflow-visible card-custom-products">
                 <div class="row mb-0">
                     <div class="col-10 p-1">
@@ -99,14 +102,17 @@
 import headBar from "../components/headBar";
 import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
+import Error from "../Components/Error";
 
 export default {
     name: 'MakeProducts',
     components: {
+        Error,
         headBar, NavBar, NavBarMenu
     },
     data() {
         return {
+            message: '',
             listGoods: [],
             selected_goods_id: 'default',
             amount: 0,
@@ -169,19 +175,26 @@ export default {
             this.ingredients[i].unit = current.unit;
         },
         async createProduct(){
-            const res = axios.post('/api/makeProduct', {
+
+            axios.post('/api/makeProduct/', {
                 storage_id: this.my_storage_id,
                 goods_id: this.selected_goods_id,
                 amount: this.amount,
                 ingredients: this.ingredients
-            });
+            }).then(res => {
 
-            if(!res.data){
-                alert('Sorry, happened error')
-                return ;
-            }
+                if(res.data.status==='ok') {
+                    console.log('приготовили: ' + res.data)
+                    this.$router.push({name: 'home'})
+                    this.message = 'приготовили'
+                }else {
+                    this.message = res.data.message
+                }
+            }).catch(err => {
+                console.log('Error: ('+err.response.status+'): '+err.response.data.message)
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            })
 
-            this.$router.push({name: 'home'})
         },
         addIngredient(){
             this.ingredients.push({

@@ -271,28 +271,42 @@ export default {
             }
         },
         makeMoveGoods(){
-            console.log(
-                'from: ' + this.my_storage_id +' \n' +
-                'to: '   + this.selected_storage_id +' \n' +
-                'goods:' + this.selected_goods_id + ' amount: ' + this.goods_amount + '' + this.unit
+            console.log('Move Goods:' +
+                '\n     goods: ' + this.selected_goods_id +
+                '\n     amount: ' + this.goods_amount + ' ' + this.unit +
+                '\n     storage_to: ' + this.selected_storage_id +
+                '\n     storage_from: ' + this.my_storage_id
             )
-             axios.post('/api/goodsMovementPush',{
-           // axios.post('/api/gaveGoods',{
-                storage_id_from: this.my_storage_id,
-                            // storage_id_to: this.main_storage_id,
-                storage_id_to: this.selected_storage_id,
+
+
+            // шаг 1/2. создать продукт на теплице
+            axios.post('/api/goodsMovementPush',{
+                storage_id_from: null,
+                storage_id_to: this.my_storage_id,
                 goods_id: this.selected_goods_id,
                 amount: this.goods_amount
             }).then(res => {
                 if(res.data.status === 'ok') {
-                    console.log('Move Goods Succesful:' +
-                        '\n     goods: ' + this.selected_goods_id +
-                        '\n     amount: ' + this.goods_amount + ' ' + this.unit +
-                        '\n     storage_to: ' + this.selected_storage_id +
-                        '\n     storage_from: ' + this.my_storage_id
-                    )
-                    console.log('[server]: '+res.data.message)
-                    this.$router.push({name: 'home'});
+                    console.log('[server]: ' + res.data.message)
+                    // шаг 2/2.  переместить продукт с теплицы на склад
+                    axios.post('/api/goodsMovementPush',{
+                        storage_id_from: this.my_storage_id,
+                        storage_id_to: this.selected_storage_id,
+                        goods_id: this.selected_goods_id,
+                        amount: this.goods_amount
+                    }).then(res => {
+                        if(res.data.status === 'ok') {
+                            console.log('[server]: '+res.data.message)
+                            this.$router.push({name: 'home'});
+                        }else {
+                            console.log(res.data.message)
+                            this.message = res.data.message
+                        }
+                    }).catch(err => {
+                        this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                        console.log(this.message)
+                    })
+
                 }else {
                     console.log(res.data.message)
                     this.message = res.data.message
