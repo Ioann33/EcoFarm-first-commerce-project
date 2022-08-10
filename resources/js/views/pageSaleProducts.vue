@@ -6,9 +6,7 @@
 
         <div class="page-content header-clear-medium text-center">
 
-            <error
-                message="нужно сделать API: https://homenet.youtrack.cloud/issue/EF-20/sozdat-apidoSale"
-            ></error>
+            <!-- ERROR -->  <error :message="message"></error>
 
 
 <title-page title_main="Продажа"></title-page>
@@ -117,6 +115,7 @@ import TitlePage from "../Components/Title";
         },
         data() {
             return {
+                message: '',
                 loading_goods: false,
                 available_goods: [],
                 sale_goods: [{
@@ -200,15 +199,31 @@ import TitlePage from "../Components/Title";
                     }
                 });
 
-                console.log(prepareData)
-                return;
+                prepareData = '{ ' +
+                    '"sales": '+
+                        JSON.stringify(prepareData, null, 2)+
+                    '}'
 
-                const res = await axios.post(`/api/doSale`, {
+                console.log('>>> продажа товара: ')
+                console.log(prepareData)
+
+                axios.post('/api/doSale', {
                     prepareData
-                });
-                if(!res.data){
-                    console.log('Some error');
-                }
+                }).then(res => {
+                    console.log('<<< товар продан')
+                    console.log(prepareData)
+
+                    this.$router.push({name: 'home'});
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                })
+
+                // const res = await axios.post(`/api/doSale`, {
+                //     prepareData
+                // });
+                // if(!res.data){
+                //     console.log('Some error');
+                // }
             }
         }
     }

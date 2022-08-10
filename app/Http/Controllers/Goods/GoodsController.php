@@ -135,9 +135,9 @@ class GoodsController extends Controller
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function getStorageGoods(Request $request){
-        //return dd($request);
+
         if ($request->storage_id === 'all'){
-            return 'dfdfg';
+            //return dd($request->input());
             return $storages = StorageGoods::where('goods_id', $request->goods_id);
             //return getAllowedStoragesResource::collection($storages);
         }
