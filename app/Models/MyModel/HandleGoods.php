@@ -104,8 +104,11 @@ class HandleGoods
 
                         $pricePerUnit = number_format($price/$amount, 2);
 
-
+                        if ($stock->amount == 0){
+                            $stock->delete();
+                        }
                         return self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main, $pricePerUnit, $user, $data);
+
 
                     }else{
                         $price += $value->price * $value->amount;
