@@ -48,7 +48,7 @@ function update_template(){
     }
 
     init_template();
-    console.log('updated_template: '+ document.readyState)
+    console.log('     updated_template: '+ document.readyState)
 }
 
 

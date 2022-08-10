@@ -189,15 +189,15 @@ class GoodsController extends Controller
         $user_id = Auth::id();
         $dateNow = date('Y-m-d H:i:s');
         $request = json_decode($request->getContent());
-        $ingridients = $request->ingridients;
+        $ingredients = $request->ingredients;
 
         try {
 
             $readyProductID = HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
 
-            foreach ($ingridients as $ingridient){
+            foreach ($ingredients as $ingredient){
 
-                HandleGoods::moveGoods($request->storage_id, null, $ingridient->goods_id, $ingridient->amount, 'ingredients', $readyProductID['productID'], null, $user_id, $dateNow);
+                HandleGoods::moveGoods($request->storage_id, null, $ingredient->goods_id, $ingredient->amount, 'ingredients', $readyProductID['productID'], null, $user_id, $dateNow);
 
             }
 

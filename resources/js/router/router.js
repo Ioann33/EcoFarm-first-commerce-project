@@ -42,8 +42,8 @@ const router = createRouter({
             component: () => import('../views/pageMakeOrder')
         },
         {
-            path: '/makeMoveGoods/:order_id?',
-            name: 'makeMoveGoods',
+            path: '/MoveGoods/:order_id?',
+            name: 'MoveGoods',
             component: () => import('../views/pageMoveGoods')
         },
         {
@@ -81,7 +81,6 @@ const router = createRouter({
 
 router.beforeEach((to, from, next)=>{
     const token = localStorage.getItem('x_xsrf_token')
-
     if(!token){
         if(to.name==='welcome'){
             return next()

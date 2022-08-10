@@ -123,7 +123,7 @@ import error from "../Components/Error";
 import cardOrder from "../Components/cardOrder";
 
 export default {
-    name: "SelectStorage",
+    name: "MoveGoods",
     components:{
         headBar, NavBar, NavBarMenu,
         error,
@@ -137,7 +137,7 @@ export default {
             storage_id_prop: [],
             storage_id_to: null,
             main_storage_id: null,
-            message: null,
+            message: '',
             selected: null,
             selected_goods_id: 'default',
             selected_storage_id: 'default',
@@ -154,16 +154,18 @@ export default {
             rule: 'allowed'     // правило подгрузки списка товаров, на основании storage.type= {теплица, склад, продажи,... }
         }
     },
+    beforeMount() {
+        this.my_storage_id = localStorage.getItem('my_storage_id')
+        this.my_storage_name = localStorage.getItem('my_storage_name')
+    },
     mounted() {
 
-        // при переходе на эту страницу в роуте не обязательный параметр  path: '/makeMoveGoods/:order_id?',
+        // при переходе на эту страницу в роуте не обязательный параметр  path: '/MoveGoods/:order_id?',
         // возникает ошибка, если этот параметр не указан, но к нему обращаемся
         //this.order_id           = this.$route.params.order_id
         this.order_id           = ''
         //-----------------
 
-
-        this.my_storage_id         = localStorage.getItem('my_storage_id')
 
 
 
@@ -269,26 +271,46 @@ export default {
             }
         },
         makeMoveGoods(){
-            // console.log(
-            //     'from: ' + this.storage_id +' \n' +
-            //     'to: '   + this.selected_storage_id +' \n' +
-            //     'goods:' + this.selected_goods_id + ' amount: ' + this.goods_amount + '' + this.unit
-            // )
-             axios.post('/api/goodsMovementPush',{
-           // axios.post('/api/gaveGoods',{
-                storage_id_from: this.my_storage_id,
-                            // storage_id_to: this.main_storage_id,
-                storage_id_to: this.selected_storage_id,
+            console.log('Move Goods:' +
+                '\n     goods: ' + this.selected_goods_id +
+                '\n     amount: ' + this.goods_amount + ' ' + this.unit +
+                '\n     storage_to: ' + this.selected_storage_id +
+                '\n     storage_from: ' + this.my_storage_id
+            )
+
+
+            // шаг 1/2. создать продукт на теплице
+            axios.post('/api/goodsMovementPush',{
+                storage_id_from: null,
+                storage_id_to: this.my_storage_id,
                 goods_id: this.selected_goods_id,
                 amount: this.goods_amount
             }).then(res => {
-                console.log('Move Goods Succesful:' +
-                    'goods:' + this.selected_goods_id + ' amount: ' + this.goods_amount + '' + this.unit +
-                    ', \nstorage_to: '+ this.selected_storage_id +
-                    ', \nstorage_from: '+ this.storage_id +
-                    ', \namount: '+ this.goods_amount
-                )
-                this.$router.push({name: 'home'});
+                if(res.data.status === 'ok') {
+                    console.log('[server]: ' + res.data.message)
+                    // шаг 2/2.  переместить продукт с теплицы на склад
+                    axios.post('/api/goodsMovementPush',{
+                        storage_id_from: this.my_storage_id,
+                        storage_id_to: this.selected_storage_id,
+                        goods_id: this.selected_goods_id,
+                        amount: this.goods_amount
+                    }).then(res => {
+                        if(res.data.status === 'ok') {
+                            console.log('[server]: '+res.data.message)
+                            this.$router.push({name: 'home'});
+                        }else {
+                            console.log(res.data.message)
+                            this.message = res.data.message
+                        }
+                    }).catch(err => {
+                        this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                        console.log(this.message)
+                    })
+
+                }else {
+                    console.log(res.data.message)
+                    this.message = res.data.message
+                }
 
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;

@@ -1,14 +1,5 @@
 <script setup>
-// import {useStorage} from "../stores/storages";
-//
-//
-// const Storage = useStorage()
-// Storage.getMyStorages()
-// {{ Storage.store_message }}
 
-// import { storeToRefs } from 'pinia'
-// const { store_message } = storeToRefs(useStorage())
-// {{ store_message }}
 </script>
 
 <template>
