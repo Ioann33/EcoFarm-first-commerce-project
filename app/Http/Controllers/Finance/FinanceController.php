@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Finance;
 
+use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
 use App\Models\Money;
+use App\Models\MyModel\HandleGoods;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -106,4 +108,70 @@ class FinanceController extends Controller
         }
     }
 
+    public function doSale(Request $request){
+        DB::beginTransaction();
+        $user_id = Auth::id();
+        $dateNow = date('Y-m-d H:i:s');
+        try {
+            foreach ($request->sales as $sale){
+                HandleGoods::moveGoods($sale['storage_id'], null, $sale['goods_id'], $sale['amount'],'sale', null,null, $user_id, $dateNow);
+
+
+                $costProduct = (int) $sale['amount'] * (int) $sale['price'];
+                $transaction = new Money();
+                $transaction->date = $dateNow;
+                $transaction->storage_id = $sale['storage_id'];
+                $transaction->size_pay = $costProduct;
+                $transaction->description = 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'];
+                $transaction->category = 5;
+                $transaction->param_id = $sale['goods_id'];
+                $transaction->user_id = $user_id;
+                $transaction->save();
+
+
+
+            }
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json(['message'=>$e->resMess(), 'status' => 'error',]);
+        }
+        DB::commit();
+
+        return response()->json(['message'=>' продажа товара', 'status' => 'ok',]);
+    }
+
+
+    public function doBuy(Request $request){
+        DB::beginTransaction();
+        $user_id = Auth::id();
+        $dateNow = date('Y-m-d H:i:s');
+        try {
+            foreach ($request->buy as $buy){
+                $costProduct = (int) $buy['amount'] * (int) $buy['price'];
+
+                HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $costProduct);
+
+
+
+                $transaction = new Money();
+                $transaction->date = $dateNow;
+                $transaction->storage_id = $buy['storage_id'];
+                $transaction->size_pay = -$costProduct;
+                $transaction->description = 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'];
+                $transaction->category = 6;
+                $transaction->param_id = $buy['goods_id'];
+                $transaction->user_id = $user_id;
+                $transaction->save();
+
+
+
+            }
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json(['message'=>$e->resMess(), 'status' => 'error',]);
+        }
+        DB::commit();
+
+        return response()->json(['message'=>'покупка товара', 'status' => 'ok',]);
+    }
 }
