@@ -37,10 +37,10 @@
             </div>
 
         </div>
-        <div v-if="message" class="alert me-3 ms-3 rounded-s alert-save-goods-custom" :class="status ? 'bg-green-dark' : 'bg-red-dark'" role="alert">
+        <div v-if="message2" class="alert me-3 ms-3 rounded-s alert-save-goods-custom" :class="status ? 'bg-green-dark' : 'bg-red-dark'" role="alert">
             <span class="alert-icon"><i class="fa font-18" :class="status ? 'fa-check' : 'fa-times-circle'"></i></span>
             <h4 class="text-uppercase color-white">{{ status ? 'SUCCESS' : 'ERROR' }}</h4>
-            <strong class="alert-icon-text">{{ message }}</strong>
+            <strong class="alert-icon-text">{{ message2 }}</strong>
             <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert" aria-label="Close">×</button>
         </div>
         <nav-bar-menu></nav-bar-menu>
@@ -67,6 +67,7 @@
             return {
                 status: '',
                 message: '',
+                message2: '',
                 loading_goods: false,
                 loading_storages_goods: false,
                 selected_goods: 'default',
@@ -84,12 +85,14 @@
         methods: {
             async getStorageGoods(){
                 this.loading_goods = true;
-                const res = await axios.get(`/api/getStorageGoods/available/1/all`);
+                // const res = await axios.get(`/api/getStorageGoods/available/1/all`);
+                const res = await axios.get(`/api/getListGoods`);
                 this.loading_goods = false;
                 if(!res.data){
                     return ;
                 }
                 this.available_goods = res.data.data;
+                this.message = 'апи создано? /api/getListGoods https://homenet.youtrack.cloud/issue/EF-27/sozdat-api-apigetListGoods'
             },
             getListStorages(){
                 const res = axios.get('/api/getListStorages').then(res => {
@@ -123,13 +126,13 @@
                     allowed: value
                 }).then(res => {
                     this.status = true;
-                    this.message = 'Сохранено';
+                    this.message2 = 'Сохранено';
 
                 }).catch(e => {
                     this.status = false;
                     this.message = e;
                 })
-                setTimeout(() => this.message = '', 3000)
+                setTimeout(() => this.message2 = '', 3000)
             }
         }
     }
