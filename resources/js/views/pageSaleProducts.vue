@@ -198,6 +198,7 @@
                 console.log(sales)
                 console.log('>>> продажа товара: ')
                 console.log(sales)
+                console.dir(sales)
 
                 axios.post('/api/doSale', {
                     sales: sales

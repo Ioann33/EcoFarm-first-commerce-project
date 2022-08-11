@@ -55,9 +55,9 @@
                                 </thead>
                                 <tbody>
                                 <tr v-for="(goods, index) in listGoods" :key="goods.id">
-                                    <th scope="row" class="align-self-center">{{ goods.name }}</th>
-                                    <td ><h4 class="pt-3 font-600">{{ goods.price }} <sup class="font-400">₴</sup></h4></td>
-                                    <td><h4 class="pt-3 font-600">{{ goods.amount }} <sup class="font-400">{{ goods.unit }}</sup></h4></td>
+                                    <th scope="row" class="align-self-center ">{{ goods.name }}</th>
+                                    <td ><h4 class="font-600">{{ goods.price }} <sup class="font-400">₴</sup></h4></td>
+                                    <td><h4 class="font-600">{{ goods.amount }} <sup class="font-400">{{ goods.unit }}</sup></h4></td>
                                 </tr>
                                 </tbody>
                             </table>

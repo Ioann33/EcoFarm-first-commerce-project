@@ -194,7 +194,20 @@
                 </div>
             </div>
         </div>
+
         <!--ПЕРЕДАТЬ ТОВАР    -->
+        <div class="row mb-n2 align-content-center p-3">
+            <div class="col-12 ">
+                <router-link :to="{name: 'trashProducts'}">
+                    <div class="card card-style mx-0 mb-5">
+                        <div class="p-3 bg-grass-light text-center">
+                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                Утилизировать </h1>
+                        </div>
+                    </div>
+                </router-link>
+            </div>
+        </div>
 
 
         <div class="card card-style">
@@ -216,26 +229,20 @@
                         <i class="fa fa-angle-right"></i>
                     </a>
 
-                    <router-link :to="{name: 'makeProducts'}">
-                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
-                        <span>Приготовить ГТ</span>
-                        <strong>Готовая продукция и ингредиенты</strong>
-                        <i class="fa fa-angle-right"></i>
-                    </router-link>
+<!--                    <router-link :to="{name: 'makeProducts'}">-->
+<!--                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>-->
+<!--                        <span>Приготовить ГТ</span>-->
+<!--                        <strong>Готовая продукция и ингредиенты</strong>-->
+<!--                        <i class="fa fa-angle-right"></i>-->
+<!--                    </router-link>-->
 
-                    <router-link :to="{name: 'utilizeProducts'}" v-if="isMain">
-                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
-                        <span>Утилизация продукта</span>
-                        <strong>Утилизация</strong>
-                        <i class="fa fa-angle-right"></i>
-                    </router-link>
 
-                    <router-link :to="{name: 'saleProducts'}">
-                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
-                        <span>Продать товар</span>
-                        <strong>Список товаров для продажи</strong>
-                        <i class="fa fa-angle-right"></i>
-                    </router-link>
+<!--                    <router-link :to="{name: 'saleProducts'}">-->
+<!--                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>-->
+<!--                        <span>Продать товар</span>-->
+<!--                        <strong>Список товаров для продажи</strong>-->
+<!--                        <i class="fa fa-angle-right"></i>-->
+<!--                    </router-link>-->
 
                     <router-link :to="{name: 'transferMoney'}">
                         <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
@@ -244,10 +251,10 @@
                         <i class="fa fa-angle-right"></i>
                     </router-link>
 
-                    <router-link :to="{name: 'buyProducts'}">
+                    <router-link :to="{name: 'CreateGoods'}">
                         <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
-                        <span>Купить товар</span>
-                        <strong>Купить товар</strong>
+                        <span>Создать товар</span>
+                        <strong>добавить товар/продукт в компанию </strong>
                         <i class="fa fa-angle-right"></i>
                     </router-link>
 

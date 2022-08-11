@@ -52,9 +52,9 @@ const router = createRouter({
             component: () => import('../views/pageMakeProducts')
         },
         {
-            path: '/utilizeProducts',
-            name: 'utilizeProducts',
-            component: () => import('../views/pageUtilizationProducts')
+            path: '/trashProducts',
+            name: 'trashProducts',
+            component: () => import('../views/pageTrashProducts')
         },
         {
             path: '/saleProducts',
@@ -75,6 +75,11 @@ const router = createRouter({
             path: '/Grow',
             name: 'grow',
             component: () => import('../views/pageGrow')
+        },
+        {
+            path: '/CreateGoods',
+            name: 'CreateGoods',
+            component: () => import('../views/pageCreateGoods')
         }
     ]
 })

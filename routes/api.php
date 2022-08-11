@@ -32,7 +32,6 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
     Route::get('/getGoodsStockBalance/{goods_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'stockGoodsBalance']);
     Route::post('/makeProduct', [\App\Http\Controllers\Goods\GoodsController::class, 'makeProduct']);
-//    Route::post('/gaveGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'gaveGoods']);
 
 
 
@@ -41,13 +40,16 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getSalary/{type}/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSalary']);
     Route::get('/getSaldo/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSaldo']);
 
-    Route::get('/getFinance/{storage_id}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
+    Route::get('/getFinance/{storage_id}/{type?}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
     Route::get('/costGoodsOnStock/{storage_id}/{type}', [\App\Http\Controllers\Goods\GoodsController::class, 'costGoods']);
     Route::get('/getMovementInfo/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovementInfo']);
     Route::post('/doTransferMoney', [\App\Http\Controllers\Finance\FinanceController::class, 'doTransferMoney']);
-    Route::post('/doSalary', [\App\Http\Controllers\Finance\FinanceController::class, 'doSalary']);
+    Route::post('/doSpends', [\App\Http\Controllers\Finance\FinanceController::class, 'doSpends']);
     Route::post('/doSale', [\App\Http\Controllers\Finance\FinanceController::class, 'doSale']);
     Route::post('/doBuy', [\App\Http\Controllers\Finance\FinanceController::class, 'doBuy']);
+    Route::post('/addGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'addGoods']);
+    Route::post('/setGoodsPermit', [\App\Http\Controllers\Goods\GoodsController::class, 'setGoodsPermit']);
+    Route::post('/doTrash', [\App\Http\Controllers\Goods\GoodsController::class, 'doTrash']);
 
 });
 

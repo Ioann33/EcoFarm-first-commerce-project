@@ -12,7 +12,7 @@
                     <div class="col-10 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
 <!--                            <label for="storage-list-from" class="color-blue-dark">Товар</label>-->
-                            <select id="storage-list-from" :disabled="true" v-model="storage_id" class="form-control">
+                            <select id="storage-list-from"  v-model="storage_id" class="form-control">
                                 <option value="default" selected>выбрать склад</option>
                                 <option
                                     v-for="(storage, index) in list_storage"
@@ -182,6 +182,18 @@
                     console.log('Unfortunately some error')
                 }
                 this.list_storage = res.data.data;
+                this.list_storage.forEach(function (storage, i){
+                    console.log(storage)
+                    console.log(storage.id +' = '+i)
+
+                    // получить для каждого департамента Баланс
+                    axios.get(`/api/getFinance/` + storage.id + '/balance');
+                    if(!res.data){
+                        console.log('Unfortunately some error')
+                    }
+                    console.log('balance='.res.data.balance)
+                })
+
                 console.log('list_storage:')
                 console.log(this.list_storage)
             },

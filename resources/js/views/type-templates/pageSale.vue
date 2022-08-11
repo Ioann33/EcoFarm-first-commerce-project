@@ -3,9 +3,40 @@
         <!-- ERROR -->  <error :message="message"></error>
         <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
+
+<div class="row">
+    <div class="col-4 ps-3 pe-0">
+        <div class="card card-style mx-0 mb-3">
+            <div class="p-3 bg-yellow-dark ">
+                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Готовая Продукция </h4>
+                <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                    {{ this.costReady }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 ps-1 pe-0">
+        <div class="card card-style mx-0 mb-3">
+            <div class="p-3 bg-yellow-dark ">
+                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">товаров </h4>
+                <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                    5443</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 ps-1 pe-3">
+        <div class="card card-style mx-0 mb-3">
+            <div class="p-3 bg-yellow-dark ">
+                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">ИТОГО </h4>
+                <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                    5443</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
         <!-- КУПИТЬ / ПРОДАТЬ -->
-        <div class="card card-style" style="padding-top: 12px;">
-            <div class="row mb-n2">
+<!--        <div class="card card-style" style="padding-top: 12px;">-->
+            <div class="row mb-1">
 
                 <div class="col-6 ps-3 pe-2">
                     <!-- КУПИТЬ -->
@@ -32,7 +63,7 @@
                     </router-link>
                 </div>
             </div>
-        </div>
+<!--        </div>-->
 
         <!--ПЕРЕДАТЬ ТОВАР    -->
         <div class="card card-style" style="padding-top: 12px;">
@@ -40,12 +71,12 @@
                 <div class="list-group list-custom-small">
 
                     <!--сделать заказ на перемещение продукции                -->
-                    <a href="#">
+<!--                    <a href="#">-->
                         <router-link :to="{name: 'MoveGoods'}">
                             <i class="fa bg-green-dark rounded-s"></i>
                             <span class="font-20">Передать продукцию</span>
                         </router-link>
-                    </a>
+<!--                    </a>-->
 
                     <div class="row mb-n2">
                         <div class="col-6 ps-2 pe-2">
@@ -59,12 +90,12 @@
                     </div>
 
                     <!--Список продукции на складе-->
-                    <a href="#">
-                        <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">
-                            <i class="fa bg-green-dark rounded-s"></i>
-                            <span class="font-20">Товары на складе: {{ my_storage_name }}</span>
-                        </router-link>
-                    </a>
+<!--                    <a href="#">-->
+<!--                        <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">-->
+<!--                            <i class="fa bg-green-dark rounded-s"></i>-->
+<!--                            <span class="font-20">Товары на складе: {{ my_storage_name }}</span>-->
+<!--                        </router-link>-->
+<!--                    </a>-->
 
 
                 </div>
@@ -93,7 +124,9 @@
         },
         data() {
             return {
-                message: ''
+                message: '',    // сообщения системы
+                costReady: -0,
+                costIngredients: -0,
             }
         },
         computed: {},
@@ -103,6 +136,22 @@
         },
 
         mounted() {
+
+            axios.get('/api/costGoodsOnStock/'+this.my_storage_id+'/ready')
+                .then(res => {
+                    this.costReady = res.data.sum
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            })
+
+            // axios.get('/api/costGoodsOnStock/'+this.my_storage_id+'/ready')
+            //     .then(res => {
+            //         this.costReady = res.data.sum
+            //     }).catch(err => {
+            //     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            // })
+
+
         },
         methods: {
         }

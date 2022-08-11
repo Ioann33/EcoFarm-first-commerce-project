@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class StorageGoods extends Model
 {
-    use HasFactory;
+   // use HasFactory;
     protected $table = 'storage_goods';
 
     public $timestamps = false;
+
+    protected $fillable = [
+        'storage_id',
+        'goods_id'
+    ];
 
     public function goods(){
         return $this->belongsTo(Goods::class, 'goods_id');
