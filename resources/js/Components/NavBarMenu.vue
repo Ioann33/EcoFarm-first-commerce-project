@@ -16,6 +16,14 @@
                     <i class="fa fa-angle-right"></i>
                 </a>
             </div>
+
+            <div class="list-group list-custom-small">
+                <router-link :to="{name: 'selectStorage'}">
+                    <i class="fa font-12 rounded-s bg-green-dark color-white me-3"></i>
+                    <span>Выбор склада</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+            </div>
             <div class="list-group list-custom-large">
                 <a  @click="logout" href="#" class="border-0">
                     <i class="fa font-14 fa-cog bg-blue-dark rounded-s"></i>

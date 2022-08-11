@@ -1,8 +1,6 @@
 <template>
     <div class="page-content header-clear-medium">
         <!-- ERROR -->  <error :message="message"></error>
-
-
         <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
 
@@ -76,12 +74,12 @@
                     </div>
 
                     <!--Список продукции на складе-->
-                    <a href="#">
-                        <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">
-                            <i class="fa bg-green-dark rounded-s"></i>
-                            <span class="font-20">Товары на складе: {{ my_storage_name }}</span>
-                        </router-link>
-                    </a>
+<!--                    <a href="#">-->
+<!--                        <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">-->
+<!--                            <i class="fa bg-green-dark rounded-s"></i>-->
+<!--                            <span class="font-20">Товары на складе: {{ my_storage_name }}</span>-->
+<!--                        </router-link>-->
+<!--                    </a>-->
 
 
                 </div>

@@ -161,7 +161,7 @@
                 this.buy_goods[index].total = this.buy_goods[index].price * this.buy_goods[index].amount;
             },
             async buyProducts(){
-                let filtered = this.buy_goods.map(el => {
+                let buy = this.buy_goods.map(el => {
                    if(el.goods_id === 'default' || el.amount === 0) return false;
                    return {
                        goods_id: el.goods_id,
@@ -170,12 +170,29 @@
                        storage_id: this.my_storage_id
                    }
                 }).filter(el => el !== false);
-                console.log(filtered)
-                return;
-                const res = await axios.post('/api/buyGoods', {
-                    storage_id: this.my_storage_id,
-                    goods: filtered
+
+
+                console.log('>>> покупка товара: ')
+                console.log(buy)
+                console.table(buy)
+
+
+                axios.post('/api/doBuy', {
+                    buy: buy
+                }).then(res => {
+                    console.log('<<< товар куплен')
+
+
+                   this.$router.push({name: 'home'});
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
+
+
+                // const res = await axios.post('/api/buyGoods', {
+                //     storage_id: this.my_storage_id,
+                //     goods: filtered
+                // })
             }
         }
     }

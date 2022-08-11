@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="{name: 'pageMovements', params: { dir: 'out', status: 'opened' }}">
+    <router-link :to="{name: 'pageMovements', params: { dir: 'out', status: 'opened' }}" v-if="count_movement_out_opened">
     <div class="card card-style mx-0 mb-3">
         <div class="p-3 bg-blue-dark">
             <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">на

@@ -242,6 +242,7 @@ class GoodsController extends Controller
     }
 
     public function costGoods(Request $request){
+//        ($request->type === 'ready') ? $type=2 : $type=1;
 
         $costGoods = StockBalance::all()->where('storage_id', '=', $request->storage_id);
 

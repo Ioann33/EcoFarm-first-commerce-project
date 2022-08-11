@@ -12,21 +12,65 @@ use Illuminate\Support\Facades\DB;
 
 class FinanceController extends Controller
 {
-    private $balance;
+    //private $balance;
 
 
     public function __construct()
     {
-        $this->balance = Money::all();
+        //$this->balance = Money::all();
     }
 
     public function getFinance(Request $request)
     {
-        $finance = $this->balance
-            ->where('storage_id', '=', $request->storage_id)
+        // понедельник 8:00
+
+        $df = date("Y-m-d H:i:s",strtotime('last monday') + 8*60*60);
+        $dt = date("Y-m-d H:i:s",strtotime('this monday') + 8*60*60);
+
+
+        $sales_today = Money::where('storage_id', '=', $request->storage_id)
+            ->where('category',5)
+            ->where('date','>=',date("Y-m-d 00:00:00"))
+            ->where('date','<', date("Y-m-d 23:59:59"))
             ->sum('size_pay');
-        return response()->json(['balance' => $finance]);
+
+        $sales_week = Money::where('storage_id', '=', $request->storage_id)
+            ->where('category',5)
+            ->where('date','>=', $df)
+            ->where('date','<', $dt)
+            ->sum('size_pay');
+
+
+        $buy_today =  Money::where('storage_id', '=', $request->storage_id)
+            ->where('category',6)
+            ->where('date','>=',date("Y-m-d 00:00:00"))
+            ->where('date','<', date("Y-m-d 23:59:59"))
+            ->sum('size_pay');
+
+        $buy_week =  Money::where('storage_id', '=', $request->storage_id)
+            ->where('category',6)
+            ->where('date','>=', $df)
+            ->where('date','<', $dt)
+            ->sum('size_pay');
+
+        $balance =  Money::where('storage_id', '=', $request->storage_id)
+            ->sum('size_pay');
+
+        return response()->json(
+            [
+                'balance' => $balance,
+                'sales_today' => $sales_today,
+                'sales_week' => $sales_week,
+                'buy_today' => $buy_today,
+                'buy_week' => $buy_week
+            ]
+        );
     }
+
+
+//    public function getSales(Request $request){
+//
+//    }
 
     public function doSalary(Request $request): array
     {
@@ -38,8 +82,7 @@ class FinanceController extends Controller
         $request = json_decode($request->getContent());
         DB::beginTransaction();
 
-        $finance = $this->balance
-            ->where('storage_id', '=', $request->storage_id_from)
+        $finance = Money::where('storage_id', '=', $request->storage_id_from)
             ->sum('size_pay');
 
         if ($finance >= $request->amount){
