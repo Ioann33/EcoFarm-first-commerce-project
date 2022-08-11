@@ -44,48 +44,6 @@ class GoodsController extends Controller
         }
     }
 
-//    public function goodsMovementPush(Request $request){
-//        $this->validate($request,[
-//            'storage_id_from'=>'required',
-//            'storage_id_to'=>'required',
-//            'goods_id'=>'required',
-//            'amount'=>'required',
-//        ]);
-//
-//        $newMovement = new Movements();
-//        $newMovement->user_id_created = Auth::id();
-//        $newMovement->date_created = date('Y-m-d H:i:s');
-//        $newMovement->storage_id_from = $request->storage_id_from;
-//        $newMovement->storage_id_to = $request->storage_id_to;
-//        $newMovement->goods_id = $request->goods_id;
-//        $newMovement->amount = $request->amount;
-//        if (isset($request->price)){
-//            $newMovement->price = $request->price;
-//        }
-//
-//        if (isset($request->order_main)){
-//            $newMovement->order_main = $request->order_main;
-//            $order = Orders::findOrFail($request->order_main);
-//            if ($order->status === null || $order->status === 'progress'){
-//                $order->status = 'completed';
-//                $order->date_status = date('Y-m-d H:i:s');
-//                $order->user_id_handler = Auth::id();
-//                if ($order->save()){
-//                    response()->json(['status'=>'ok']);
-//                }
-//            }else{
-//                return 'this order already completed or canceled';
-//            }
-//        }
-//
-//        //TODO handle possible error
-//
-//        if($newMovement->save()){
-//            return response()->json(['status'=>'ok']);
-//        }
-//
-//    }
-
     public function getMovement(Request $request){
 
         if($request->status === 'opened'){
@@ -267,5 +225,59 @@ class GoodsController extends Controller
     public function getMovementInfo(Request $request){
         return response()->json(Movements::findOrFail($request->id));
     }
+
+    public function addGoods(Request $request){
+        $addGoods = new Goods();
+        $addGoods->name = $request->name;
+        $addGoods->unit = $request->unit;
+        $addGoods->type = $request->type;
+        $addGoods->save();
+        $id = $addGoods->id;
+        return response()->json(['goods_id'=>$id]);
+    }
+
+    public function setGoodsPermit(Request $request){
+        if ($request->allowed === 'yes'){
+            $set = new StorageGoods();
+            $set->storage_id = $request->storage_id;
+            $set->goods_id = $request->goods_id;
+            $res = $set->save();
+        }else{
+            $res =  StorageGoods::where('storage_id','=', $request->storage_id)
+                ->where('goods_id', '=', $request->goods_id)->delete();
+
+        }
+        if ($res){
+            return response()->json(['status'=>'ok']);
+        }else{
+            return response()->json(['status'=>'error']);
+        }
+
+    }
+
+    public function doTrash(Request $request){
+        $user_id = Auth::id();
+        $dateNow = date('Y-m-d H:i:s');
+
+        DB::beginTransaction();
+
+        try {
+            HandleGoods::moveGoods($request->storage_id, null, $request->goods_id, $request->amount,'trash', null, null, $user_id, $dateNow);
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json([
+                'message'=>$e->resMess(),
+                'status'=> 'error'
+            ]);
+        }
+        DB::commit();
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'продукт ('.$request->goods_id.'), был утилизирован на складе ('.$request->storage_id.'), в количестве ('.$request->amount.')'
+
+        ]);
+
+    }
+
 
 }

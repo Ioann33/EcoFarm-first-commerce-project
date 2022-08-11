@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class FinanceController extends Controller
 {
-    //private $balance;
+    private $balance;
 
 
     public function __construct()
     {
-        //$this->balance = Money::all();
+        $this->balance = Money::all();
     }
 
     public function getFinance(Request $request)
@@ -67,15 +67,25 @@ class FinanceController extends Controller
         );
     }
 
-
-//    public function getSales(Request $request){
-//
-//    }
-
-    public function doSalary(Request $request): array
+    public function doSpends(Request $request)
     {
-        //dd($request);
-        return array('status' => 'sd');
+        $user = Auth::id();
+        $date = date('Y-m-d H:i:s');
+
+        $transaction= new Money();
+        $transaction->date = $date;
+        $transaction->storage_id = $request->storage_id;
+        $transaction->size_pay = -$request->size_pay;
+        $transaction->description = $request->comment;
+        $transaction->category = $request->category;
+        $transaction->param_id = $request->param_id;
+        $transaction->user_id = $user;
+
+        if ($transaction->save()){
+            return response()->json(['status'=>'ok']);
+        }else{
+            return response()->json(['status'=>'error']);
+        }
     }
 
     public function doTransferMoney(Request $request){
