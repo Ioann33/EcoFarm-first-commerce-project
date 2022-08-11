@@ -39,7 +39,7 @@ export default {
        }
     },
     beforeMount() {
-        this.pagesListGoods = ['sale', 'buy']
+        this.pagesListGoods = ['sale', 'buy', 'storage']
         this.pagesMoveGoods = ['sale', 'buy', 'grow', 'cook'];
         this.pagesCook = ['cook'];
 

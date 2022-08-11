@@ -8,7 +8,7 @@
             <div class="list-group list-custom-small">
                 <a href="#" data-toggle-theme data-trigger-switch="switch-dark-mode" class="pb-2 ms-n1">
                     <i class="fa font-12 fa-moon rounded-s bg-highlight color-white me-3"></i>
-                    <span>Dark Mode</span>
+                    <span>Темный режим</span>
                     <div class="custom-control scale-switch ios-switch">
                         <input data-toggle-theme type="checkbox" class="ios-input" id="switch-dark-mode">
                         <label class="custom-control-label" for="switch-dark-mode"></label>
