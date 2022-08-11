@@ -64,7 +64,7 @@ export default {
         this.my_storage_type = localStorage.getItem('type')
     },
     mounted() {
-        console.log('[cardBalance]     load cardBalance for storage_id: '+this.storage_id)
+        // console.log('[cardBalance]     load cardBalance for storage_id: '+this.storage_id)
         this.getBalance(this.storage_id)
     },
     methods: {

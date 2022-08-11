@@ -8,7 +8,9 @@ use App\Http\Controllers\Storage\StorageController;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
+use App\Http\Resources\StorageGoodsPermitResource;
 use App\Http\Resources\StorageGoodsResource;
+use App\Http\Resources\StorageResource;
 use App\Models\Goods;
 use App\Models\MainStore;
 use App\Models\Movements;
@@ -16,6 +18,7 @@ use App\Models\MyModel\HandleGoods;
 use App\Models\Orders;
 use App\Models\StockBalance;
 use App\Models\StorageGoods;
+use App\Models\Storages;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +26,28 @@ use Illuminate\Support\Facades\DB;
 
 class GoodsController extends Controller
 {
+
+    public function getListStoragesGoodsPermit(){
+        $storage = Storages::all();
+        return StorageGoodsPermitResource::collection($storage);
+
+        /*
+         {
+            "data": [
+            {
+                "storage_id": 1,
+                "storage_name": "Главный склад",
+                "allowed": true
+            },
+            {
+                "storage_id": 4,
+                "storage_name": "Кафе",
+                "allowed": true
+            }
+        }
+         */
+    }
+
     public function setPrice(Request $request){
         $this->validate($request,[
             'movement_id'=>'required',
