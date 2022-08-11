@@ -17,12 +17,12 @@
         <router-link :to="{name: 'home'}"><i class="fa fa-home"></i><span>Главная</span></router-link>
 
 
-            <router-link v-if="this.my_storage_type == 'cook'" :to="{name: 'makeProducts'}"><i class="fa fa-hat-hard "></i><span>приготовить</span></router-link>
-            <router-link v-if="this.my_storage_type == 'grow'" :to="{name: 'MoveGoods'}"><i class="fa">  </i><span>передать</span></router-link>
-            <router-link v-if="this.my_storage_type != 'finance'"  :to="{name: 'pageListGoods', params: {type: 'available'}}"><i class="fa fa-search"></i><span>товары на складе</span></router-link>
+            <router-link v-if="isCook" :to="{name: 'makeProducts'}"><i class="fa fa-hat-hard "></i><span>приготовить</span></router-link>
+            <router-link v-if="isMoveGoods" :to="{name: 'MoveGoods'}"><i class="fa">  </i><span>передать</span></router-link>
+            <router-link v-if="isListGoods"  :to="{name: 'pageListGoods', params: {type: 'available'}}"><i class="fa fa-search"></i><span>товары на складе</span></router-link>
 
 
-        <router-link :to="{name: 'selectStorage'}"><i class="fa-fw select-all fas"></i><span>Выбор склада</span></router-link>
+        <router-link v-if="isSelectStorage" :to="{name: 'selectStorage'}"><i class="fa-fw select-all fas"></i><span>Выбор склада</span></router-link>
         <a href="#" data-menu="menu-settings"><i class="fa fa-cog"></i><span>Настройки</span></a>
     </div>
 
@@ -35,16 +35,37 @@ export default {
     },
     date(){
        return {
-           my_storage_type
+           my_storage_type,
        }
     },
     beforeMount() {
+        this.pagesListGoods = ['sale', 'buy']
+        this.pagesMoveGoods = ['sale', 'buy', 'grow', 'cook'];
+        this.pagesCook = ['cook'];
+
         this.my_storage_id = localStorage.getItem('my_storage_id')
         this.my_storage_name = localStorage.getItem('my_storage_name')
         this.my_storage_type = localStorage.getItem('type')
     },
     mounted() {
-        //console.log('Component navBar mounted')
+
+    },
+    computed: {
+        isCook(){
+            if(this.pagesCook.includes(this.my_storage_type))
+                return 1
+        },
+        isMoveGoods(){
+            if(this.pagesMoveGoods.includes(this.my_storage_type))
+                return 1
+        },
+        isListGoods(){
+            if(this.pagesListGoods.includes(this.my_storage_type))
+                return 1
+        },
+        isSelectStorage(){
+            return 1
+        }
     }
 
 }

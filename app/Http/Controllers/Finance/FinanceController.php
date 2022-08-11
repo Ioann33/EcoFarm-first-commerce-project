@@ -17,7 +17,7 @@ class FinanceController extends Controller
 
     public function __construct()
     {
-        $this->balance = Money::all();
+//        $this->balance = Money::all();
     }
 
     public function getFinance(Request $request)
