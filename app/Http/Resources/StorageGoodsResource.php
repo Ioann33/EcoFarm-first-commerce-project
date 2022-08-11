@@ -29,7 +29,7 @@ class StorageGoodsResource extends JsonResource
             ->where('goods_id','=', $this->goods_id)
             ->sum('amount');
 
-        if ($totalPriceSum !== 0){
+        if ($totalPriceSum != 0){
             $averagePrice = number_format($totalPriceSum / $sumGoods,2);
         }else{
             $averagePrice = 0;

@@ -74,7 +74,7 @@ class HandleGoods
      * @return \Illuminate\Http\JsonResponse|mixed
      * @throws NotEnoughGoods
      */
-    static public function moveGoods($storage_id_from = null, $storage_id_to = null, $goods_id = null, $amount = null, $category = null, $link_id = null, $order_main = null, $user = null, $data =null){
+    static public function moveGoods($storage_id_from = null, $storage_id_to = null, $goods_id = null, $amount = null, $category = null, $link_id = null, $order_main = null, $user = null, $data =null, $price = null){
 
         if (isset($storage_id_from)){
 
@@ -104,8 +104,11 @@ class HandleGoods
 
                         $pricePerUnit = number_format($price/$amount, 2);
 
-
+                        if ($stock->amount == 0){
+                            $stock->delete();
+                        }
                         return self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main, $pricePerUnit, $user, $data);
+
 
                     }else{
                         $price += $value->price * $value->amount;
@@ -116,15 +119,15 @@ class HandleGoods
                 }
             }else{
                 throw new NotEnoughGoods();
-//                return 'not enough goods in stock';
+
             }
         }else{
 
             $user = Auth::id();
             $data = date('Y-m-d H:i:s');
-            $productID = self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main,null, $user, $data);
+            $productID = self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main, $price, $user, $data);
 
-            $stockBalanceID = self::addGoodsOnStockBalance($storage_id_to, $goods_id, $amount, $data);
+            $stockBalanceID = self::addGoodsOnStockBalance($storage_id_to, $goods_id, $amount, $data, $price);
 
             return [
                'productID'=>$productID,

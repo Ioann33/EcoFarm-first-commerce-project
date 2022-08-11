@@ -127,19 +127,27 @@ class GoodsController extends Controller
         }
     }
 
+    /**
+     * api/getStorageGoods/{key}/{storage_id}/{goods_id?}
+     *
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function getStorageGoods(Request $request){
 
-        if ($request->id === 'all'){
-            $storages = StorageGoods::all()->where('goods_id', '=', $request->goods_id);
-            return getAllowedStoragesResource::collection($storages);
+        if ($request->storage_id === 'all'){
+            //return dd($request->input());
+            return $storages = StorageGoods::where('goods_id', $request->goods_id);
+            //return getAllowedStoragesResource::collection($storages);
         }
 
         if ($request->goods_id === 'all'){
             $goods = StorageGoods::all()
-                ->where('storage_id','=', $request->id);
+                ->where('storage_id','=', $request->storage_id);
         }else{
             $goods = StorageGoods::all()
-                ->where('storage_id','=', $request->id)
+                ->where('storage_id','=', $request->storage_id)
                 ->where('goods_id', '=', $request->goods_id);
         }
 
@@ -152,7 +160,13 @@ class GoodsController extends Controller
 
     }
 
-
+    /**
+     * api/getGoodsStockBalance/{goods_id}
+     * Получить кол-во выбранного товара на складе
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function stockGoodsBalance(Request $request){
         $balance = StockBalance::all()
             ->where('storage_id','=',$request->storage_id_from)
