@@ -3,17 +3,12 @@
         <head-bar></head-bar>
         <nav-bar></nav-bar>
 
-
         <div class="page-content header-clear-medium text-center">
-
             <!-- ERROR -->  <error :message="message"></error>
 
-
-<title-page title_main="Продажа"></title-page>
-
+            <title-page title_main="Продажа"></title-page>
 
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
-
 
                 <div class="row mb-0" v-for="(item, i) in sale_goods" :key="item.goods_id">
                     <div class="col-12 p-1">
@@ -105,7 +100,7 @@
     import NavBar from "../Components/NavBar";
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
-import TitlePage from "../Components/Title";
+    import TitlePage from "../Components/Title";
     export default {
         name: "pageSaleProducts",
         components:{
@@ -113,6 +108,7 @@ import TitlePage from "../Components/Title";
             TitlePage,
             headBar, NavBar, NavBarMenu,
         },
+
         data() {
             return {
                 message: '',
@@ -189,29 +185,25 @@ import TitlePage from "../Components/Title";
                 });
             },
             async saleProducts(){
-                let prepareData = this.sale_goods.map(el => {
+                let sales = this.sale_goods.map(el => {
                     if(Number.isInteger(el.goods_id)){
                         return {
                             storage_id: this.my_storage_id,
                             goods_id: el.goods_id,
-                            amount: el.amount
+                            amount: el.amount,
+                            price: el.price
                         }
                     }
                 });
-
-                prepareData = '{ ' +
-                    '"sales": '+
-                        JSON.stringify(prepareData, null, 2)+
-                    '}'
-
+                console.log(sales)
                 console.log('>>> продажа товара: ')
-                console.log(prepareData)
+                console.log(sales)
 
                 axios.post('/api/doSale', {
-                    prepareData
+                    sales: sales
                 }).then(res => {
                     console.log('<<< товар продан')
-                    console.log(prepareData)
+
 
                     this.$router.push({name: 'home'});
                 }).catch(err => {

@@ -101,10 +101,10 @@
             this.my_storage_id = localStorage.getItem('my_storage_id')
             this.my_storage_name = localStorage.getItem('my_storage_name')
         },
+
         mounted() {
         },
         methods: {
-
         }
 
     }

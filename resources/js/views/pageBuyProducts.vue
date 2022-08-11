@@ -4,10 +4,8 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium text-center">
-
-            <error
-                message="нужно сделать API: https://homenet.youtrack.cloud/issue/EF-21/sozdat-apidoBuy"
-            ></error>
+            <!-- ERROR -->          <error :message="message"></error>
+            <!-- cardBalance -->    <card-balance :storage_id="my_storage_id"></card-balance>
 
             <title-page title_main="Покупка"></title-page>
 
@@ -91,16 +89,19 @@
     import error from "../Components/Error";
     import TitlePage from '../Components/Title'
     import SelectInput from "../Components/SelectInput"
+    import cardBalance from "../Components/cardBalance";
 
     export default {
         name: "pageBuyProducts",
         components:{
             error,
             TitlePage,
-            headBar, NavBar, NavBarMenu, SelectInput
+            headBar, NavBar, NavBarMenu, SelectInput,
+            cardBalance
         },
         data() {
             return {
+                message:'',
                 buy_goods: [{
                     goods_id: 'default',
                     amount: 0,
@@ -117,6 +118,13 @@
               this.buy_goods.forEach(el => total += el.total);
               return total
           }
+        },
+        updated() {
+            update_template()
+        },
+        beforeMount() {
+            this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.my_storage_name = localStorage.getItem('my_storage_name')
         },
         mounted() {
             this.my_storage_id = localStorage.getItem('my_storage_id');
