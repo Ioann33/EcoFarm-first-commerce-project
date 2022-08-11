@@ -207,19 +207,19 @@ class GoodsController extends Controller
         if ($request->type === 'ready'){
             $res = $costGoods->sum(function ($item){
                 if ($item->goods->type === 2){
-                    return number_format($item->amount * $item->price, 2);
+                    return $item->amount * $item->price;
                 }
             });
         }else{
             $res = $costGoods->sum(function ($item){
                 if ($item->goods->type === 1){
-                    return number_format($item->amount * $item->price, 2);
+                    return $item->amount * $item->price;
                 }
             });
         }
 
 
-        return response()->json(['sum' => $res]);
+        return response()->json(['sum' => number_format($res, 2,'.','')]);
     }
 
     public function getMovementInfo(Request $request){
