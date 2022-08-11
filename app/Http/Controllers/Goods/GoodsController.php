@@ -240,4 +240,29 @@ class GoodsController extends Controller
 
     }
 
+    public function doTrash(Request $request){
+        $user_id = Auth::id();
+        $dateNow = date('Y-m-d H:i:s');
+
+        DB::beginTransaction();
+
+        try {
+            HandleGoods::moveGoods($request->storage_id, null, $request->goods_id, $request->amount,'trash', null, null, $user_id, $dateNow);
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json([
+                'message'=>$e->resMess(),
+                'status'=> 'error'
+            ]);
+        }
+        DB::commit();
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'продукт ('.$request->goods_id.'), был утилизирован на складе ('.$request->storage_id.'), в количестве ('.$request->amount.')'
+
+        ]);
+
+    }
+
+
 }
