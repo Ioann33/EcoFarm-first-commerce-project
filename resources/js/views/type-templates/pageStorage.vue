@@ -213,13 +213,64 @@
         <div class="card card-style">
             <div class="content mt-0 mb-0">
                 <div class="list-group list-custom-large short-border">
-<!--что то тут будет ?-->
+
+
+                    <a href="component-ad-boxes.html" v-if="money_in">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Получить деньги</span>
+                        <strong>отправить продукцию</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+
+                    <a href="component-ad-boxes.html" v-if="money_out">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Отправить деньги</span>
+                        <strong>отправить продукцию</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+
+<!--                    <router-link :to="{name: 'makeProducts'}">-->
+<!--                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>-->
+<!--                        <span>Приготовить ГТ</span>-->
+<!--                        <strong>Готовая продукция и ингредиенты</strong>-->
+<!--                        <i class="fa fa-angle-right"></i>-->
+<!--                    </router-link>-->
+
+
+<!--                    <router-link :to="{name: 'saleProducts'}">-->
+<!--                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>-->
+<!--                        <span>Продать товар</span>-->
+<!--                        <strong>Список товаров для продажи</strong>-->
+<!--                        <i class="fa fa-angle-right"></i>-->
+<!--                    </router-link>-->
+
+                    <router-link :to="{name: 'transferMoney'}">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Передать деньги</span>
+                        <strong>Передать деньги</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
+                    <router-link :to="{name: 'CreateGoods'}" v-if="isMain">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Создать товар</span>
+                        <strong>добавить товар/продукт в компанию </strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
+                    <router-link :to="{name: 'PermitGoods'}" v-if="isMain">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Разрешить товар</span>
+                        <strong>Разрешить выбранный товар на складах</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
                 </div>
             </div>
         </div>
 
 
-        
+
     </div>
 </template>
 
