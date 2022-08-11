@@ -251,10 +251,17 @@
                         <i class="fa fa-angle-right"></i>
                     </router-link>
 
-                    <router-link :to="{name: 'CreateGoods'}">
+                    <router-link :to="{name: 'CreateGoods'}" v-if="isMain">
                         <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
                         <span>Создать товар</span>
                         <strong>добавить товар/продукт в компанию </strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
+                    <router-link :to="{name: 'PermitGoods'}" v-if="isMain">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Разрешить товар</span>
+                        <strong>Разрешить выбранный товар на складах</strong>
                         <i class="fa fa-angle-right"></i>
                     </router-link>
 
