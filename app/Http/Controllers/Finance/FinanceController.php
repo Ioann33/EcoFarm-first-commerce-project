@@ -27,6 +27,20 @@ class FinanceController extends Controller
         $df = date("Y-m-d H:i:s",strtotime('last monday') + 8*60*60);
         $dt = date("Y-m-d H:i:s",strtotime('this monday') + 8*60*60);
 
+        if($request->type != null ){
+            switch ($request->type){
+                case "balance":
+                    $balance =  Money::where('storage_id', '=', $request->storage_id)
+                        ->sum('size_pay');
+                    return response()->json(
+                        [
+                            'balance' => $balance,
+                        ]
+                    );
+                    break;
+            }
+        }
+
 
         $sales_today = Money::where('storage_id', '=', $request->storage_id)
             ->where('category',5)
@@ -62,7 +76,8 @@ class FinanceController extends Controller
                 'sales_today' => $sales_today,
                 'sales_week' => $sales_week,
                 'buy_today' => $buy_today,
-                'buy_week' => $buy_week
+                'buy_week' => $buy_week,
+                'type' => $request->type
             ]
         );
     }
@@ -75,7 +90,7 @@ class FinanceController extends Controller
         $transaction= new Money();
         $transaction->date = $date;
         $transaction->storage_id = $request->storage_id;
-        $transaction->size_pay = -$request->size_pay;
+        $transaction->size_pay = $request->size_pay;
         $transaction->description = $request->comment;
         $transaction->category = $request->category;
         $transaction->param_id = $request->param_id;

@@ -75,6 +75,11 @@ const router = createRouter({
             path: '/Grow',
             name: 'grow',
             component: () => import('../views/pageGrow')
+        },
+        {
+            path: '/CreateGoods',
+            name: 'CreateGoods',
+            component: () => import('../views/pageCreateGoods')
         }
     ]
 })
