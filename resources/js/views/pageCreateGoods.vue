@@ -15,6 +15,8 @@
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label class="color-blue-dark" for="product_name">Товар или продукт</label>
                             <input id="product_name" type="text" class="form-control focus-color focus-blue" v-model="name">
+                            <i class="fa fa-times disabled invalid color-red-dark"></i>
+                            <i class="fa fa-check disabled valid color-green-dark"></i>
                             <em></em>
                         </div>
                     </div>
@@ -22,6 +24,8 @@
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label class="color-blue-dark" for="product_unit">Ед. изм.</label>
                             <input id="product_unit" type="text" class="form-control focus-color focus-blue" v-model="unit">
+                            <i class="fa fa-times disabled invalid color-red-dark"></i>
+                            <i class="fa fa-check disabled valid color-green-dark"></i>
                             <em></em>
                         </div>
                     </div>
@@ -97,8 +101,11 @@
                     name: this.name, unit: this.unit, type: this.type
                 }).then(res => {
                    if(!res.data){
-                       alert('К сожалению, произошла ошибка')
+                       console.error('при добавлении товара произошла ошибка')
+                       this.message = 'при добавлении товара произошла ошибка'
                    }
+                    console.log('товар добавлен в систему')
+                    this.$router.push({name: 'home'});
                 });
             }
         }

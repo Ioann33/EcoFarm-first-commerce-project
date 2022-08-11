@@ -80,6 +80,11 @@ const router = createRouter({
             path: '/CreateGoods',
             name: 'CreateGoods',
             component: () => import('../views/pageCreateGoods')
+        },
+        {
+            path: '/PermitGoods',
+            name: 'PermitGoods',
+            component: () => import('../views/pagePermitGoods')
         }
     ]
 })

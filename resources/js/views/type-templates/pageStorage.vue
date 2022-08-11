@@ -213,13 +213,22 @@
         <div class="card card-style">
             <div class="content mt-0 mb-0">
                 <div class="list-group list-custom-large short-border">
-<!--что то тут будет ?-->
+
+
+
+                    <router-link :to="{name: 'PermitGoods'}" v-if="isMain">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Разрешить товар</span>
+                        <strong>Разрешить выбранный товар на складах</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
                 </div>
             </div>
         </div>
 
 
-        
+
     </div>
 </template>
 

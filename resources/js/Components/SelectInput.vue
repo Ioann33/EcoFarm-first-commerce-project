@@ -73,6 +73,10 @@
     }
 </script>
 
-<style scoped>
-
+<style>
+    .select-input-spinner{
+        position: absolute;
+        right: 35px;
+        top: 10px;
+    }
 </style>
