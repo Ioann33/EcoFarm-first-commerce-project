@@ -49,6 +49,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/doBuy', [\App\Http\Controllers\Finance\FinanceController::class, 'doBuy']);
     Route::post('/addGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'addGoods']);
     Route::post('/setGoodsPermit', [\App\Http\Controllers\Goods\GoodsController::class, 'setGoodsPermit']);
+    Route::post('/doTrash', [\App\Http\Controllers\Goods\GoodsController::class, 'doTrash']);
 
 });
 
