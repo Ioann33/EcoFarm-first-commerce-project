@@ -123,10 +123,12 @@
                 }).then(res => {
                     this.status = true;
                     this.message = 'Сохранено';
+
                 }).catch(e => {
                     this.status = false;
                     this.message = e;
                 })
+                setTimeout(() => this.message = '', 3000)
             }
         }
     }
