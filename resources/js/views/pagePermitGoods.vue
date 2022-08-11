@@ -4,6 +4,7 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
+            <!-- ERROR -->  <error  :message="message"></error>
 
             <title-page title_main="Разрешить выбранный товар"></title-page>
 
@@ -116,7 +117,7 @@
             },
             async changeGoodsAllow(id, value){
                 if(this.selected_goods === 'default') return;
-                const res = await axios.post('/api/setGoodsPermit', {
+                await axios.post('/api/setGoodsPermit', {
                     goods_id: this.selected_goods,
                     storage_id: id,
                     allowed: value
