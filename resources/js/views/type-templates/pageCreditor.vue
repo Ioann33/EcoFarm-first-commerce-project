@@ -51,6 +51,23 @@
 
         </div>
         <!--ПЕРЕДАТЬ ТОВАР    -->
+
+        <div class="row text-center mb-0 mt-n2">
+            <router-link :to="{name: 'preSale'}" class="col-6 ps-3">
+                <div class="card card-style me-2 mb-3">
+                    <i class="fa fa-arrow-up color-red-dark fa-2x mt-3"></i>
+                    <h1 class="pt-2 font-18">Продажа без отгрузки</h1>
+                    <p class="font-11 opacity-50 mt-n2 mb-3">деньги поступят на счет этого склада. движение товара отсутствует</p>
+                </div>
+            </router-link>
+            <router-link :to="{name: 'SpendInvest', params: {type: 'in'}}" class="col-6 ps-0">
+                <div class="card card-style ms-2 mb-3">
+                    <i class="fa fa-arrow-down color-green-dark fa-2x mt-3"></i>
+                    <h1 class="pt-2 font-18">Посмотреть открытые сделки</h1>
+                    <p class="font-11 opacity-50 mt-n2 mb-3">список сделок, и закрытие сделки по наличию товара на текущем складе</p>
+                </div>
+            </router-link>
+        </div>
     </div>
 </template>
 

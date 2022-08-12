@@ -158,10 +158,11 @@
                 });
 
                 if(!res.data){
-                    console.error('Some error')
+                    console.error('Some error in trash')
                     return;
                 }
                 console.log('Success')
+                this.$router.push({name: 'home'});
             }
         }
     }

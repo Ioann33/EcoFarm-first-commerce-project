@@ -62,6 +62,11 @@ const router = createRouter({
             component: () => import('../views/pageSaleProducts')
         },
         {
+            path: '/preSale',
+            name: 'preSale',
+            component: () => import('../views/pagePreSale')
+        },
+        {
             path: '/transferMoney',
             name: 'transferMoney',
             component: () => import('../views/pageTransferMoney')
@@ -80,6 +85,17 @@ const router = createRouter({
             path: '/CreateGoods',
             name: 'CreateGoods',
             component: () => import('../views/pageCreateGoods')
+        },
+        {
+            path: '/Spend/:type?',
+            name: 'Spend',
+            component: () => import('../views/pageSpend'),
+
+        },
+        {
+            path: '/SpendInvest/:type',
+            name: 'SpendInvest',
+            component: () => import('../views/pageSpendInvest'),
         },
         {
             path: '/PermitGoods',
