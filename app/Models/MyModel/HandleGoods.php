@@ -24,7 +24,7 @@ class HandleGoods
      * @param $data
      * @return \Illuminate\Http\JsonResponse|string|void
      */
-    static private function movements($storage_id_from = null, $storage_id_to= null, $goods_id = null, $category = null, $link_id = null, $amount = null, $order_main = null, $pricePerUnit = null, $user = null, $data =null){
+    static public function movements($storage_id_from = null, $storage_id_to= null, $goods_id = null, $category = null, $link_id = null, $amount = null, $order_main = null, $pricePerUnit = null, $user = null, $data =null){
         $newMovement = new Movements();
         $newMovement->user_id_created = Auth::id();
         $newMovement->user_id_accepted = $user;
@@ -71,10 +71,15 @@ class HandleGoods
      * @param $category
      * @param $link_id
      * @param $order_main
-     * @return \Illuminate\Http\JsonResponse|mixed
+     * @param $user
+     * @param $data
+     * @param $price
+     * @param $param
+     * @return array|bool|\Illuminate\Http\JsonResponse|string|void
      * @throws NotEnoughGoods
      */
-    static public function moveGoods($storage_id_from = null, $storage_id_to = null, $goods_id = null, $amount = null, $category = null, $link_id = null, $order_main = null, $user = null, $data =null, $price = null){
+    static public function moveGoods($storage_id_from = null, $storage_id_to = null, $goods_id = null, $amount = null, $category = null, $link_id = null, $order_main = null, $user = null, $data =null, $price = null, $param = null)
+    {
 
         if (isset($storage_id_from)){
 
@@ -106,6 +111,10 @@ class HandleGoods
 
                         if ($stock->amount == 0){
                             $stock->delete();
+                        }
+
+                        if ($param){
+                            return $pricePerUnit;
                         }
                         return self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main, $pricePerUnit, $user, $data);
 
