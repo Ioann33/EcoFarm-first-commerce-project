@@ -12,6 +12,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getListMyStorages', [\App\Http\Controllers\Storage\StorageController::class, 'getListMyStorages']);
     Route::get('/getListStorages', [\App\Http\Controllers\Storage\StorageController::class, 'getListStorages']);
     Route::get('/getStorageProp/{id}', [\App\Http\Controllers\Storage\StorageController::class, 'getStorageProp']);
+    Route::post('/addStorage', [\App\Http\Controllers\Storage\StorageController::class, 'addStorage']);
 
     Route::get('/getStorageOrder/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'getStorageOrder']);
 
@@ -50,12 +51,15 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/doSale', [\App\Http\Controllers\Finance\FinanceController::class, 'doSale']);
     Route::post('/doPreSale', [\App\Http\Controllers\Finance\FinanceController::class, 'doPreSale']);
     Route::post('/closePreSale', [\App\Http\Controllers\Finance\FinanceController::class, 'closePreSale']);
-    Route::get('/getSumMoneyByCategoryOnStorage/{storage_id}/{category_id}', [\App\Http\Controllers\Finance\FinanceController::class, 'getSumMoneyByCategoryOnStorage']);
-    Route::get('/getListMoneyByCategoryOnStorage/{storage_id}/{category_id}', [\App\Http\Controllers\Finance\FinanceController::class, 'getListMoneyByCategoryOnStorage']);
+    Route::get('/getSumMoneyByCategoryOnStorage/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Finance\FinanceController::class, 'getSumMoneyByCategoryOnStorage']);
+    Route::get('/getListMoneyByCategoryOnStorage/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Finance\FinanceController::class, 'getListMoneyByCategoryOnStorage']);
     Route::post('/doBuy', [\App\Http\Controllers\Finance\FinanceController::class, 'doBuy']);
     Route::post('/addGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'addGoods']);
     Route::post('/setGoodsPermit', [\App\Http\Controllers\Goods\GoodsController::class, 'setGoodsPermit']);
     Route::post('/doTrash', [\App\Http\Controllers\Goods\GoodsController::class, 'doTrash']);
+
+    Route::post('/addUser', [\App\Http\Controllers\User\UserController::class, 'addUser']);
+    Route::post('/setUserPermit', [\App\Http\Controllers\User\UserController::class, 'setUserPermit']);
 
 });
 
