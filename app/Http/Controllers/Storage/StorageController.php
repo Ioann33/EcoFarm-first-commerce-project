@@ -38,4 +38,16 @@ class StorageController extends Controller
         $storage = Storages::all();
         return StorageResource::collection($storage);
     }
+
+    public function addStorage(Request $request){
+        $newStorage = new Storages();
+        $newStorage->name = $request->name;
+        $newStorage->type = $request->type;
+
+        if ($newStorage->save()){
+            return response()->json(['storage_id'=>$newStorage->id]);
+        }else{
+            return response()->json(['error'=>'some errors with adding storage']);
+        }
+    }
 }
