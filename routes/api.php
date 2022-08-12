@@ -48,8 +48,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/doTransferMoney', [\App\Http\Controllers\Finance\FinanceController::class, 'doTransferMoney']);
     Route::post('/doSpends', [\App\Http\Controllers\Finance\FinanceController::class, 'doSpends']);
     Route::post('/doSale', [\App\Http\Controllers\Finance\FinanceController::class, 'doSale']);
-    Route::post('/preSale', [\App\Http\Controllers\Finance\FinanceController::class, 'preSale']);
+    Route::post('/doPreSale', [\App\Http\Controllers\Finance\FinanceController::class, 'doPreSale']);
     Route::post('/closePreSale', [\App\Http\Controllers\Finance\FinanceController::class, 'closePreSale']);
+    Route::get('/getSumMoneyByCategoryOnStorage/{storage_id}/{category_id}', [\App\Http\Controllers\Finance\FinanceController::class, 'getSumMoneyByCategoryOnStorage']);
+    Route::get('/getListMoneyByCategoryOnStorage/{storage_id}/{category_id}', [\App\Http\Controllers\Finance\FinanceController::class, 'getListMoneyByCategoryOnStorage']);
     Route::post('/doBuy', [\App\Http\Controllers\Finance\FinanceController::class, 'doBuy']);
     Route::post('/addGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'addGoods']);
     Route::post('/setGoodsPermit', [\App\Http\Controllers\Goods\GoodsController::class, 'setGoodsPermit']);

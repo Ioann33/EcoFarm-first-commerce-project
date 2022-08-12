@@ -17,7 +17,7 @@ class MoneyTransfer
      * @param $user_id
      * @return bool
      */
-    static public function moneyTransfer($costProduct = null, $date = null, $storage_id = null, $description = null, $category = null, $param_id = null, $user_id = null): bool
+    static public function moneyTransfer($costProduct = null, $date = null, $storage_id = null, $description = null, $category = null, $param_id = null, $user_id = null)
     {
         $transaction = new Money();
         $transaction->date = $date;
@@ -27,7 +27,8 @@ class MoneyTransfer
         $transaction->category = $category;
         $transaction->param_id = $param_id;
         $transaction->user_id = $user_id;
-        return $transaction->save();
+        $transaction->save();
+        return $transaction->id;
     }
 
 }

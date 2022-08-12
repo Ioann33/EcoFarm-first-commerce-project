@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finance;
 use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
 use App\Models\Money;
+use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\MyModel\MoneyTransfer;
 use Illuminate\Http\Request;
@@ -179,11 +180,51 @@ class FinanceController extends Controller
         }
     }
 
+    public function getSumMoneyByCategoryOnStorage(Request $request){
+        $sum = Money::all()
+            ->where('storage_id', '=', $request->storage_id)
+            ->where('category', '=', $request->category_id)
+            ->sum('size_pay');
+        return response()->json(['sum'=>$sum]);
+    }
+
+    public function getListMoneyByCategoryOnStorage(Request $request){
+        $list = Money::where('storage_id', '=', $request->storage_id)
+            ->where('category', '=', $request->category_id)
+            ->get();
+        return response()->json(['list'=>$list]);
+    }
+
     public function closePreSale(Request $request){
+        $user_id = Auth::id();
+        $dateNow = date('Y-m-d H:i:s');
+        $transaction = Money::findOrFail($request->money_id);
+        $movement = Movements::findOrFail($transaction->param_id);
+
+        try {
+            $selfCoastPushGoods = HandleGoods::moveGoods($transaction->storage_id, null,$movement->goods_id, $movement->amount, null, null, null, null,null, null, true);
+
+            if ($selfCoastPushGoods){
+                $movement->storage_id_from = $transaction->storage_id;
+                $movement->user_id_accepted = $user_id;
+                $movement->date_accepted = $dateNow;
+                $movement->category = 'sale';
+                $movement->save();
+            }
+            $transaction->category = 700;
+            $transaction->save();
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json(['message'=>$e->resMess(), 'status' => 'error',]);
+        }
+        DB::commit();
+
+        return response()->json(['message'=>' отгрузка товара согласно препродаже '.$request->money_id, 'status' => 'ok',]);
+
 
     }
 
-    public function preSale(Request $request): \Illuminate\Http\JsonResponse
+    public function doPreSale(Request $request)
     {
         DB::beginTransaction();
         $user_id = Auth::id();
@@ -193,9 +234,13 @@ class FinanceController extends Controller
 
                 $costProduct = (int) $sale['amount'] * (int) $sale['price'];
 
-                $move_id = HandleGoods::moveGoods(null, null, $sale['goods_id'], $sale['amount'],'pre_sale', null, null, null, null, $sale['price']);
+                $move_id = HandleGoods::movements(null, null, $sale['goods_id'],'pre_sale', null, $sale['amount'], null, $sale['price']);
 
-                MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'предпродажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 701, $move_id['productID'],$user_id);
+                $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'предпродажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 701, $move_id,$user_id);
+
+                $movement = Movements::findOrFail($move_id);
+                $movement->link_id = $trance_id;
+                $movement->save();
 
             }
         }catch (NotEnoughGoods $e){
