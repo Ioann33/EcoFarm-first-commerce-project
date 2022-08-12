@@ -87,9 +87,9 @@ const router = createRouter({
             component: () => import('../views/pagePermitGoods')
         },
         {
-            path: '/PreSale',
-            name: 'PreSale',
-            component: () => import('../views/pagePreSale')
+            path: '/ListPreSale',
+            name: 'ListPreSale',
+            component: () => import('../views/pageListPreSale')
         }
     ]
 })

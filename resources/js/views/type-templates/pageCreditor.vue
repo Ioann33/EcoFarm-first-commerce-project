@@ -38,7 +38,12 @@
                     <!--                        </router-link>-->
                     <!--                    </a>-->
 
-
+                    <router-link :to="{name: 'ListPreSale'}">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Незакрытые сделки</span>
+                        <strong>Список не закрытых сделок</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
                 </div>
 
             </div>
