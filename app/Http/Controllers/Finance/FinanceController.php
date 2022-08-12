@@ -184,6 +184,8 @@ class FinanceController extends Controller
         $sum = Money::all()
             ->where('storage_id', '=', $request->storage_id)
             ->where('category', '=', $request->category_id)
+            ->where('date', '>=', $request->date_from)
+            ->where('date', '<=', $request->date_to)
             ->sum('size_pay');
         return response()->json(['sum'=>$sum]);
     }
@@ -191,6 +193,8 @@ class FinanceController extends Controller
     public function getListMoneyByCategoryOnStorage(Request $request){
         $list = Money::where('storage_id', '=', $request->storage_id)
             ->where('category', '=', $request->category_id)
+            ->where('date', '>=', $request->date_from)
+            ->where('date', '<=', $request->date_to)
             ->get();
         return response()->json(['list'=>$list]);
     }
