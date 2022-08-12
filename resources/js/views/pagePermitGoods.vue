@@ -89,10 +89,13 @@
                 const res = await axios.get(`/api/getListGoods`);
                 this.loading_goods = false;
                 if(!res.data){
+                    console.log(11111)
+                    console.log(res.data)
                     return ;
                 }
                 this.available_goods = res.data.data;
-                this.message = 'апи создано? /api/getListGoods https://homenet.youtrack.cloud/issue/EF-27/sozdat-api-apigetListGoods'
+                console.log(res.data)
+                //this.message = 'апи создано? /api/getListGoods https://homenet.youtrack.cloud/issue/EF-27/sozdat-api-apigetListGoods'
             },
             getListStorages(){
                 const res = axios.get('/api/getListStorages').then(res => {
