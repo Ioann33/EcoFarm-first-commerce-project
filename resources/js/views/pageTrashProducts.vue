@@ -9,7 +9,7 @@
                 <div class="row mb-0">
                     <div class="col-12 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <label for="storage-list" class="color-blue-dark">На склад</label>
+                            <label for="storage-list" class="color-blue-dark">Склад</label>
                             <select id="storage-list" v-model="selected_storage_id" @change="getStorageGoods(selected_storage_id)" class="form-control">
                                 <option value="default" selected>выбрать склад</option>
                                 <option
@@ -31,6 +31,7 @@
                 </div>
 
                 <div class="row mb-0">
+<!--   выбор товара   -->
                     <div class="col-7 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label for="prod_2" class="color-blue-dark">Товар</label>
@@ -40,7 +41,7 @@
                                     v-for="(goods, index) in availableGoods"
                                     v-bind:value="goods.goods_id"
                                 >
-                                    {{ goods.name }}
+                                    {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}
                                 </option>
 
                             </select>
@@ -52,7 +53,7 @@
                             <em></em>
                         </div>
                     </div>
-
+<!--   количество   -->
                     <div class="col-3 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="number" :disabled="max_amount === 0" class="form-control focus-color focus-blue validate-name "
@@ -130,13 +131,14 @@
             },
             async getStorageList(){
                 this.loading_storage = true;
-                const res = await axios.get('/api/getListStorage');
+                const res = await axios.get('/api/getListStorages');
                 this.loading_storage = false;
                 if(!res.data){
                     return ;
                 }
 
                 this.storageList = res.data.data;
+                console.table(this.storageList)
             },
             async getStorageGoods(id){
                 if(!Number.isInteger(id)) return ;
@@ -146,20 +148,21 @@
                 if(!res.data){
                     return ;
                 }
-                this.availableGoods = res.data.data;
+                this.availableGoods = res.data.data.filter(el => el.amount>0);
             },
             async doTrash(){
                 const res = await axios.post(`/api/doTrash`, {
+                    storage_id: this.selected_storage_id,
                     goods_id: this.selected_goods_id,
-                    amount: this.amount,
-                    storage_id: this.selected_storage_id
+                    amount: this.amount
                 });
 
                 if(!res.data){
-                    console.log('Some error')
+                    console.error('Some error in trash')
                     return;
                 }
                 console.log('Success')
+                this.$router.push({name: 'home'});
             }
         }
     }

@@ -12,13 +12,13 @@
                     <div class="col-10 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
 <!--                            <label for="storage-list-from" class="color-blue-dark">Товар</label>-->
-                            <select id="storage-list-from" :disabled="true" v-model="storage_id" class="form-control">
+                            <select id="storage-list-from"  v-model="storage_id" class="form-control">
                                 <option value="default" selected>выбрать склад</option>
                                 <option
                                     v-for="(storage, index) in list_storage"
                                     v-bind:value="storage.id"
                                 >
-                                    {{ storage.name }}
+                                    {{ storage.name }}, {{ storage.balance }} грн
                                 </option>
 
                             </select>
@@ -67,7 +67,7 @@
                                     v-for="(storage, index) in list_storage"
                                     v-bind:value="storage.id"
                                 >
-                                    {{ storage.name }}
+                                    {{ storage.name }}, {{ storage.balance }} грн
                                 </option>
 
                             </select>
@@ -160,7 +160,7 @@
                 } else {
                     this.loading_balance_from = true;
                 }
-                const res = await axios.get(`/api/getFinance/${storage_id}`);
+                const res = await axios.get(`/api/getFinance/${storage_id}/balance`);
                 if(storage_to){
                     this.loading_balance_to = false;
                 } else {
@@ -177,11 +177,21 @@
                 console.log(this.storage_to.balance)
             },
             async getStorageList(){
-                const res = await axios.get(`/api/getListStorages/`);
-                if(!res.data){
-                    console.log('Unfortunately some error')
-                }
+                const res = await axios.get(`/api/getListStorages/`)
+                if(!res.data)   {   console.error('Unfortunately some error')   }
+
                 this.list_storage = res.data.data;
+                this.list_storage.forEach(function (storage, i){
+
+                    // получить для каждого департамента Баланс
+                    axios.get('/api/getFinance/'+ storage.id+"/balance").then(res => {
+                        storage.balance = res.data.balance
+                        // console.log('balance('+storage.id+'): '+ storage.balance)
+                    }).catch(err => {
+                        this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    })
+                })
+
                 console.log('list_storage:')
                 console.log(this.list_storage)
             },

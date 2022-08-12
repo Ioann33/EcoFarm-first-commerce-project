@@ -4,7 +4,6 @@
 
 <template>
     <div id="page">
-
         <head-bar></head-bar>
         <nav-bar></nav-bar>
 
@@ -27,7 +26,6 @@ import pageGrow from "./type-templates/pageGrow";
 import pageFinance from "./type-templates/pageFinance";
 import pageCreditor from "./type-templates/pageCreditor";
 import pageServices from "./type-templates/pageServices";
-
 import pageSale from "./type-templates/pageSale";
 import pageBuy from "./type-templates/pageBuy";
 
@@ -42,11 +40,10 @@ export default {
     },
     data(){
         return {
-
+            message: ''
         }
     },
     mounted() {
-
         update_template()
     },
     computed: {
@@ -60,10 +57,8 @@ export default {
         },
     },
     methods: {
-
     },
     updated() {
-
         update_template()
     }
 }

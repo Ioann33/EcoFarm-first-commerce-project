@@ -4,10 +4,8 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium text-center">
-
-            <error
-                message="нужно сделать API: https://homenet.youtrack.cloud/issue/EF-21/sozdat-apidoBuy"
-            ></error>
+            <!-- ERROR -->          <error :message="message"></error>
+            <!-- cardBalance -->    <card-balance :storage_id="my_storage_id"></card-balance>
 
             <title-page title_main="Покупка"></title-page>
 
@@ -91,16 +89,19 @@
     import error from "../Components/Error";
     import TitlePage from '../Components/Title'
     import SelectInput from "../Components/SelectInput"
+    import cardBalance from "../Components/cardBalance";
 
     export default {
         name: "pageBuyProducts",
         components:{
             error,
             TitlePage,
-            headBar, NavBar, NavBarMenu, SelectInput
+            headBar, NavBar, NavBarMenu, SelectInput,
+            cardBalance
         },
         data() {
             return {
+                message:'',
                 buy_goods: [{
                     goods_id: 'default',
                     amount: 0,
@@ -117,6 +118,13 @@
               this.buy_goods.forEach(el => total += el.total);
               return total
           }
+        },
+        updated() {
+            update_template()
+        },
+        beforeMount() {
+            this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.my_storage_name = localStorage.getItem('my_storage_name')
         },
         mounted() {
             this.my_storage_id = localStorage.getItem('my_storage_id');
@@ -153,7 +161,7 @@
                 this.buy_goods[index].total = this.buy_goods[index].price * this.buy_goods[index].amount;
             },
             async buyProducts(){
-                let filtered = this.buy_goods.map(el => {
+                let buy = this.buy_goods.map(el => {
                    if(el.goods_id === 'default' || el.amount === 0) return false;
                    return {
                        goods_id: el.goods_id,
@@ -162,12 +170,29 @@
                        storage_id: this.my_storage_id
                    }
                 }).filter(el => el !== false);
-                console.log(filtered)
-                return;
-                const res = await axios.post('/api/buyGoods', {
-                    storage_id: this.my_storage_id,
-                    goods: filtered
+
+
+                console.log('>>> покупка товара: ')
+                console.log(buy)
+                console.table(buy)
+
+
+                axios.post('/api/doBuy', {
+                    buy: buy
+                }).then(res => {
+                    console.log('<<< товар куплен')
+
+
+                   this.$router.push({name: 'home'});
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
+
+
+                // const res = await axios.post('/api/buyGoods', {
+                //     storage_id: this.my_storage_id,
+                //     goods: filtered
+                // })
             }
         }
     }

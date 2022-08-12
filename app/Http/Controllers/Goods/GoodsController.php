@@ -8,7 +8,9 @@ use App\Http\Controllers\Storage\StorageController;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
+use App\Http\Resources\StorageGoodsPermitResource;
 use App\Http\Resources\StorageGoodsResource;
+use App\Http\Resources\StorageResource;
 use App\Models\Goods;
 use App\Models\MainStore;
 use App\Models\Movements;
@@ -16,6 +18,7 @@ use App\Models\MyModel\HandleGoods;
 use App\Models\Orders;
 use App\Models\StockBalance;
 use App\Models\StorageGoods;
+use App\Models\Storages;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +26,21 @@ use Illuminate\Support\Facades\DB;
 
 class GoodsController extends Controller
 {
+    /**
+     * api/getListStoragesGoodsPermit/{goods_id}
+     * по выбранному продукту=goods_id показать на каком складе есть разрешения
+     */
+    public function getListStoragesGoodsPermit(){
+        $storage = Storages::all();
+        return StorageGoodsPermitResource::collection($storage);
+
+    }
+
+    public function getListGoods(){
+        $allGoods = Goods::all();
+        return response()->json($allGoods);
+    }
+
     public function setPrice(Request $request){
         $this->validate($request,[
             'movement_id'=>'required',
@@ -85,19 +103,27 @@ class GoodsController extends Controller
         }
     }
 
+    /**
+     * api/getStorageGoods/{key}/{storage_id}/{goods_id?}
+     *
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function getStorageGoods(Request $request){
 
-        if ($request->id === 'all'){
-            $storages = StorageGoods::all()->where('goods_id', '=', $request->goods_id);
-            return getAllowedStoragesResource::collection($storages);
+        if ($request->storage_id === 'all'){
+            //return dd($request->input());
+            return $storages = StorageGoods::where('goods_id', $request->goods_id);
+            //return getAllowedStoragesResource::collection($storages);
         }
 
         if ($request->goods_id === 'all'){
             $goods = StorageGoods::all()
-                ->where('storage_id','=', $request->id);
+                ->where('storage_id','=', $request->storage_id);
         }else{
             $goods = StorageGoods::all()
-                ->where('storage_id','=', $request->id)
+                ->where('storage_id','=', $request->storage_id)
                 ->where('goods_id', '=', $request->goods_id);
         }
 
@@ -110,7 +136,13 @@ class GoodsController extends Controller
 
     }
 
-
+    /**
+     * api/getGoodsStockBalance/{goods_id}
+     * Получить кол-во выбранного товара на складе
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function stockGoodsBalance(Request $request){
         $balance = StockBalance::all()
             ->where('storage_id','=',$request->storage_id_from)
@@ -186,6 +218,7 @@ class GoodsController extends Controller
     }
 
     public function costGoods(Request $request){
+//        ($request->type === 'ready') ? $type=2 : $type=1;
 
         $costGoods = StockBalance::all()->where('storage_id', '=', $request->storage_id);
 

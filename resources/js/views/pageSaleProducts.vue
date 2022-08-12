@@ -3,19 +3,12 @@
         <head-bar></head-bar>
         <nav-bar></nav-bar>
 
-
         <div class="page-content header-clear-medium text-center">
+            <!-- ERROR -->  <error :message="message"></error>
 
-            <error
-                message="нужно сделать API: https://homenet.youtrack.cloud/issue/EF-20/sozdat-apidoSale"
-            ></error>
-
-
-<title-page title_main="Продажа"></title-page>
-
+            <title-page title_main="Продажа"></title-page>
 
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
-
 
                 <div class="row mb-0" v-for="(item, i) in sale_goods" :key="item.goods_id">
                     <div class="col-12 p-1">
@@ -107,7 +100,7 @@
     import NavBar from "../Components/NavBar";
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
-import TitlePage from "../Components/Title";
+    import TitlePage from "../Components/Title";
     export default {
         name: "pageSaleProducts",
         components:{
@@ -115,8 +108,10 @@ import TitlePage from "../Components/Title";
             TitlePage,
             headBar, NavBar, NavBarMenu,
         },
+
         data() {
             return {
+                message: '',
                 loading_goods: false,
                 available_goods: [],
                 sale_goods: [{
@@ -190,25 +185,38 @@ import TitlePage from "../Components/Title";
                 });
             },
             async saleProducts(){
-                let prepareData = this.sale_goods.map(el => {
+                let sales = this.sale_goods.map(el => {
                     if(Number.isInteger(el.goods_id)){
                         return {
                             storage_id: this.my_storage_id,
                             goods_id: el.goods_id,
-                            amount: el.amount
+                            amount: el.amount,
+                            price: el.price
                         }
                     }
                 });
+                console.log(sales)
+                console.log('>>> продажа товара: ')
+                console.log(sales)
+                console.dir(sales)
 
-                console.log(prepareData)
-                return;
+                axios.post('/api/doSale', {
+                    sales: sales
+                }).then(res => {
+                    console.log('<<< товар продан')
 
-                const res = await axios.post(`/api/doSale`, {
-                    prepareData
-                });
-                if(!res.data){
-                    console.log('Some error');
-                }
+
+                    this.$router.push({name: 'home'});
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                })
+
+                // const res = await axios.post(`/api/doSale`, {
+                //     prepareData
+                // });
+                // if(!res.data){
+                //     console.log('Some error');
+                // }
             }
         }
     }

@@ -8,13 +8,34 @@
             <div class="list-group list-custom-small">
                 <a href="#" data-toggle-theme data-trigger-switch="switch-dark-mode" class="pb-2 ms-n1">
                     <i class="fa font-12 fa-moon rounded-s bg-highlight color-white me-3"></i>
-                    <span>Dark Mode</span>
+                    <span>Темный режим</span>
                     <div class="custom-control scale-switch ios-switch">
                         <input data-toggle-theme type="checkbox" class="ios-input" id="switch-dark-mode">
                         <label class="custom-control-label" for="switch-dark-mode"></label>
                     </div>
                     <i class="fa fa-angle-right"></i>
                 </a>
+            </div>
+            <div class="list-group list-custom-small" v-if="isMain">
+                <router-link :to="{name: 'PermitGoods'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <span>Разрешить товар</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+            </div>
+            <div class="list-group list-custom-small" v-if="isMain">
+                <router-link :to="{name: 'CreateGoods'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <span>Создать товар</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+            </div>
+            <div class="list-group list-custom-small">
+                <router-link :to="{name: 'selectStorage'}">
+                    <i class="fa font-12 rounded-s bg-green-dark color-white me-3"></i>
+                    <span>Выбор склада</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
             </div>
             <div class="list-group list-custom-large">
                 <a  @click="logout" href="#" class="border-0">
@@ -33,7 +54,20 @@
 export default {
     name: "navBarMenu",
     mounted() {
-        //console.log('Component navBarMenu mounted')
+        update_template()
+    },
+    beforeMount() {
+        this.my_storage_id = localStorage.getItem('my_storage_id')
+        this.my_storage_name = localStorage.getItem('my_storage_name')
+    },
+    computed: {
+        isMain(){
+            const main_id = localStorage.getItem('main_storage_id');
+            if(main_id === this.my_storage_id) {
+                return true;
+            }
+            return false;
+        }
     },
     methods:{
         logout() {
