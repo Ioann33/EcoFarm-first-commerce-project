@@ -101,8 +101,11 @@
                     name: this.name, unit: this.unit, type: this.type
                 }).then(res => {
                    if(!res.data){
-                       alert('К сожалению, произошла ошибка')
+                       console.error('при добавлении товара произошла ошибка')
+                       this.message = 'при добавлении товара произошла ошибка'
                    }
+                    console.log('товар добавлен в систему')
+                    this.$router.push({name: 'home'});
                 });
             }
         }

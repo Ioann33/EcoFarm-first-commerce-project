@@ -7,19 +7,16 @@
 
         <head-bar></head-bar>
 
-
         <div class="page-content header-clear-medium">
 
-            <!-- ERROR -->
-<error :message="message"></error>
+            <!-- ERROR --> <error :message="message"></error>
 
             <div  v-for="(storage_id, index) in listStorage">
 <!--                    index:{{ index }} - storage_id:{{storage_id['storage_id']}}-->
                 <StorageButton
                     :storage_name="storage_id['name']"
                     :storage_id="storage_id['storage_id']"
-                >
-                </StorageButton>
+                ></StorageButton>
             </div>
 
         </div>

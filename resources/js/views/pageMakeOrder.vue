@@ -6,10 +6,7 @@
 
         <div class="page-content header-clear-medium">
 
-            <!-- ERROR -->
-            <error
-                :message="message"
-            ></error>
+            <!-- ERROR -->  <error  :message="message"></error>
 
 
 

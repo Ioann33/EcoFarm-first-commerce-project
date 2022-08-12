@@ -16,7 +16,20 @@
                     <i class="fa fa-angle-right"></i>
                 </a>
             </div>
-
+            <div class="list-group list-custom-small" v-if="isMain">
+                <router-link :to="{name: 'PermitGoods'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <span>Разрешить товар</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+            </div>
+            <div class="list-group list-custom-small" v-if="isMain">
+                <router-link :to="{name: 'CreateGoods'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <span>Создать товар</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+            </div>
             <div class="list-group list-custom-small">
                 <router-link :to="{name: 'selectStorage'}">
                     <i class="fa font-12 rounded-s bg-green-dark color-white me-3"></i>
@@ -41,7 +54,20 @@
 export default {
     name: "navBarMenu",
     mounted() {
-        //console.log('Component navBarMenu mounted')
+        update_template()
+    },
+    beforeMount() {
+        this.my_storage_id = localStorage.getItem('my_storage_id')
+        this.my_storage_name = localStorage.getItem('my_storage_name')
+    },
+    computed: {
+        isMain(){
+            const main_id = localStorage.getItem('main_storage_id');
+            if(main_id === this.my_storage_id) {
+                return true;
+            }
+            return false;
+        }
     },
     methods:{
         logout() {

@@ -1,5 +1,7 @@
 <template>
     <div class="page-content header-clear-medium">
+        <!-- ERROR -->  <error  :message="message"></error>
+
 продать услугу (выбрать) <br>
         <select>
             <option>баня</option>
