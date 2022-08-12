@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class UserStorages extends Model
 {
     use HasFactory;
-
+    public $timestamps = false;
     protected $table = 'users_storages';
 
     public function storage(){

@@ -9,5 +9,10 @@ class Storages extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
     protected $table = 'storages';
+    protected $fillable = [
+        'name',
+        'type',
+    ];
 }
