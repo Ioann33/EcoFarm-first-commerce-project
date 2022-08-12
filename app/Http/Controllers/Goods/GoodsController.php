@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Goods;
 use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Storage\StorageController;
+use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
@@ -33,21 +34,12 @@ class GoodsController extends Controller
     public function getListStoragesGoodsPermit(){
         $storage = Storages::all();
         return StorageGoodsPermitResource::collection($storage);
-/*=======================
-         {
-            "data": [
-            {
-                "storage_id": 1,
-                "storage_name": "Главный склад",
-                "allowed": true
-            },
-            {
-                "storage_id": 4,
-                "storage_name": "Кафе",
-                "allowed": true
-            }
-        }
-=======================*/
+
+    }
+
+    public function getListGoods(){
+        $allGoods = Goods::all();
+        return getListGoodsResource::collection($allGoods);
     }
 
     public function setPrice(Request $request){
@@ -264,7 +256,7 @@ class GoodsController extends Controller
     }
 
     public function setGoodsPermit(Request $request){
-        if ($request->allowed === 'yes'){
+        if ($request->allowed == 'true'){
             $set = new StorageGoods();
             $set->storage_id = $request->storage_id;
             $set->goods_id = $request->goods_id;
