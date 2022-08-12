@@ -39,7 +39,7 @@ export default {
        }
     },
     beforeMount() {
-        this.pagesListGoods = ['sale', 'buy', 'storage']
+        this.pagesListGoods = ['sale', 'buy', 'storage', 'creditor']
         this.pagesMoveGoods = ['sale', 'buy', 'grow', 'cook'];
         this.pagesCook = ['cook'];
 
@@ -67,6 +67,8 @@ export default {
             return 1
         }
     }
+
+
 
 }
 </script>

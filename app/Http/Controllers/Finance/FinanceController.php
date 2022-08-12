@@ -97,7 +97,12 @@ class FinanceController extends Controller
         $transaction->user_id = $user;
 
         if ($transaction->save()){
-            return response()->json(['status'=>'ok']);
+            return response()->json(
+                [
+                    'status'=>'ok',
+                    'message'=>"списано {$request->size_pay}грн с департамента: {$request->storage_id}, на склад: {$request->param_id}. Категория: {$request->category}"
+                ]
+            );
         }else{
             return response()->json(['status'=>'error']);
         }

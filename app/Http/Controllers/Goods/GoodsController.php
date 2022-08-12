@@ -26,12 +26,14 @@ use Illuminate\Support\Facades\DB;
 
 class GoodsController extends Controller
 {
-
+    /**
+     * api/getListStoragesGoodsPermit/{goods_id}
+     * по выбранному продукту=goods_id показать на каком складе есть разрешения
+     */
     public function getListStoragesGoodsPermit(){
         $storage = Storages::all();
         return StorageGoodsPermitResource::collection($storage);
-
-        /*
+/*=======================
          {
             "data": [
             {
@@ -45,7 +47,7 @@ class GoodsController extends Controller
                 "allowed": true
             }
         }
-         */
+=======================*/
     }
 
     public function setPrice(Request $request){

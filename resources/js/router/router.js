@@ -82,6 +82,17 @@ const router = createRouter({
             component: () => import('../views/pageCreateGoods')
         },
         {
+            path: '/Spend/:type?',
+            name: 'Spend',
+            component: () => import('../views/pageSpend'),
+
+        },
+        {
+            path: '/SpendInvest/:type',
+            name: 'SpendInvest',
+            component: () => import('../views/pageSpendInvest'),
+        },
+        {
             path: '/PermitGoods',
             name: 'PermitGoods',
             component: () => import('../views/pagePermitGoods')
