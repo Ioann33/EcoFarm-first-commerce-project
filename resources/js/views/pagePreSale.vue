@@ -3,11 +3,11 @@
         <head-bar></head-bar>
         <nav-bar></nav-bar>
 
-        <div class="page-content header-clear-medium text-center">
+        <div class="page-content header-clear-medium">
             <!-- ERROR -->  <error :message="message"></error>
 
-            <title-page title_main="Продажа"></title-page>
-
+            <title-page title_main="Предпродажа"></title-page>
+продажа товара, без его отгрузки
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
 
                 <div class="row mb-0" v-for="(item, i) in sale_goods" :key="item.goods_id">
@@ -20,7 +20,7 @@
                                     v-for="(goods, index) in available_goods.filter(el => ![...selected_goods.slice(0,i), ...selected_goods.slice(i+1,selected_goods.length)].includes(el.goods_id))"
                                     v-bind:value="goods.goods_id"
                                 >
-                                    {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}
+                                    {{ goods.name }}
                                 </option>
 
                             </select>
@@ -35,14 +35,22 @@
                     </div>
                     <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <input type="number" :disabled="true" class="form-control focus-color focus-blue validate-name "
+                            <input type="number"  class="form-control focus-color focus-blue validate-name "
                                    id="f15"
                                    v-model="item.price"
                             >
-                            <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
+                                                            <label for="f1" class="color-blue-dark">кол-во</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
                             <i class="fa fa-check disabled valid color-green-dark"></i>
                             <em>цена за ед.</em>
+                        </div>
+
+                        <div class="input-style has-borders no-icon validate-field mb-4">
+                            <input v-model="item.price" type="number" class="form-control validate-number" id="form4" placeholder="Кол-во">
+                            <label for="form4" class="color-blue-dark">кол-во</label>
+                            <i class="fa fa-times disabled invalid color-red-dark"></i>
+                            <i class="fa fa-check disabled valid color-green-dark"></i>
+                            <em>(обязательно)</em>
                         </div>
                     </div>
                     <div class="col-4 p-1">
@@ -119,7 +127,7 @@
                     amount: 0,
                     max_amount: 0,
                     unit: 'кг',
-                    price: 5,
+                    price: '',
                     total: 0
                 }]
             }
@@ -161,12 +169,12 @@
             },
             async getStorageGoods(id){
                 this.loading_goods = true;
-                const res = await axios.get(`/api/getStorageGoods/available/${id}/all`);
+                const res = await axios.get(`/api/getStorageGoods/allowed/${id}/all`);
                 this.loading_goods = false;
                 if(!res.data){
                     return ;
                 }
-                this.available_goods = res.data.data.filter(el => el.amount >0);
+                this.available_goods = res.data.data;
             },
             checkAmount(i){
                 if(this.sale_goods[i].amount > this.sale_goods[i].max_amount){
