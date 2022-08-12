@@ -33,21 +33,12 @@ class GoodsController extends Controller
     public function getListStoragesGoodsPermit(){
         $storage = Storages::all();
         return StorageGoodsPermitResource::collection($storage);
-/*=======================
-         {
-            "data": [
-            {
-                "storage_id": 1,
-                "storage_name": "Главный склад",
-                "allowed": true
-            },
-            {
-                "storage_id": 4,
-                "storage_name": "Кафе",
-                "allowed": true
-            }
-        }
-=======================*/
+
+    }
+
+    public function getListGoods(){
+        $allGoods = Goods::all();
+        return response()->json($allGoods);
     }
 
     public function setPrice(Request $request){

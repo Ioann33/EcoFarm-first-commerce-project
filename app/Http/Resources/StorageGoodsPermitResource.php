@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\StorageGoods;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class StorageGoodsPermitResource extends JsonResource
@@ -14,10 +15,16 @@ class StorageGoodsPermitResource extends JsonResource
      */
     public function toArray($request)
     {
+        $permit = StorageGoods::where('storage_id', '=', $this->id)->where('goods_id', '=', $request->goods_id)->get('storage_id');
+        if (isset($permit[0]['storage_id'])){
+            $allow = true;
+        }else{
+            $allow = false;
+        }
         return [
             'storage_id'=>$this->id,
             'storage_name'=>$this->name,
-            'allowed'=>true
+            'allowed'=>$allow
         ];
     }
 }
