@@ -85,6 +85,11 @@ const router = createRouter({
             path: '/PermitGoods',
             name: 'PermitGoods',
             component: () => import('../views/pagePermitGoods')
+        },
+        {
+            path: '/PreSale',
+            name: 'PreSale',
+            component: () => import('../views/pagePreSale')
         }
     ]
 })
