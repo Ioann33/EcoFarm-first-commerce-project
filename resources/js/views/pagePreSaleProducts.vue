@@ -43,7 +43,8 @@
                             <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
                             <i class="fa fa-check disabled valid color-green-dark"></i>
-                            <em>цена за ед.</em>
+                            <em></em>
+                            <span>цена за ед.</span>
                         </div>
                     </div>
                     <div class="col-4 p-1">
@@ -56,7 +57,8 @@
                             <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
                             <i class="fa fa-check disabled valid color-green-dark"></i>
-                            <em>{{ item.unit }}</em>
+                            <em></em>
+                            <span>{{ item.unit }}</span>
                         </div>
                     </div>
                     <div class="col-4 p-1">
