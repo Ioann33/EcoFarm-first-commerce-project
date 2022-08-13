@@ -119,11 +119,11 @@
                 available_goods: [],
                 sale_goods: [{
                     goods_id: 'default',
-                    amount: 0,
+                    amount: '',
                     max_amount: 0,
                     unit: 'кг',
-                    price: 5,
-                    total: 0
+                    price: '',
+                    total: ''
                 }]
             }
         },
@@ -196,7 +196,7 @@
                     }
                 });
 
-                axios.post('/api/preSale', {
+                axios.post('/api/doPreSale', {
                     sales: sales
                 }).then(res => {
                     console.log('<<< товар продан')

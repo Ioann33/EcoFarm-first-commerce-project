@@ -132,7 +132,7 @@
 
 
         <!--ПЕРЕДАТЬ ТОВАР    -->
-        <div class="card card-style" style="padding-top: 12px;" v-if="move_out=='true'">
+        <div class="card card-style" style="padding-top: 12px;" >
             <div class="content mb-3 mt-0">
                 <div class="list-group list-custom-small">
 
@@ -197,13 +197,6 @@
         data() {
             return {
                 message: '',
-                ddd: 'Test name button',
-                order_in: false,
-                order_out: false,
-                move_in: false,
-                move_out: false,
-                money_in: false,
-                money_out: false,
                 storage_id: null,
                 storage_name: null,
                 balance: 1000,
@@ -248,12 +241,12 @@
             }
 
             // иначе - склад выбран - и нужно подтянуть привелегии этого склада
-            this.order_in = localStorage.getItem('order_in');
-            this.order_out = localStorage.getItem('order_out');
-            this.money_in = localStorage.getItem('money_in');
-            this.money_out = localStorage.getItem('money_out');
-            this.move_in = localStorage.getItem('move_in');
-            this.move_out = localStorage.getItem('move_out');
+            // this.order_in = localStorage.getItem('order_in');
+            // this.order_out = localStorage.getItem('order_out');
+            // this.money_in = localStorage.getItem('money_in');
+            // this.money_out = localStorage.getItem('money_out');
+            // this.move_in = localStorage.getItem('move_in');
+            // this.move_out = localStorage.getItem('move_out');
             this.storage_name = localStorage.getItem('my_storage_name');
 
             console.log('storage_name: '+this.storage_name)
