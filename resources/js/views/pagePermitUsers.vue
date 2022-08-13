@@ -10,9 +10,9 @@
 
             <div class="card card-style p-4 pt-3 mt-3">
                 <div class="row mb-0">
-                    <select-input :data="available_goods"
+                    <select-input :data="users"
                                   :label="'Пользователи'"
-                                  :value="selected_goods"
+                                  :value="selected_user"
                                   :loading="loading_goods" @getSelected="changeGoods" :defaultOption="'выбрать пользователя'" :keyOfValue="'id'">
                     </select-input>
                 </div>
@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-3">
                         <div class="custom-control ios-switch ios-switch-icon">
-                            <input v-model="elem.allowed" type="checkbox" class="ios-input" @change="changeGoodsAllow(elem.id, elem.allowed)" :disabled="loading_storages_goods" :id="'toggle-id-'+index">
+                            <input v-model="elem.allowed" type="checkbox" class="ios-input" @change="setUserPermit(elem.id, elem.allowed)" :disabled="loading_storages_goods" :id="'toggle-id-'+index">
                             <label class="custom-control-label" :for="'toggle-id-'+index"></label>
                             <i class="fa fa-check font-11 color-white"></i>
                             <i class="fa fa-times font-11 color-white"></i>
@@ -70,8 +70,8 @@
                 message2: '',
                 loading_goods: false,
                 loading_storages_goods: false,
-                selected_goods: 'default',
-                available_goods: [],
+                selected_user: 'default',
+                users: [],
                 storages: []
             }
         },
@@ -93,7 +93,7 @@
                     console.log(res.data)
                     return ;
                 }
-                this.available_goods = res.data;
+                this.users = res.data;
                 console.log(res.data)
                 //this.message = 'апи создано? /api/getListGoods https://homenet.youtrack.cloud/issue/EF-27/sozdat-api-apigetListGoods'
             },
@@ -116,18 +116,27 @@
                 })
             },
             changeGoods(value){
-                this.selected_goods = value;
+                this.selected_user = value;
                 if(value === 'default'){
+                    this.storages.forEach(el => {
+                        el.allowed = false;
+                    })
                     return;
                 }
                 this.getUserPermit(value)
             },
-            async changeGoodsAllow(id, value){
-                if(this.selected_goods === 'default') return;
-                await axios.post('/api/setGoodsPermit', {
-                    goods_id: this.selected_goods,
+            async setUserPermit(id, value){
+                if(this.selected_user === 'default') return;
+                const payload = {
+                    user_id: this.selected_user,
                     storage_id: id,
                     allowed: value
+                };
+                console.log('Данные которые отправляем на сервер:')
+                console.log(payload)
+
+                await axios.post('/api/setUserPermit', {
+                    ...payload
                 }).then(res => {
                     this.status = true;
                     this.message2 = 'Сохранено';
