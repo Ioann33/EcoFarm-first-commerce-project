@@ -6,7 +6,7 @@
                 <option value="default" selected>{{ defaultOption }}</option>
                 <option
                     v-for="(item, index) in data"
-                    v-bind:value="item.goods_id"
+                    v-bind:value="item[keyOfValue]"
                 >
                     {{ item.name }}
                 </option>
@@ -54,6 +54,10 @@
             disabled: {
                 type: Boolean,
                 default: false
+            },
+            keyOfValue: {
+                type: String,
+                default: 'goods_id'
             }
         },
         data() {
