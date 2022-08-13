@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import headBar from "../components/headBar";
+import headBar from "../Components/HeadBar";
 import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
 import Error from "../Components/Error";
