@@ -38,7 +38,7 @@
     <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached bg-orange-light rounded-m" data-menu-effect="menu-over" data-menu-height="200">
         <div class="menu-title mt-n1">
             <h1>Установить цену</h1>
-            <a href="#" class="close-menu"><i class="fa fa-times"></i></a>
+<!--            <a href="#" class="close-menu"><i class="fa fa-times"></i></a>-->
         </div>
         <div class="content mb-0 mt-2">
             <div class="divider mb-3"></div>
@@ -57,7 +57,7 @@
                 <input type="text" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">
             </div>
 
-            <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-subscribe-confirm" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
+            <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-setPrice" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
         </div>
     </div>
 
@@ -90,7 +90,8 @@ export default {
             message: null,           // for error message
             movement_id: '',
             price: -0,
-            editPrice: false
+            editPrice: false,
+            oneUpdate: 0
         }
     },
     mounted() {
@@ -118,7 +119,7 @@ export default {
         })
     },
     updated() {
-        update_template()
+            update_template()
     },
     methods: {
         setMovementId(e){
@@ -133,7 +134,7 @@ export default {
                 // если отгрузка из type=grow - то цену не нужно брать
                 // установить цену на товар "по умолчанию" взятую из этого перемещения
                 axios.get('/api/getMovementInfo/' + this.movement_id).then(res => {
-                    //this.price = res.data.price
+                    this.price = res.data.price
                     console.log('цена продукта взять из базы: ' + this.price)
 
                 }).catch(err => {
@@ -141,6 +142,8 @@ export default {
                     console.log(this.message)
                 })
             }
+
+
         },
         getListOrders(storage_id) {
             axios.get('/api/getStorageGoods/'+ this.dir +'/'+this.status+'/'+storage_id).then(res => {
@@ -152,7 +155,6 @@ export default {
             })
         },
         pullGoods(movement_id){
-
             // если выбранный склад - это главный склад, то оприходование товара прошло через модальное окно "установить цену"
             if(this.editPrice) {
                 axios.post('/api/setPrice/', {
