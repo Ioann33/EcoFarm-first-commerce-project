@@ -6,11 +6,14 @@
                 <option value="default" selected>{{ defaultOption }}</option>
                 <option
                     v-for="(item, index) in data"
-                    v-bind:value="item.goods_id"
+                    v-bind:value="item[keyOfValue]"
                 >
                     {{ item.name }}
                 </option>
-
+                <span><i class="fa fa-chevron-down"></i></span>
+                <i class="fa fa-check disabled valid color-green-dark"></i>
+                <i class="fa fa-check disabled invalid color-red-dark"></i>
+                <em></em>
             </select>
             <div v-if="loading" class="spinner-border text-light select-input-spinner" role="status">
                 <span class="sr-only">Loading...</span>
@@ -54,6 +57,10 @@
             disabled: {
                 type: Boolean,
                 default: false
+            },
+            keyOfValue: {
+                type: String,
+                default: 'goods_id'
             }
         },
         data() {
