@@ -106,6 +106,11 @@ const router = createRouter({
             path: '/ListPreSale',
             name: 'ListPreSale',
             component: () => import('../views/pageListPreSale')
+        },
+        {
+            path: '/PreSaleProducts',
+            name: 'PreSaleProducts',
+            component: () => import('../views/pagePreSaleProducts')
         }
     ]
 })

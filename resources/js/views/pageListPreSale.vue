@@ -8,7 +8,7 @@
             <title-page title_main="Список не закрытых сделок"></title-page>
 
             <div class="card card-style p-4 pt-3 mt-3">
-                <table class="table table-sm">
+                <table class="table table-sm table-pre-sale">
                     <thead>
                     <tr>
                         <th scope="col">Дата</th>
@@ -19,19 +19,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td><button class="btn btn-success btn-sm">Отгрузить</button></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                        <td><button class="btn btn-sm btn-success">Отгрузить</button></td>
+                    <tr v-for="(item, index) in list" :key="index">
+                        <th scope="row">{{ item.date.split(' ')[0] }}</th>
+                        <td>{{item.size_pay}}</td>
+                        <td>{{item.description}}</td>
+                        <td>Откуда взять?</td>
+                        <td><button class="btn-close-pre-sale" @click="closePreSale(item.id)">Отгрузить</button></td>
                     </tr>
                     </tbody>
                 </table>
@@ -72,10 +65,20 @@
         methods: {
             async getListMoneyByCategoryOnStorage(){
                 const res = await axios.get('/api/getListMoneyByCategoryOnStorage/12/701/2022-06-01 00:00:00/2022-09-05 00:00:00').then(res => {
+
                     console.log(res.data)
 
                     this.list = res.data.list;
                     console.log(this.list)
+                }).catch(e => {
+                    console.log(e)
+                })
+            },
+            async closePreSale(id){
+                const res = await axios.post('/api/closePreSale', {
+                    money_id: id
+                }).then(res => {
+                    console.log(res.data)
                 }).catch(e => {
                     console.log(e)
                 })
@@ -84,6 +87,14 @@
     }
 </script>
 
-<style scoped>
-
+<style>
+    .btn-close-pre-sale{
+        padding: 3px 6px;
+        border-radius: 6px;
+        background-color: #A0D468;
+        color: #fff;
+    }
+    .table-pre-sale {
+        vertical-align: middle;
+    }
 </style>
