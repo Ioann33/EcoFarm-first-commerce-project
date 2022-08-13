@@ -5,7 +5,9 @@
 
         <div class="page-content header-clear-medium">
 
-            <div class="card card-style p-4 pt-3 mt-3">
+            <title-page title_main="Добавить новый склад"></title-page>
+
+            <div class="card card-style p-4 mt-3">
                 <div class="input-style has-borders no-icon validate-field mb-4">
                     <input v-model="name" type="text" class="form-control validate-text" id="form1" placeholder="Название склада">
                     <label for="form1" class="color-highlight">Название склада</label>
@@ -15,9 +17,9 @@
                 </div>
                 <select-input :data="types"
                               :label="'Тип склада'"
-                              :value="type" @getSelected="changeGoods" :defaultOption="'выбрать тип'" :keyOfValue="'id'">
+                              :value="type" @getSelected="changeType" :defaultOption="'выбрать тип'" :keyOfValue="'id'">
                 </select-input>
-                <button class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark" @click="addStorage">Добавить</button>
+                <button :disabled="disabled" class="btn shadow-bg shadow-bg-m btn-m btn-full rounded-s text-uppercase font-900 shadow-s bg-green-dark" @click="addStorage">Добавить</button>
             </div>
 
         </div>
@@ -57,19 +59,29 @@
                 ]
             }
         },
-        computed: {},
+        computed: {
+            disabled(){
+                if(this.type !== 'default' && this.name.length >= 2){
+                    return false;
+                }
+                return true;
+            }
+        },
         mounted() {
         },
         updated() {
         },
         methods: {
+            changeType(value){
+              this.type = value;
+            },
             addStorage(){
                 const res = axios.post('/api/addStorage', {
                     name: this.name,
                     type: this.login,
                 }).then(res => {
                     if(res.data.status === 'ok'){
-                        console.log('Пользователь добавлен')
+                        console.log('Склад добавлен')
                     }
                 }).catch(e => {
                     console.log(e)

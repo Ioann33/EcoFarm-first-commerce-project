@@ -5,29 +5,31 @@
 
         <div class="page-content header-clear-medium">
 
-            <div class="card card-style p-4 pt-3 mt-3">
-                <div class="input-style has-borders no-icon validate-field mb-4">
-                    <input v-model="name" type="text" class="form-control validate-text" id="form1" placeholder="Имя пользователя">
+            <title-page title_main="Новый пользователь"></title-page>
+
+            <div class="card card-style p-4 mt-3">
+                <div class="input-style has-borders no-icon mb-4">
+                    <input v-model="name" type="text" class="form-control" id="form1" placeholder="Имя пользователя">
                     <label for="form1" class="color-highlight">Имя пользователя</label>
-                    <i class="fa fa-times disabled invalid color-red-dark"></i>
-                    <i class="fa fa-check disabled valid color-green-dark"></i>
+                    <i class="fa fa-times invalid color-red-dark" :class="(isValidName || name === '') ? 'disabled' : ''"></i>
+                    <i class="fa fa-check valid color-green-dark" :class="{disabled: !isValidName}"></i>
                     <em>(required)</em>
                 </div>
-                <div class="input-style has-borders no-icon validate-field mb-4">
-                    <input v-model="login" type="text" class="form-control validate-text" id="form2" placeholder="Логин">
+                <div class="input-style has-borders no-icon mb-4">
+                    <input v-model="login" type="text" class="form-control" id="form2" placeholder="Логин">
                     <label for="form2" class="color-highlight">Логин</label>
-                    <i class="fa fa-times disabled invalid color-red-dark"></i>
-                    <i class="fa fa-check disabled valid color-green-dark"></i>
+                    <i class="fa fa-times invalid color-red-dark" :class="(isValidLogin || login === '') ? 'disabled' : ''"></i>
+                    <i class="fa fa-check valid color-green-dark" :class="{disabled: !isValidLogin}"></i>
                     <em>(required)</em>
                 </div>
-                <div class="input-style has-borders no-icon validate-field mb-4">
-                    <input v-model="password" type="password" class="form-control validate-text" id="form3" placeholder="Пароль">
+                <div class="input-style has-borders no-icon mb-4">
+                    <input v-model="password" type="password" class="form-control" id="form3" placeholder="Пароль">
                     <label for="form3" class="color-highlight">Пароль</label>
-                    <i class="fa fa-times disabled invalid color-red-dark"></i>
-                    <i class="fa fa-check disabled valid color-green-dark"></i>
+                    <i class="fa fa-times invalid color-red-dark" :class="(isValidPassword || password === '') ? 'disabled' : ''"></i>
+                    <i class="fa fa-check valid color-green-dark" :class="{disabled: !isValidPassword}"></i>
                     <em>(required)</em>
                 </div>
-                <button class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark" @click="addUser">Добавить</button>
+                <button :disabled="!isValidName || !isValidLogin || !isValidPassword" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark" @click="addUser">Добавить</button>
             </div>
 
         </div>
@@ -54,10 +56,26 @@
             return {
                 name: '',
                 login: '',
-                password: ''
+                password: '',
+                regex_name: /[\wа-я]+/ig,
+                regex_login: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{3,}$/,
+                regex_password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
             }
         },
-        computed: {},
+        computed: {
+            isValidName(){
+                if(this.regex_name.test(this.name) && this.name.length >= 3) {
+                    return true;
+                }
+                return false;
+            },
+            isValidLogin(){
+                return this.regex_login.test(this.login);
+            },
+            isValidPassword(){
+                return this.regex_password.test(this.password);
+            },
+        },
         mounted() {
         },
         updated() {
