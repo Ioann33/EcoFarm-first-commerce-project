@@ -62,6 +62,11 @@ const router = createRouter({
             component: () => import('../views/pageSaleProducts')
         },
         {
+            path: '/preSale',
+            name: 'preSale',
+            component: () => import('../views/pagePreSale')
+        },
+        {
             path: '/transferMoney',
             name: 'transferMoney',
             component: () => import('../views/pageTransferMoney')
@@ -96,6 +101,11 @@ const router = createRouter({
             path: '/PermitGoods',
             name: 'PermitGoods',
             component: () => import('../views/pagePermitGoods')
+        },
+        {
+            path: '/ListPreSale',
+            name: 'ListPreSale',
+            component: () => import('../views/pageListPreSale')
         }
     ]
 })

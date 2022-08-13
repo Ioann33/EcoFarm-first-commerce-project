@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Finance;
 use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
 use App\Models\Money;
+use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
+use App\Models\MyModel\MoneyTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +22,7 @@ class FinanceController extends Controller
 //        $this->balance = Money::all();
     }
 
-    public function getFinance(Request $request)
+    public function getFinance(Request $request): \Illuminate\Http\JsonResponse
     {
         // понедельник 8:00
 
@@ -82,7 +84,7 @@ class FinanceController extends Controller
         );
     }
 
-    public function doSpends(Request $request)
+    public function doSpends(Request $request): \Illuminate\Http\JsonResponse
     {
         $user = Auth::id();
         $date = date('Y-m-d H:i:s');
@@ -108,7 +110,9 @@ class FinanceController extends Controller
         }
     }
 
-    public function doTransferMoney(Request $request){
+
+    public function doTransferMoney(Request $request): \Illuminate\Http\JsonResponse
+    {
         $request = json_decode($request->getContent());
         DB::beginTransaction();
 
@@ -124,7 +128,7 @@ class FinanceController extends Controller
             $give->storage_id = $request->storage_id_from;
             $give->size_pay = -$request->amount;
             $give->description = $request->comment;
-            $give->category = 4;
+            $give->category = 300;
 
             $give->user_id = $user;
             $res = $give->save();
@@ -144,7 +148,7 @@ class FinanceController extends Controller
             $resive->storage_id = $request->storage_id_to;
             $resive->size_pay = $request->amount;
             $resive->description = $request->comment;
-            $resive->category = 4;
+            $resive->category = 301;
             $resive->param_id = $giveID;
             $resive->user_id = $user;
             $res = $resive->save();
@@ -181,27 +185,94 @@ class FinanceController extends Controller
         }
     }
 
-    public function doSale(Request $request){
+    public function getSumMoneyByCategoryOnStorage(Request $request){
+        $sum = Money::all()
+            ->where('storage_id', '=', $request->storage_id)
+            ->where('category', '=', $request->category_id)
+            ->where('date', '>=', $request->date_from)
+            ->where('date', '<=', $request->date_to)
+            ->sum('size_pay');
+        return response()->json(['sum'=>$sum]);
+    }
+
+    public function getListMoneyByCategoryOnStorage(Request $request){
+        $list = Money::where('storage_id', '=', $request->storage_id)
+            ->where('category', '=', $request->category_id)
+            ->where('date', '>=', $request->date_from)
+            ->where('date', '<=', $request->date_to)
+            ->get();
+        return response()->json(['list'=>$list]);
+    }
+
+    public function closePreSale(Request $request){
+        $user_id = Auth::id();
+        $dateNow = date('Y-m-d H:i:s');
+        $transaction = Money::findOrFail($request->money_id);
+        $movement = Movements::findOrFail($transaction->param_id);
+
+        try {
+            $selfCoastPushGoods = HandleGoods::moveGoods($transaction->storage_id, null,$movement->goods_id, $movement->amount, null, null, null, null,null, null, true);
+
+            if ($selfCoastPushGoods){
+                $movement->storage_id_from = $transaction->storage_id;
+                $movement->user_id_accepted = $user_id;
+                $movement->date_accepted = $dateNow;
+                $movement->category = 'sale';
+                $movement->save();
+            }
+            $transaction->category = 700;
+            $transaction->save();
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json(['message'=>$e->resMess(), 'status' => 'error',]);
+        }
+        DB::commit();
+
+        return response()->json(['message'=>' отгрузка товара согласно препродаже '.$request->money_id, 'status' => 'ok',]);
+
+
+    }
+
+    public function doPreSale(Request $request)
+    {
         DB::beginTransaction();
         $user_id = Auth::id();
         $dateNow = date('Y-m-d H:i:s');
         try {
             foreach ($request->sales as $sale){
-                HandleGoods::moveGoods($sale['storage_id'], null, $sale['goods_id'], $sale['amount'],'sale', null,null, $user_id, $dateNow);
-
 
                 $costProduct = (int) $sale['amount'] * (int) $sale['price'];
-                $transaction = new Money();
-                $transaction->date = $dateNow;
-                $transaction->storage_id = $sale['storage_id'];
-                $transaction->size_pay = $costProduct;
-                $transaction->description = 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'];
-                $transaction->category = 5;
-                $transaction->param_id = $sale['goods_id'];
-                $transaction->user_id = $user_id;
-                $transaction->save();
 
+                $move_id = HandleGoods::movements(null, null, $sale['goods_id'],'pre_sale', null, $sale['amount'], null, $sale['price']);
 
+                $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'предпродажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 701, $move_id,$user_id);
+
+                $movement = Movements::findOrFail($move_id);
+                $movement->link_id = $trance_id;
+                $movement->save();
+
+            }
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json(['message'=>$e->resMess(), 'status' => 'error',]);
+        }
+        DB::commit();
+
+        return response()->json(['message'=>' продажа товара без отгрузки', 'status' => 'ok',]);
+    }
+
+    public function doSale(Request $request)
+    {
+        DB::beginTransaction();
+        $user_id = Auth::id();
+        $dateNow = date('Y-m-d H:i:s');
+        try {
+            foreach ($request->sales as $sale){
+                $costProduct = (int) $sale['amount'] * (int) $sale['price'];
+
+                $move_id = HandleGoods::moveGoods($sale['storage_id'], null, $sale['goods_id'], $sale['amount'],'sale', null,null, $user_id, $dateNow);
+
+                MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 700, $move_id, $user_id);
 
             }
         }catch (NotEnoughGoods $e){
@@ -214,7 +285,8 @@ class FinanceController extends Controller
     }
 
 
-    public function doBuy(Request $request){
+    public function doBuy(Request $request): \Illuminate\Http\JsonResponse
+    {
         DB::beginTransaction();
         $user_id = Auth::id();
         $dateNow = date('Y-m-d H:i:s');
@@ -222,21 +294,9 @@ class FinanceController extends Controller
             foreach ($request->buy as $buy){
                 $costProduct = (int) $buy['amount'] * (int) $buy['price'];
 
-                HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $costProduct);
+                $move_id = HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $costProduct);
 
-
-
-                $transaction = new Money();
-                $transaction->date = $dateNow;
-                $transaction->storage_id = $buy['storage_id'];
-                $transaction->size_pay = -$costProduct;
-                $transaction->description = 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'];
-                $transaction->category = 6;
-                $transaction->param_id = $buy['goods_id'];
-                $transaction->user_id = $user_id;
-                $transaction->save();
-
-
+                MoneyTransfer::moneyTransfer(-$costProduct, $dateNow, $buy['storage_id'], 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], 800, $move_id['productID'],$user_id);
 
             }
         }catch (NotEnoughGoods $e){

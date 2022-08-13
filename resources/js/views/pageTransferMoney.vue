@@ -12,7 +12,7 @@
                     <div class="col-10 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
 <!--                            <label for="storage-list-from" class="color-blue-dark">Товар</label>-->
-                            <select id="storage-list-from"  v-model="storage_id" class="form-control">
+                            <select id="storage-list-from"  v-model="storage_from.id" @change="selectStorageFrom()" class="form-control">
                                 <option value="default" selected>выбрать склад</option>
                                 <option
                                     v-for="(storage, index) in list_storage"
@@ -35,7 +35,7 @@
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="number" :disabled="true" class="form-control focus-color focus-blue validate-name "
                                    id="f15"
-                                   v-model="balance"
+                                   v-model="storage_from.balance"
                             >
                             <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -48,7 +48,7 @@
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="number" class="form-control focus-color focus-blue validate-name "
                                    :id="'amount-from-' + storage_id"
-                                   @change="checkAmount()"
+                                   @input="checkAmount()"
                                    v-model="amount"
                             >
                             <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
@@ -84,7 +84,7 @@
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="number" :disabled="true" class="form-control focus-color focus-blue validate-name "
                                    id="storage-to-balance"
-                                   v-model="balance"
+                                   v-model="storage_to.balance"
                             >
                             <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -134,6 +134,10 @@
                 balance: 0,
                 amount: '',
                 list_storage: [],
+                storage_from: {
+                    id: 'default',
+                    balance: 0
+                },
                 storage_to: {
                     id: 'default',
                     balance: 0
@@ -154,6 +158,14 @@
           await this.getStorageList();
         },
         methods: {
+            selectStorageFrom(){
+                if(this.storage_from.id === 'default') {
+                    this.storage_from.balance = 0;
+                    return;
+                }
+                const selected = this.list_storage.find(el => el.id === this.storage_from.id );
+                this.storage_from.balance = selected.balance;
+            },
             async getMoney(storage_id, storage_to = false){
                 if(storage_to){
                     this.loading_balance_to = true;
@@ -170,7 +182,7 @@
                     console.log('Unfortunately some error')
                 }
                 if(storage_to) {
-                    this.storage_to.balance = res.data.balance;
+                    this.storage_to.balance += Number.parseFloat(res.data.balance);
                 } else {
                     this.balance = res.data.balance;
                 }
@@ -208,8 +220,20 @@
                 this.$router.push({name: 'home'});
             },
             checkAmount(){
-                if(this.amount > this.balance){
-                    this.amount = this.balance;
+                const selected_storage_to = this.list_storage.find(el => el.id === this.storage_to.id);
+                if(this.amount > this.storage_from.balance){
+                    this.amount = Number.parseFloat(this.storage_from.balance);
+                    if(this.storage_to.id === 'default'){
+                        this.storage_to.balance = this.amount;
+                    } else {
+                        this.storage_to.balance = Number.parseFloat(selected_storage_to.balance) + this.amount;
+                    }
+                    return;
+                }
+                if(this.storage_to.id === 'default'){
+                    this.storage_to.balance = this.amount;
+                } else {
+                    this.storage_to.balance = Number.parseFloat(selected_storage_to.balance) + this.amount;
                 }
             }
         }
