@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UsersPermitResource;
 use App\Models\StorageGoods;
+use App\Models\Storages;
 use App\Models\User;
 use App\Models\UserStorages;
 use Illuminate\Http\Request;
@@ -28,6 +30,40 @@ class UserController extends Controller
         }
     }
 
+    public function getUserPermit(Request $request){
+//        $this->validate($request,[
+//            'user_id'=>'required',
+//        ]);
+
+        $storage = Storages::all();
+        return UsersPermitResource::collection($storage);
+
+    }
+
+    public function listUsers(Request $request){
+        $all_users = User::all();
+        return $all_users;
+/* return
+--------------------json
+[
+    {
+        "id": 3,
+        "name": "Официант",
+        "login": "Официант",
+        "created_on": "2022-07-20 15:11:55",
+        "last_login": null
+    },
+    {
+        "id": 1,
+        "name": "Djek Lu",
+        "login": "djeklu",
+        "created_on": "2022-07-19 22:20:58",
+        "last_login": null
+    },
+]
+--------------------
+*/
+    }
 
     public function setUserPermit(Request $request){
         if ($request->allow == 'yes'){

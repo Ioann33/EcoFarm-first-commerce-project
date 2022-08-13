@@ -74,11 +74,11 @@ class FinanceController extends Controller
 
         return response()->json(
             [
-                'balance' => $balance,
-                'sales_today' => $sales_today,
-                'sales_week' => $sales_week,
-                'buy_today' => $buy_today,
-                'buy_week' => $buy_week,
+                'balance' => number_format($balance,0, '.', ' '),
+                'sales_today' => number_format($sales_today,0, '.', ' '),
+                'sales_week' => number_format($sales_week,0, '.', ' '),
+                'buy_today' => number_format($buy_today,0, '.', ' '),
+                'buy_week' => number_format($buy_week,0, '.', ' '),
                 'type' => $request->type
             ]
         );

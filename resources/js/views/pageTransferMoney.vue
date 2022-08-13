@@ -209,7 +209,7 @@
             },
             async doTransfer(){
                 const res = await axios.post(`/api/doTransferMoney`, {
-                    storage_id_from: this.storage_id,
+                    storage_id_from: this.storage_from.id,
                     storage_id_to: this.storage_to.id,
                     amount: this.amount,
                     comment: this.comment,

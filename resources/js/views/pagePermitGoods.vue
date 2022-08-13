@@ -39,9 +39,9 @@
         </div>
         <div v-if="message2" class="alert me-3 ms-3 rounded-s alert-save-goods-custom" :class="status ? 'bg-green-dark' : 'bg-red-dark'" role="alert">
             <span class="alert-icon"><i class="fa font-18" :class="status ? 'fa-check' : 'fa-times-circle'"></i></span>
-            <h4 class="text-uppercase color-white">{{ status ? 'SUCCESS' : 'ERROR' }}</h4>
-            <strong class="alert-icon-text">{{ message2 }}</strong>
-            <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert" aria-label="Close">×</button>
+            <h4 class="text-uppercase color-white">{{ status ? 'ОК' : 'ERROR' }} - {{ message2 }}</h4>
+<!--            <strong class="alert-icon-text">{{ message2 }}</strong>-->
+<!--            <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert" aria-label="Close">×</button>-->
         </div>
         <nav-bar-menu></nav-bar-menu>
     </div>
@@ -135,7 +135,7 @@
                     this.status = false;
                     this.message = e;
                 })
-                setTimeout(() => this.message2 = '', 3000)
+                setTimeout(() => this.message2 = '', 1000)
             }
         }
     }

@@ -42,6 +42,14 @@ class GoodsController extends Controller
         return getListGoodsResource::collection($allGoods);
     }
 
+    /**
+     Установить цену на перемещение.
+     на входе
+            {
+                "movement_id": 163,
+                "price": "3"
+            }
+     */
     public function setPrice(Request $request){
         $this->validate($request,[
             'movement_id'=>'required',
@@ -59,7 +67,11 @@ class GoodsController extends Controller
 
 
         if($movement->save()) {
-            return response()->json(['status'=>'ok']);
+            return response()->json(
+                [
+                    'status' => 'ok',
+                    'message' => "move($request->movement_id): установленна цена({$movement->price}) на продукт({$movement->goods_id}) "
+                ]);
         }
     }
 

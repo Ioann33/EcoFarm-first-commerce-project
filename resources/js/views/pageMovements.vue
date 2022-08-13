@@ -159,7 +159,7 @@ export default {
                     movement_id,
                     price: this.price
                 }).then(res => {
-                    console.log('price: '+this.price+' is set')
+                    console.log('[serv-'+res.data.status+'] '+res.data.message)
                 }).catch(err => {
                     this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
                 })
