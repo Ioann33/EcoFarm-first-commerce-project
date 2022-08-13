@@ -49,6 +49,25 @@
 
 <!--                        @click.prevent="pullGoods(movement.order_id)"-->
 
+
+<!--                        <div v-if="!this.clk">-->
+<!--                            <div v-if="needEditPrice"><a href="#" @click.prevent="this.clk=true"> установить цену и оприходовать </a></div>-->
+<!--                            <div v-else> только оприходовать</div>-->
+<!--                        </div>-->
+<!--                        <div v-else>-->
+<!--                            <div class="input-style input-style-always-active has-borders no-icon">-->
+<!--                                <div class="input-group input-group-lg">-->
+<!--                                    <div class="input-group-prepend">-->
+<!--                                        <span class="input-group-text" id="inputGroup-sizing-lg">₴</span>-->
+<!--                                    </div>-->
+<!--                                    <input type="number" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">-->
+<!--                                </div>-->
+<!--                                <a href="#"   @click.prevent='' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену и Оприходовать</a>-->
+
+<!--                            </div>-->
+<!--                        </div>-->
+
+
                         <a href="#" v-if="editPrice" data-menu="menu-setPrice" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену и Оприходовать</a>
                         <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
 <!--                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(movement.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</a>-->
@@ -70,7 +89,11 @@ export default {
     name: "cardMovement",
     data(){
         return {
-            price: null
+            price: null,
+            editPrice2: false,
+            my_storage_id: 0,
+            main_storage_id: 0,
+            clk: false
         }
     },
     props: [
@@ -140,7 +163,14 @@ export default {
         //     if(this.storage_id == this.main_storage_id;)
         //         return 1
         // },
-
+        needEditPrice(){
+            if(this.my_storage_id == this.main_storage_id)
+                return true
+        }
+    },
+    beforeMount() {
+        this.my_storage_id = localStorage.getItem('my_storage_id')
+        this.main_storage_id = localStorage.getItem('main_storage_id')
 
     },
     methods: {
@@ -161,6 +191,3 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>

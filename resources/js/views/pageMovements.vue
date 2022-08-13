@@ -57,7 +57,7 @@
                 <input type="text" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">
             </div>
 
-            <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-subscribe-confirm" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
+            <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-setPrice" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
         </div>
     </div>
 
@@ -142,6 +142,8 @@ export default {
                     console.log(this.message)
                 })
             }
+
+
         },
         getListOrders(storage_id) {
             axios.get('/api/getStorageGoods/'+ this.dir +'/'+this.status+'/'+storage_id).then(res => {
