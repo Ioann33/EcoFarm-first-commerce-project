@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import headBar from "../components/headBar";
+import headBar from "../Components/HeadBar";
 import error from "../Components/Error";
 import StorageButton from "../Components/StorageButton";
 
