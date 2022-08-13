@@ -19,7 +19,7 @@
             <div class="p-3 bg-yellow-dark ">
                 <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">товаров </h4>
                 <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
-                    5443</h1>
+                    {{ this.costIngredients }}</h1>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
             <div class="p-3 bg-yellow-dark ">
                 <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">ИТОГО </h4>
                 <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
-                    5443</h1>
+                    {{ this.costProductsTotal }}</h1>
             </div>
         </div>
     </div>
@@ -127,6 +127,7 @@
                 message: '',    // сообщения системы
                 costReady: -0,
                 costIngredients: -0,
+                costProductsTotal: -0
             }
         },
         computed: {},
@@ -135,30 +136,26 @@
             this.my_storage_name = localStorage.getItem('my_storage_name')
         },
 
-        mounted() {
+        async mounted() {
 
-            axios.get('/api/costGoodsOnStock/'+this.my_storage_id+'/ready')
+            await axios.get('/api/costGoodsOnStock/'+this.my_storage_id+'/ready')
                 .then(res => {
-                    this.costReady = res.data.sum
+                    this.costReady = parseInt(res.data.sum)
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
-            // axios.get('/api/costGoodsOnStock/'+this.my_storage_id+'/ready')
-            //     .then(res => {
-            //         this.costReady = res.data.sum
-            //     }).catch(err => {
-            //     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-            // })
+            await axios.get('/api/costGoodsOnStock/'+this.my_storage_id+'/ingredients')
+                .then(res => {
+                    this.costIngredients = parseInt(res.data.sum)
+                }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            })
 
+            this.costProductsTotal = 55 + this.costIngredients + this.costReady
 
         },
         methods: {
         }
-
     }
 </script>
-
-<style scoped>
-
-</style>
