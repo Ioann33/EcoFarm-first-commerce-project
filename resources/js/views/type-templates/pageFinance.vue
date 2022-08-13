@@ -3,6 +3,36 @@
         <!-- ERROR -->  <error :message="message"></error>
         <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
+        <div class="row">
+            <div class="col-4 ps-3 pe-0">
+                <div class="card card-style mx-0 mb-3">
+                    <div class="p-3 bg-yellow-dark ">
+                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Готовая Продукция </h4>
+                        <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                            {{ this.salaryWeek }}</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 ps-1 pe-0">
+                <div class="card card-style mx-0 mb-3">
+                    <div class="p-3 bg-yellow-dark ">
+                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">товаров </h4>
+                        <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                            {{ this.capitalWeek }}</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 ps-1 pe-3">
+                <div class="card card-style mx-0 mb-3">
+                    <div class="p-3 bg-yellow-dark ">
+                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">ИТОГО </h4>
+                        <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                            {{ this.non_profitWeek }}</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card card-style">
             <div class="content mt-0 mb-0">
 
@@ -88,14 +118,22 @@
         data() {
             return {
                 message: '',
+                capitalWeek: 0,
+                salaryWeek: 0,
+                non_profitWeek: 0
             }
         },
         computed: {},
         beforeMount() {
             this.my_storage_id = localStorage.getItem('my_storage_id')
-            this.my_storage_name = localStorage.getItem('my_storage_name')
         },
-        mounted() {
+        async mounted() {
+            await axios.get('/api/costGoodsOnStock/'+this.my_storage_id+'/ingredients')
+                .then(res => {
+                    this.costIngredients = parseInt(res.data.sum)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                })
         },
         methods: {
 
