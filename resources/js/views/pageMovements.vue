@@ -162,19 +162,32 @@ export default {
                     price: this.price
                 }).then(res => {
                     console.log('[serv-'+res.data.status+'] '+res.data.message)
+
+
+                    axios.post('/api/goodsMovementPull/', {
+                        movement_id
+                    }).then(res => {
+                        console.log('movements #' + movement_id + ' pull is approve')
+                        console.log('[serv-'+res.data.status+'] '+res.data.message)
+                        this.$router.push({name: 'home'});
+                    }).catch(err => {
+                        this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                    })
+
+
+                }).catch(err => {
+                    this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                })
+            }else {
+                axios.post('/api/goodsMovementPull/', {
+                    movement_id
+                }).then(res => {
+                    console.log('movements #' + movement_id + ' pull is approve')
+                    this.$router.push({name: 'home'});
                 }).catch(err => {
                     this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
                 })
             }
-
-            axios.post('/api/goodsMovementPull/', {
-                movement_id
-            }).then(res => {
-                console.log('movements #'+movement_id+' pull is approve')
-                this.$router.push({name: 'home'});
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-            })
 
         },
 
