@@ -14,16 +14,16 @@
                 <div class="content mb-0">
 
 
-
                     <div class="input-style input-style-always-active has-borders no-icon">
                         <label for="f7" class="color-blue-dark">категория</label>
-                        <select id="f7" class="form-control">
+                        <select id="f7" class="form-control" v-model="selected_category_id">
                             <option value="default" disabled selected>выбрать категорию</option>
+
+                            <!--                                v-bind:selected="category.selected"-->
 
                             <option
                                 v-for="(category, index) in categories"
                                 v-bind:value="category.id"
-                                v-bind:selected="category.selected"
                             >
                                 {{ category.name }}
                             </option>
@@ -114,6 +114,7 @@
                 listStorage: [],
                 loading_goods: false,
                 selected_storage_id: 'default',
+                selected_category_id: 'default',
                 size_pay: '',
                 comment: '',
                 categories: [
@@ -141,7 +142,8 @@
             // на основании входящего параметра при переходе на этустраницу - будет выбираться сразу: зарплата, кап затраты или не профильные
             this.categories.forEach(el => {
                 if(el.type == this.$route.params.type) {
-                    el.selected = 1
+                    //el.selected = 1
+                    this.selected_category_id = el.id
                 }
             })
             update_template()
@@ -153,7 +155,7 @@
                     storage_id: this.my_storage_id,
                     size_pay: -this.size_pay,   // списания со знаком минус
                     comment: this.comment,
-                    category: 100,  // 100 - salary
+                    category: this.selected_category_id,  // 100 - salary
                     param_id: this.selected_storage_id
                 }).then(res => {
                     if(res.data.status === 'ok') {
