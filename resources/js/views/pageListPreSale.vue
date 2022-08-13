@@ -24,7 +24,7 @@
                         <td>Mark</td>
                         <td>Otto</td>
                         <td>@mdo</td>
-                        <td><button class="btn btn-sm btn-success">Отгрузить</button></td>
+                        <td><button class="btn btn-success btn-sm">Отгрузить</button></td>
                     </tr>
                     <tr>
                         <th scope="row">2</th>
@@ -71,7 +71,7 @@
         },
         methods: {
             async getListMoneyByCategoryOnStorage(){
-                const res = await axios.get('/api/getListMoneyByCategoryOnStorage/7/701/2022-06-01/00:00:00/2022-09-05 00:00:00').then(res => {
+                const res = await axios.get('/api/getListMoneyByCategoryOnStorage/12/701/2022-06-01 00:00:00/2022-09-05 00:00:00').then(res => {
                     console.log(res.data)
 
                     this.list = res.data.list;
