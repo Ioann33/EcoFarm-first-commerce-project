@@ -44,6 +44,12 @@
                         <strong>Список не закрытых сделок</strong>
                         <i class="fa fa-angle-right"></i>
                     </router-link>
+                    <router-link :to="{name: 'PreSaleProducts'}">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Продажа товара</span>
+                        <strong>Продажа товара без отгрузки</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
                 </div>
 
             </div>
