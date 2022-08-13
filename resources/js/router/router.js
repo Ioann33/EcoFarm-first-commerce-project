@@ -116,6 +116,16 @@ const router = createRouter({
             path: '/permitUsers',
             name: 'permitUsers',
             component: () => import('../views/pagePermitUsers')
+        },
+        {
+            path: '/addUser',
+            name: 'addUser',
+            component: () => import('../views/pageAddUser')
+        },
+        {
+            path: '/addStorage',
+            name: 'addStorage',
+            component: () => import('../views/pageAddStorage')
         }
     ]
 })
