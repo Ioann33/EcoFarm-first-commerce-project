@@ -111,6 +111,11 @@ const router = createRouter({
             path: '/PreSaleProducts',
             name: 'PreSaleProducts',
             component: () => import('../views/pagePreSaleProducts')
+        },
+        {
+            path: '/permitUsers',
+            name: 'permitUsers',
+            component: () => import('../views/pagePermitUsers')
         }
     ]
 })
