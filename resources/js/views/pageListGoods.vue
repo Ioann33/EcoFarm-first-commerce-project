@@ -62,7 +62,9 @@
                                 </tbody>
                             </table>
                         </div>
-
+                        <div class="text-center mt-2" style="font-size: 18px;">
+                            ИТОГО {{ Number.parseInt(totalAmount.split('.')[0]).toLocaleString('en-US').replace(',', ' ') }},{{ totalAmount.split('.')[1]}} грн
+                        </div>
 
 
                     </div>
@@ -124,6 +126,13 @@ export default {
             storage_id: null,
             storage_name: null, // имя текущего склада
         }
+    },
+    computed: {
+      totalAmount() {
+          let total = 0;
+          this.listGoods.forEach(el => total += el.amount * el.price);
+          return total.toFixed(2);
+      }
     },
     updated() {
         update_template()
