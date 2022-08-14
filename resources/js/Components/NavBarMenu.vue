@@ -37,6 +37,20 @@
                     <i class="fa fa-angle-right"></i>
                 </router-link>
             </div>
+            <div class="list-group list-custom-small" v-if="isMain">
+                <router-link :to="{name: 'addUser'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <span>Добавить пользователя</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+            </div>
+            <div class="list-group list-custom-small" v-if="isMain">
+                <router-link :to="{name: 'addStorage'}">
+                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <span>Добавить склад</span>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+            </div>
             <div class="list-group list-custom-small">
                 <router-link :to="{name: 'selectStorage'}">
                     <i class="fa font-12 rounded-s bg-green-dark color-white me-3"></i>
