@@ -58,8 +58,8 @@
                 login: '',
                 password: '',
                 regex_name: /[\wа-я]+/ig,
-                regex_login: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{3,}$/,
-                regex_password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                regex_login: /^[\SA-Za-z0-9]{5,15}$/,
+                regex_password: /[A-Za-z]{2}[A-Za-z]*[ ]?[A-Za-z]*/,
             }
         },
         computed: {
@@ -70,10 +70,16 @@
                 return false;
             },
             isValidLogin(){
-                return this.regex_login.test(this.login);
+                if(this.regex_login.test(this.login) && this.login.length >=3){
+                    return true;
+                }
+                return false;
             },
             isValidPassword(){
-                return this.regex_password.test(this.password);
+                if(this.regex_password.test(this.password) && this.password.length >=3){
+                    return true;
+                }
+                return false;
             },
         },
         mounted() {
