@@ -51,10 +51,8 @@
 <!--            </div>-->
 
             <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-lg">₴</span>
-                </div>
-                <input type="number" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">
+                <span class="input-group-text">₴</span>
+                <input type="number" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price" @focus="$event.target.select()">
             </div>
 
             <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-setPrice" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
