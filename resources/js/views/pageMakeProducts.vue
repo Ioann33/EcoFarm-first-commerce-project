@@ -8,12 +8,12 @@
 
             <!-- ERROR -->  <error :message="message"></error>
 
-            <div class="card card-style overflow-visible card-custom-products">
+            <div class="card card-style overflow-visible card-custom-products pt-2 pb-0 bg-green-dark">
                 <div class="row mb-0">
-                    <div class="col-10 p-1">
+                    <div class="col-8 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <label for="prod_1" class="color-blue-dark">Готовя продукция</label>
-                            <select id="prod_1" v-model="selected_goods_id" class="form-control">
+                            <label for="prod_1" class="color-blue-dark bg-green-dark">Готовая продукция</label>
+                            <select id="prod_1" v-model="selected_goods_id" class="form-control bg-green-dark">
                                 <option value="default" selected>выбрать</option>
                                 <option
                                     v-for="(goods, index) in listGoods"
@@ -28,9 +28,9 @@
                             <em></em>
                         </div>
                     </div>
-                    <div class="col-2 p-1">
+                    <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <input type="number" class="form-control focus-color focus-blue validate-name "
+                            <input type="number" class="form-control focus-color focus-blue validate-name bg-green-dark"
                                    id="f4"
                                    v-model="amount"
                             >
@@ -41,6 +41,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+
+            <div class="card card-style overflow-visible card-custom-products">
                 <div class="row mb-0" v-for="(ingredient, i) in ingredients" :key="i">
                     <div class="col-7 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
@@ -61,7 +65,7 @@
                         </div>
                     </div>
 
-                    <div class="col-3 p-1">
+                    <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="number" :disabled="ingredient.max_amount === 0" class="form-control focus-color focus-blue validate-name "
                                    id="f1"
@@ -74,22 +78,24 @@
                             <em>{{ ingredient.max_amount }}</em>
                         </div>
                     </div>
-
-                    <div class="col-2 p-1">
-                        <div class="input-style input-style-always-active has-borders no-icon">
-                            <input type="number" disabled class="form-control focus-color focus-blue validate-name text-center"
-                                   :placeholder="ingredient.unit"
-                            >
-
-                            <i class="fa fa-times disabled invalid color-red-dark"></i>
-                            <i class="fa fa-check disabled valid color-green-dark"></i>
-                        </div>
+                    <div class="col-1 p-1 text-center">
+                    {{ingredient.unit}}
                     </div>
+<!--                    <div class="col-2 p-1">-->
+<!--                        <div class="input-style input-style-always-active has-borders no-icon">-->
+<!--                            <input type="number" disabled class="form-control focus-color focus-blue validate-name text-center"-->
+<!--                                   :placeholder="ingredient.unit"-->
+<!--                            >-->
+
+<!--                            <i class="fa fa-times disabled invalid color-red-dark"></i>-->
+<!--                            <i class="fa fa-check disabled valid color-green-dark"></i>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
                 <button @click="addIngredient" style="padding: 15px 24px; background-color: #A0D468; border-radius: 28px; color: #fff;" class="add-ingredient-btn">+</button>
             </div>
 
-            <button type="button" class="btn btn-success btn-lg create-product-btn" @click="createProduct">Создать ГТ и передать ее на главный склад</button>
+            <button v-if="isAllRight" type="button" class="btn btn-success btn-lg create-product-btn" @click="createProduct">Создать ГТ и передать ее на главный склад</button>
 
         </div>
 
@@ -121,18 +127,22 @@ export default {
                 goods_id: 'default',
                 amount: '',
                 max_amount: 0,
-                unit: 'кг'
+                unit: ''
             }]
         }
     },
     computed: {
-      selected_ingredients(){
-          let arr = [];
-          this.ingredients.forEach(el => {
+        selected_ingredients(){
+            let arr = [];
+            this.ingredients.forEach(el => {
               arr.push(el.goods_id)
-          });
-          return arr;
-      }
+            });
+            return arr;
+        },
+        isAllRight(){
+          if(this.selected_goods_id!='default' && this.amount>0 && this.ingredients[0].amount>0)
+            return 1
+        }
     },
     beforeMount() {
         this.my_storage_id = localStorage.getItem('my_storage_id')
@@ -186,8 +196,9 @@ export default {
                 if(res.data.status==='ok') {
                     console.log('приготовили: ' + res.data)
                     this.$router.push({name: 'home'})
-                    this.message = 'приготовили'
+                    this.message = 'приготовили' // это не работает. @todo уведомлять пользователя про успех
                 }else {
+                    console.error(res.data.message)
                     this.message = res.data.message
                 }
             }).catch(err => {

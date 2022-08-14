@@ -344,7 +344,7 @@ class FinanceController extends Controller
         $dateNow = date('Y-m-d H:i:s');
         try {
             foreach ($request->buy as $buy){
-                $costProduct = (int) $buy['amount'] * (int) $buy['price'];
+                $costProduct = (float) $buy['amount'] * (float) $buy['price'];
 
                 $move_id = HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $costProduct);
 

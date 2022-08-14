@@ -182,20 +182,27 @@
 
                     </div>
 
-                    <!--Список продукции на складе-->
-                    <a href="#">
-                        <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">
-                            <i class="fa bg-green-dark rounded-s"></i>
-                            <span class="font-20">Товары на складе: {{ storage_name }}</span>
-                        </router-link>
-                    </a>
+                </div>
+            </div>
+        </div>
 
+<!--Список продукции на складе-->
+        <div class="card card-style">
+            <div class="content mt-0 mb-0">
+                <div class="list-group list-custom-large short-border">
+
+                    <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">
+                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
+                        <span>Товары на складе</span>
+                        <strong>{{ storage_name }}</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
 
                 </div>
             </div>
         </div>
 
-        <!--ПЕРЕДАТЬ ТОВАР    -->
+<!--УТИЛИЗАРОВАТЬ ТОВАР    -->
         <div class="row mb-n2 align-content-center p-3">
             <div class="col-12 ">
                 <router-link :to="{name: 'trashProducts'}">
@@ -210,22 +217,22 @@
         </div>
 
 
-        <div class="card card-style">
-            <div class="content mt-0 mb-0">
-                <div class="list-group list-custom-large short-border">
+<!--        <div class="card card-style">-->
+<!--            <div class="content mt-0 mb-0">-->
+<!--                <div class="list-group list-custom-large short-border">-->
 
 
 
-                    <router-link :to="{name: 'PermitGoods'}" v-if="isMain">
-                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
-                        <span>Разрешить товар</span>
-                        <strong>Разрешить выбранный товар на складах</strong>
-                        <i class="fa fa-angle-right"></i>
-                    </router-link>
+<!--                    <router-link :to="{name: 'PermitGoods'}" v-if="isMain">-->
+<!--                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>-->
+<!--                        <span>Разрешить товар</span>-->
+<!--                        <strong>Разрешить выбранный товар на складах</strong>-->
+<!--                        <i class="fa fa-angle-right"></i>-->
+<!--                    </router-link>-->
 
-                </div>
-            </div>
-        </div>
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
 
 

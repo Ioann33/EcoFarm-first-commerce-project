@@ -26,8 +26,21 @@ class UserController extends Controller
         $newUser->password = Hash::make($request->password);
         $newUser->created_on = date('Y-m-d H:i:s');
         if($newUser->save()){
-            return response()->json(['user_id' => $newUser->id]);
-        }
+            return response()->json(
+                [
+                    'status' => 'ok',
+                    'message' => "польователь #{$newUser->id} {$request->login}($request->name) был добавлен в базу ",
+                    'user_id' => $newUser->id
+                ]
+            );
+        } else
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => "при добавление пользоваеля возникла ошибка",
+                    'user_id' => $newUser->id
+                ]
+            );
     }
 
     public function getUserPermit(Request $request){
@@ -66,22 +79,36 @@ class UserController extends Controller
     }
 
     public function setUserPermit(Request $request){
-        if ($request->allow == 'yes'){
+        if ($request->allowed == 'true'){
             $set = new UserStorages();
             $set->storage_id = $request->storage_id;
             $set->user_id = $request->user_id;
             $res = $set->save();
         }else{
-            $res =  UserStorages::where('storage_id','=', $request->storage_id)
-                ->where('user_id', '=', $request->user_id)->delete();
+            $res =  UserStorages::
+                      where('storage_id','=', $request->storage_id)
+                    ->where('user_id', '=', $request->user_id)
+                    ->delete();
 
-            return response()->json(['status'=>'ok', 'message' => 'пользователь ('.$request->user_id.') ,был удален со склада('.$request->storage_id.')']);
+            return response()->json(
+                [
+                    'status' => 'ok',
+                    'message' => 'пользователь ('.$request->user_id.') ,был удален со склада('.$request->storage_id.')'
+                ]);
         }
 
         if ($res){
-            return response()->json(['status'=>'ok', 'message' => 'пользователь ('.$request->user_id.') получил доступ к складу('.$request->storage_id.')']);
+            return response()->json(
+                [
+                    'status' => 'ok',
+                    'message' => 'пользователь ('.$request->user_id.') получил доступ к складу('.$request->storage_id.')'
+                ]);
         }else{
-            return response()->json(['status'=>'error']);
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'при установлении права пользователя возникла ошибка'
+                ]);
         }
 
     }
