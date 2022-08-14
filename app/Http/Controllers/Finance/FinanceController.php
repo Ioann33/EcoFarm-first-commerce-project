@@ -185,16 +185,41 @@ class FinanceController extends Controller
         }
     }
 
+    /**
+     * api/getSumMoneyByCategoryOnStorage/7/701/2022-06-01 00:00:00/2022-09-05 00:00:00
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSumMoneyByCategoryOnStorage(Request $request){
-        $sum = Money::all()
-            ->where('storage_id', '=', $request->storage_id)
-            ->where('category', '=', $request->category_id)
-            ->where('date', '>=', $request->date_from)
-            ->where('date', '<=', $request->date_to)
-            ->sum('size_pay');
+        if($request->storage_id == 'all')
+        {
+            $sum = Money::where('category', '=', $request->category_id)
+                ->where('date', '>=', $request->date_from)
+                ->where('date', '<=', $request->date_to)
+                ->sum('size_pay');
+        }
+        else {
+            $sum = Money::where('storage_id', '=', $request->storage_id)
+                ->where('category', '=', $request->category_id)
+                ->where('date', '>=', $request->date_from)
+                ->where('date', '<=', $request->date_to)
+                ->sum('size_pay');
+        }
         return response()->json(['sum'=>$sum]);
     }
+/*
+{
+    "sum": 0
+}
+*/
 
+    /**
+     * api/getListMoneyByCategoryOnStorage/12/701/2022-06-01 00:00:00/2022-09-05 00:00:00
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getListMoneyByCategoryOnStorage(Request $request){
         $list = Money::where('storage_id', '=', $request->storage_id)
             ->where('category', '=', $request->category_id)
@@ -203,6 +228,33 @@ class FinanceController extends Controller
             ->get();
         return response()->json(['list'=>$list]);
     }
+/*
+{
+    "list": [
+        {
+            "id": 55,
+            "date": "2022-08-13 14:01:35",
+            "storage_id": 12,
+            "size_pay": "10000",
+            "description": "предпродажа товара 4,в количестве 100, по цене 100",
+            "category": 701,
+            "param_id": 213,
+            "user_id": 1
+        },
+        {
+            "id": 56,
+            "date": "2022-08-13 14:01:35",
+            "storage_id": 12,
+            "size_pay": "5000",
+            "description": "предпродажа товара 1,в количестве 100, по цене 50",
+            "category": 701,
+            "param_id": 214,
+            "user_id": 1
+        },
+    ]
+}
+*/
+
 
     public function closePreSale(Request $request){
         $user_id = Auth::id();
@@ -292,7 +344,7 @@ class FinanceController extends Controller
         $dateNow = date('Y-m-d H:i:s');
         try {
             foreach ($request->buy as $buy){
-                $costProduct = (int) $buy['amount'] * (int) $buy['price'];
+                $costProduct = (float) $buy['amount'] * (float) $buy['price'];
 
                 $move_id = HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $costProduct);
 

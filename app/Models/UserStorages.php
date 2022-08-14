@@ -11,6 +11,9 @@ class UserStorages extends Model
     public $timestamps = false;
     protected $table = 'users_storages';
 
+    protected $primaryKey = null;
+    public $incrementing = false;
+
     public function storage(){
         return $this->belongsTo(Storages::class, 'storage_id');
     }

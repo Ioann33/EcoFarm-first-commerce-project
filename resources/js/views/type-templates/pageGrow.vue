@@ -148,25 +148,9 @@
 
                         <!-- кнопка - Список продукции - на рассмотрении      -->
                         <div class="col-6 ps-2 pe-2">
-                            <card-movement-out-opened :storage_id="this.storage_id"></card-movement-out-opened>
-<!--                            <router-link :to="{name: 'pageMovements', params: { dir: 'out', status: 'opened' }}">-->
-<!--                                <div class="card card-style mx-0 mb-3">-->
-<!--                                    <div class="p-3 bg-blue-dark">-->
-<!--                                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">на-->
-<!--                                            рассмотрении</h4>-->
-<!--                                        <h1 class="font-700 font-34  opacity-60 mb-0 text-center">-->
-<!--                                            {{count_movement_out_opened}}</h1>-->
-
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </router-link>-->
+                            <card-movement-out-opened :storage_id="this.my_storage_id"></card-movement-out-opened>
                         </div>
 
-
-                        <!-- кнопка -  Список продукции, которую нужно принять -->
-                        <div class="col-6 ps-2" v-if="move_in=='true'">
-
-                        </div>
 
 
                     </div>
