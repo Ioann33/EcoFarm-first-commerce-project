@@ -8,6 +8,7 @@ use App\Models\Money;
 use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\MyModel\MoneyTransfer;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -84,7 +85,7 @@ class FinanceController extends Controller
         );
     }
 
-    public function doSpends(Request $request): \Illuminate\Http\JsonResponse
+    public function doSpends(Request $request, LogService $service): \Illuminate\Http\JsonResponse
     {
         $user = Auth::id();
         $date = date('Y-m-d H:i:s');
@@ -99,6 +100,7 @@ class FinanceController extends Controller
         $transaction->user_id = $user;
 
         if ($transaction->save()){
+            $service->newLog('doSpends', "списано {$request->size_pay}грн с департамента: {$request->storage_id}, на склад: {$request->param_id}. Категория: {$request->category}", $transaction->id);
             return response()->json(
                 [
                     'status'=>'ok',
@@ -111,9 +113,9 @@ class FinanceController extends Controller
     }
 
 
-    public function doTransferMoney(Request $request): \Illuminate\Http\JsonResponse
+    public function doTransferMoney(Request $request, LogService $service)
     {
-        $request = json_decode($request->getContent());
+
         DB::beginTransaction();
 
         $finance = Money::where('storage_id', '=', $request->storage_id_from)
@@ -165,6 +167,8 @@ class FinanceController extends Controller
              $previousTransaction = Money::findOrFail($giveID);
              $previousTransaction->param_id = $resiveID;
              $previousTransaction->save();
+
+             $service->newLog('doTransferMoney', 'transfer money from storage '.$request->storage_id_from.' to '.$request->storage_id_to.' in the amount '. $request->amount, $giveID);
 
             DB::commit();
 
@@ -256,7 +260,7 @@ class FinanceController extends Controller
 */
 
 
-    public function closePreSale(Request $request){
+    public function closePreSale(Request $request, LogService $service){
         $user_id = Auth::id();
         $dateNow = date('Y-m-d H:i:s');
         $transaction = Money::findOrFail($request->money_id);
@@ -278,6 +282,7 @@ class FinanceController extends Controller
             DB::rollBack();
             return response()->json(['message'=>$e->resMess(), 'status' => 'error',]);
         }
+        $service->newLog('closePreSale', ' отгрузка товара согласно препродаже '.$request->money_id, $request->money_id);
         DB::commit();
 
         return response()->json(['message'=>' отгрузка товара согласно препродаже '.$request->money_id, 'status' => 'ok',]);
@@ -285,7 +290,7 @@ class FinanceController extends Controller
 
     }
 
-    public function doPreSale(Request $request)
+    public function doPreSale(Request $request, LogService $service)
     {
         DB::beginTransaction();
         $user_id = Auth::id();
@@ -303,17 +308,18 @@ class FinanceController extends Controller
                 $movement->link_id = $trance_id;
                 $movement->save();
 
+                $service->newLog('doPreSale', 'предпродажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], $trance_id);
+
             }
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json(['message'=>$e->resMess(), 'status' => 'error',]);
         }
         DB::commit();
-
         return response()->json(['message'=>' продажа товара без отгрузки', 'status' => 'ok',]);
     }
 
-    public function doSale(Request $request)
+    public function doSale(Request $request, LogService $service)
     {
         DB::beginTransaction();
         $user_id = Auth::id();
@@ -324,7 +330,9 @@ class FinanceController extends Controller
 
                 $move_id = HandleGoods::moveGoods($sale['storage_id'], null, $sale['goods_id'], $sale['amount'],'sale', null,null, $user_id, $dateNow);
 
-                MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 700, $move_id, $user_id);
+                $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 700, $move_id, $user_id);
+
+                $service->newLog('doSale', 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], $trance_id);
 
             }
         }catch (NotEnoughGoods $e){
@@ -337,7 +345,7 @@ class FinanceController extends Controller
     }
 
 
-    public function doBuy(Request $request): \Illuminate\Http\JsonResponse
+    public function doBuy(Request $request, LogService $service): \Illuminate\Http\JsonResponse
     {
         DB::beginTransaction();
         $user_id = Auth::id();
@@ -348,7 +356,8 @@ class FinanceController extends Controller
 
                 $move_id = HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $costProduct);
 
-                MoneyTransfer::moneyTransfer(-$costProduct, $dateNow, $buy['storage_id'], 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], 800, $move_id['productID'],$user_id);
+                $trance_id = MoneyTransfer::moneyTransfer(-$costProduct, $dateNow, $buy['storage_id'], 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], 800, $move_id['productID'],$user_id);
+                $service->newLog('doBuy', 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], $trance_id);
 
             }
         }catch (NotEnoughGoods $e){

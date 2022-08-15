@@ -26,6 +26,9 @@ class UserController extends Controller
         $newUser->password = Hash::make($request->password);
         $newUser->created_on = date('Y-m-d H:i:s');
         if($newUser->save()){
+            $service->newLog('addUser', 'added new user, login: '.$request->login.' name: '.$request->name, $newUser->id);
+            return response()->json(['user_id' => $newUser->id, 'status'=>'ok', 'message'=>'added new user, login: '.$request->login.' name: '.$request->name]);
+        }
             return response()->json(
                 [
                     'status' => 'ok',
@@ -80,11 +83,17 @@ class UserController extends Controller
 
     public function setUserPermit(Request $request){
         if ($request->allowed == 'true'){
+    public function setUserPermit(Request $request, LogService $service){
+        if ($request->allow == 'yes'){
             $set = new UserStorages();
             $set->storage_id = $request->storage_id;
             $set->user_id = $request->user_id;
             $res = $set->save();
         }else{
+            $res =  UserStorages::where('storage_id','=', $request->storage_id)
+                ->where('user_id', '=', $request->user_id)->delete();
+            $service->newLog('setUserPermit', 'пользователь ('.$request->user_id.') ,был удален со склада('.$request->storage_id.')', null);
+            return response()->json(['status'=>'ok', 'message' => 'пользователь ('.$request->user_id.') ,был удален со склада('.$request->storage_id.')']);
             $res =  UserStorages::
                       where('storage_id','=', $request->storage_id)
                     ->where('user_id', '=', $request->user_id)
@@ -98,6 +107,8 @@ class UserController extends Controller
         }
 
         if ($res){
+            $service->newLog('setUserPermit', 'пользователь ('.$request->user_id.') получил доступ к складу('.$request->storage_id.')', null);
+            return response()->json(['status'=>'ok', 'message' => 'пользователь ('.$request->user_id.') получил доступ к складу('.$request->storage_id.')']);
             return response()->json(
                 [
                     'status' => 'ok',
