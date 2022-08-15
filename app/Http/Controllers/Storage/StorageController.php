@@ -9,6 +9,7 @@ use App\Http\Resources\UserStorageResource;
 use App\Models\MainStore;
 use App\Models\Storages;
 use App\Models\UserStorages;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,12 +40,13 @@ class StorageController extends Controller
         return StorageResource::collection($storage);
     }
 
-    public function addStorage(Request $request){
+    public function addStorage(Request $request, LogService $service){
         $newStorage = new Storages();
         $newStorage->name = $request->name;
         $newStorage->type = $request->type;
 
         if ($newStorage->save()){
+            $service->newLog('addStorage', 'added storage '.$newStorage->id, $newStorage->id);
             return response()->json(['storage_id'=>$newStorage->id]);
         }else{
             return response()->json(['error'=>'some errors with adding storage']);
