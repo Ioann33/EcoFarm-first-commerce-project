@@ -7,7 +7,7 @@
 
         <!--ЗАКАЗЫ-->
 
-        <div class="card card-style" v-if="order_in=='0'">
+        <div class="card card-style" v-if="0">
             <div class="content mb-0 mt-0">
                 <div class="list-group list-custom-small">
                     <router-link :to="{name: 'makeOrder'}">
@@ -87,7 +87,7 @@
 
         <!--ВХОДЯЩИЕ ЗАЯВКИ-->
 
-        <div class="card card-style" v-if="order_out=='0'">
+        <div class="card card-style" v-if="0">
             <div class="content mb-3 mt-0">
                 <div class="list-group list-custom-small">
                     <a href="#">
@@ -135,7 +135,7 @@
 
 
         <!--ПЕРЕДАТЬ ТОВАР    -->
-        <div class="card card-style" style="padding-top: 12px;" v-if="move_out=='true'">
+        <div class="card card-style" style="padding-top: 12px;">
             <div class="content mb-3 mt-0">
                 <div class="list-group list-custom-small">
 
@@ -166,7 +166,7 @@
 
 
                         <!-- кнопка -  Список продукции, которую нужно принять -->
-                        <div class="col-6 ps-2" v-if="move_in=='true'">
+                        <div class="col-6 ps-2" >
                             <router-link :to="{name: 'pageMovements', params: { dir: 'in', status: 'opened' }}">
                                 <div class="card card-style mx-0 mb-3">
                                     <div class="p-3 bg-yellow-dark ">
@@ -186,19 +186,30 @@
             </div>
         </div>
 
-<!--Список продукции на складе-->
+
         <div class="card card-style">
             <div class="content mt-0 mb-0">
                 <div class="list-group list-custom-large short-border">
-
+<!--Список продукции на складе-->
                     <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">
                         <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
                         <span>Товары на складе</span>
-                        <strong>{{ storage_name }}</strong>
+                        <strong>{{ my_storage_name }}</strong>
                         <i class="fa fa-angle-right"></i>
                     </router-link>
 
                 </div>
+<!--Забрать выращенную продукцию со склада и установить цену              -->
+                <div class="list-group list-custom-large short-border">
+
+                <router-link :to="{name: 'GrowMoveGoods'}">
+                    <i class="fa fa-inbox  bg-green-dark rounded-s"></i>
+                    <span>Забрать продукцию с теплиц</span>
+                    <strong>установить цену и оприходовать на главный склад</strong>
+                    <i class="fa fa-angle-right"></i>
+                </router-link>
+
+            </div>
             </div>
         </div>
 
@@ -252,15 +263,15 @@ import Error from "../../Components/Error";
         data() {
             return {
                 message: '',
-                ddd: 'Test name button',
-                order_in: false,
-                order_out: false,
-                move_in: false,
-                move_out: false,
-                money_in: false,
-                money_out: false,
-                storage_id: null,
-                storage_name: null,
+                // ddd: 'Test name button',
+                // order_in: false,
+                // order_out: false,
+                // move_in: false,
+                // move_out: false,
+                // money_in: false,
+                // money_out: false,
+                my_storage_id: null,
+                my_storage_name: null,
                 balance: 1000,
 
 
@@ -288,6 +299,7 @@ import Error from "../../Components/Error";
         beforeMount() {
             this.my_storage_id = localStorage.getItem('my_storage_id')
             this.my_storage_name = localStorage.getItem('my_storage_name')
+            //this.storage_name = localStorage.getItem('my_storage_name');
         },
         mounted() {
             console.log('     Component views/Home mounted....')
@@ -300,15 +312,15 @@ import Error from "../../Components/Error";
             }
 
             // иначе - склад выбран - и нужно подтянуть привелегии этого склада
-            this.order_in = localStorage.getItem('order_in');
-            this.order_out = localStorage.getItem('order_out');
-            this.money_in = localStorage.getItem('money_in');
-            this.money_out = localStorage.getItem('money_out');
-            this.move_in = localStorage.getItem('move_in');
-            this.move_out = localStorage.getItem('move_out');
-            this.storage_name = localStorage.getItem('my_storage_name');
+            // this.order_in = localStorage.getItem('order_in');
+            // this.order_out = localStorage.getItem('order_out');
+            // this.money_in = localStorage.getItem('money_in');
+            // this.money_out = localStorage.getItem('money_out');
+            // this.move_in = localStorage.getItem('move_in');
+            // this.move_out = localStorage.getItem('move_out');
 
-            console.log('storage_name: '+this.storage_name)
+
+            console.log('storage_name: '+this.my_storage_name)
 
             // получим сумму перемещений на этом складе
             // this.date_from = '2022-08-01'
@@ -331,25 +343,25 @@ import Error from "../../Components/Error";
         methods: {
             loadStoragesParams(){
 
-                axios.get('/api/getStorageOrder/out/'+ this.my_storage_id).then(res => {
-                    //console.log(res.data)
-                    this.count_order_out_opened = res.data.data.opened
-                    this.count_order_out_canceled = res.data.data.canceled
-                    this.count_order_out_progres = res.data.data.progress
+                // axios.get('/api/getStorageOrder/out/'+ this.my_storage_id).then(res => {
+                //     //console.log(res.data)
+                //     this.count_order_out_opened = res.data.data.opened
+                //     this.count_order_out_canceled = res.data.data.canceled
+                //     this.count_order_out_progres = res.data.data.progress
+                //
+                // }).catch(err => {
+                //     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                // })
 
-                }).catch(err => {
-                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                })
-
-                axios.get('/api/getStorageOrder/in/'+ this.my_storage_id).then(res => {
-                    //console.log(res.data)
-                    this.count_order_in_opened = res.data.data.opened
-                    this.count_order_in_canceled = res.data.data.canceled
-                    this.count_order_in_progres = res.data.data.progress
-
-                }).catch(err => {
-                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                })
+                // axios.get('/api/getStorageOrder/in/'+ this.my_storage_id).then(res => {
+                //     //console.log(res.data)
+                //     this.count_order_in_opened = res.data.data.opened
+                //     this.count_order_in_canceled = res.data.data.canceled
+                //     this.count_order_in_progres = res.data.data.progress
+                //
+                // }).catch(err => {
+                //     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                // })
 
                 // получить ОТКРЫТЫЕ ИСХОДЯЩИЕ заявки на ПЕРЕДАЧУ товара  (нужно только количество, для отображения на главной странице)
                 axios.get('/api/getMovement/out/opened/'+ this.my_storage_id).then(res => {
@@ -365,12 +377,8 @@ import Error from "../../Components/Error";
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
 
-                console.log('loaded all params for storage: ' + this.my_storage_id)
+                console.log('Загружены все параметры для склада: ' + this.my_storage_id)
             }
         }
     }
 </script>
-
-<style scoped>
-
-</style>

@@ -47,6 +47,11 @@ const router = createRouter({
             component: () => import('../views/pageMoveGoods')
         },
         {
+            path: '/GrowMoveGoods/',
+            name: 'GrowMoveGoods',
+            component: () => import('../views/pageGrowMoveGoods')
+        },
+        {
             path: '/makeProducts',
             name: 'makeProducts',
             component: () => import('../views/pageMakeProducts')
