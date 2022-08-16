@@ -92,10 +92,10 @@
                     console.log(el.id)
 
                     // в зависимости от toggle
-                    this.rule = 'ingredient'
                     this.rule = 'ready'
+                    this.rule = 'ingredient'
 
-                    await axios.get('/api/costGoodsOnStock/'+el.id+'/'.this.rule).then(res => {
+                    await axios.get('/api/costGoodsOnStock/'+el.id+'/'+this.rule).then(res => {
                         console.log('Остаток продукции('+this.rule+') на складе '+el.name+': '+res.data.sum+'грн')
 
 
