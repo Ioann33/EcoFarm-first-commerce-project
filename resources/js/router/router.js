@@ -47,6 +47,11 @@ const router = createRouter({
             component: () => import('../views/pageMoveGoods')
         },
         {
+            path: '/GrowMoveGoods/',
+            name: 'GrowMoveGoods',
+            component: () => import('../views/pageGrowMoveGoods')
+        },
+        {
             path: '/makeProducts',
             name: 'makeProducts',
             component: () => import('../views/pageMakeProducts')
@@ -70,6 +75,11 @@ const router = createRouter({
             path: '/transferMoney',
             name: 'transferMoney',
             component: () => import('../views/pageTransferMoney')
+        },,
+        {
+            path: '/FinanceDashboard',
+            name: 'FinanceDashboard',
+            component: () => import('../views/pageFinanceDashboard')
         },
         {
             path: '/buyProducts',

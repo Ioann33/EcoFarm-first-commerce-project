@@ -20,10 +20,12 @@ use App\Models\Orders;
 use App\Models\StockBalance;
 use App\Models\StorageGoods;
 use App\Models\Storages;
+use App\Services\LogService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GoodsController extends Controller
 {
@@ -50,7 +52,7 @@ class GoodsController extends Controller
                 "price": "3"
             }
      */
-    public function setPrice(Request $request){
+    public function setPrice(Request $request, LogService $service){
         $this->validate($request,[
             'movement_id'=>'required',
             'price'=>'required',
@@ -67,6 +69,7 @@ class GoodsController extends Controller
 
 
         if($movement->save()) {
+            $service->newLog('setPrice', 'set price '.$request->price.' for good_id '.$movement->goods_id, $request->movement_id);
             return response()->json(
                 [
                     'status' => 'ok',
@@ -96,7 +99,7 @@ class GoodsController extends Controller
         return getMovementResource::collection($movement);
     }
 
-    public function goodsMovementPull(Request $request){
+    public function goodsMovementPull(Request $request, LogService $service){
 
         $this->validate($request,[
             'movement_id'=>'required',
@@ -111,6 +114,7 @@ class GoodsController extends Controller
 
         $result = HandleGoods::addGoodsOnStockBalance($movement->storage_id_to, $movement->goods_id, $movement->amount, $dateNow, $movement->price);
 
+        $service->newLog('pullGoods', 'pull goods('.$movement->goods_id.'), from '.$movement->storage_id_from.'->'.$movement->storage_id_to.', amount: '.$movement->amount, $request->movement_id);
         if($movement->save() && $result) {
             return response()->json(['status'=>'ok']);
         }
@@ -164,12 +168,13 @@ class GoodsController extends Controller
         return $balance;
     }
 
-    public function goodsMovementPush(Request $request)
+    public function goodsMovementPush(Request $request, LogService $service)
     {
         DB::beginTransaction();
 
         try {
-            HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
+            $move = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
+            $service->newLog('moveGoods', 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $move['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -185,7 +190,49 @@ class GoodsController extends Controller
         ]);
     }
 
-    public function makeProduct(Request $request){
+    public function GrowAndMoveOnMainStorage(Request $request, LogService $service){
+
+        $dateNow = date('Y-m-d H:i:s');
+        $user_id = Auth::id();
+
+
+
+        DB::beginTransaction();
+
+        try {
+
+            HandleGoods::moveGoods(null, $request->storage_id_from, $request->goods_id, $request->amount,'grow');
+
+            $push = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
+
+            $pull = Movements::findOrFail($push['productID']);
+
+            $pull->user_id_accepted = $user_id;
+            $pull->date_accepted = $dateNow;
+            $pull->price = $request->price;
+            $pull->save();
+
+            $result = HandleGoods::addGoodsOnStockBalance($pull->storage_id_to, $pull->goods_id, $pull->amount, $dateNow, $pull->price);
+
+            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.$request->goods_id.'), from storage '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $push['productID']);
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json([
+                'message'=>$e->resMess(),
+                'status'=> 'error'
+            ]);
+        }
+        DB::commit();
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'grow and push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount
+
+        ]);
+
+
+    }
+
+    public function makeProduct(Request $request, LogService $service){
 
 
         DB::beginTransaction();
@@ -222,6 +269,7 @@ class GoodsController extends Controller
 
             HandleGoods::moveGoods($request->storage_id, $mainStore[0]['param'], $request->goods_id, $request->amount,'move', $readyProductID['productID']);
 
+            $service->newLog('makeProduct', 'made product '.$request->goods_id.' in the amount '. $request->amount.' and move to main storage', $readyProductID['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json(['status'=>$e->resMess()]);
@@ -257,28 +305,31 @@ class GoodsController extends Controller
         return response()->json(Movements::findOrFail($request->id));
     }
 
-    public function addGoods(Request $request){
+    public function addGoods(Request $request, LogService $service){
         $addGoods = new Goods();
         $addGoods->name = $request->name;
         $addGoods->unit = $request->unit;
         $addGoods->type = $request->type;
         $addGoods->save();
         $id = $addGoods->id;
-        return response()->json(['goods_id'=>$id]);
+        $service->newLog('addGoods', 'added new goods '.$id, $id);
+        return response()->json(['goods_id'=>$id, 'status'=>'ok', 'message'=>'added new goods ']);
     }
 
-    public function setGoodsPermit(Request $request){
+    public function setGoodsPermit(Request $request, LogService $service){
         if ($request->allowed == 'true'){
             $set = new StorageGoods();
             $set->storage_id = $request->storage_id;
             $set->goods_id = $request->goods_id;
             $res = $set->save();
+            $param = 1;
         }else{
             $res =  StorageGoods::where('storage_id','=', $request->storage_id)
                 ->where('goods_id', '=', $request->goods_id)->delete();
-
+            $param = 0;
         }
         if ($res){
+            $service->newLog('setGoodsPermit', 'set permit goods_id '.$request->goods_id.' to storage '. $request->storage_id, $param);
             return response()->json(['status'=>'ok']);
         }else{
             return response()->json(['status'=>'error']);
@@ -286,14 +337,14 @@ class GoodsController extends Controller
 
     }
 
-    public function doTrash(Request $request){
+    public function doTrash(Request $request, LogService $service){
         $user_id = Auth::id();
         $dateNow = date('Y-m-d H:i:s');
 
         DB::beginTransaction();
 
         try {
-            HandleGoods::moveGoods($request->storage_id, null, $request->goods_id, $request->amount,'trash', null, null, $user_id, $dateNow);
+            $trashID = HandleGoods::moveGoods($request->storage_id, null, $request->goods_id, $request->amount,'trash', null, null, $user_id, $dateNow);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -301,6 +352,7 @@ class GoodsController extends Controller
                 'status'=> 'error'
             ]);
         }
+        $service->newLog('doTrash','продукт ('.$request->goods_id.'), был утилизирован на складе ('.$request->storage_id.'), в количестве ('.$request->amount.')', $trashID['productID']);
         DB::commit();
         return response()->json([
             'status'=>'ok',

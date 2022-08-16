@@ -152,7 +152,7 @@
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
-            this.costProductsTotal = 55 + this.costIngredients + this.costReady
+            this.costProductsTotal = this.costIngredients + this.costReady
 
         },
         methods: {

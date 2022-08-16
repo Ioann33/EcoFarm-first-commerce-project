@@ -27,7 +27,7 @@
             <div class="col-4 ps-1 pe-3">
                 <div class="card card-style mx-0 mb-3">
                     <div class="p-3 bg-yellow-dark ">
-                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">не профильные </h4>
+                        <h4 class="font-700 text-uppercase font-10 opacity-50 mt-n2">не профильные </h4>
                         <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
                             {{ this.non_profitWeek }}</h1>
                     </div>
@@ -69,7 +69,7 @@
                         <router-link :to="{name: 'Spend', params: {type: 'capital'}}">
                             <div class="card card-style me-2 mb-1">
                                 <h1 class="pt-2 font-18">Капитальные затраты</h1>
-                                <p class="font-11 opacity-50 mt-n2 mb-3">Капитальные затраты</p>
+<!--                                <p class="font-11 opacity-50 mt-n2 mb-3">Капитальные затраты</p>-->
                             </div>
                         </router-link>
                     </div>
@@ -77,8 +77,8 @@
                     <div class="col-6">
                         <router-link :to="{name: 'Spend', params: {type: 'non_profit'}}">
                             <div class="card card-style me-2 mb-1">
-                                <h1 class="pt-2 font-18">Не профильный затраты</h1>
-                                <p class="font-11 opacity-50 mt-n2 mb-3">Не профильный затраты</p>
+                                <h1 class="pt-2 font-15">Не профильные затраты</h1>
+<!--                                <p class="font-11 opacity-50 mt-n2 mb-3">Не профильный затраты</p>-->
                             </div>
 
                         </router-link>
@@ -92,7 +92,7 @@
             <router-link :to="{name: 'SpendInvest', params: {type: 'out'}}" class="col-6 ps-3">
                 <div class="card card-style me-2 mb-3">
                     <i class="fa fa-arrow-up color-red-dark fa-2x mt-3"></i>
-                    <h1 class="pt-2 font-18">Вывод инвестиций</h1>
+                    <h1 class="pt-2 font-15">Вывод инвестиций</h1>
 <!--                    <p class="font-11 opacity-50 mt-n2 mb-3">Tap to Transfer Funds</p>-->
                 </div>
             </router-link>

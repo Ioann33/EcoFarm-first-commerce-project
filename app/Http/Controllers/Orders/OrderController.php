@@ -9,6 +9,7 @@ use App\Http\Resources\getListOrderProcessedResource;
 use App\Http\Resources\OrderInResource;
 use App\Http\Resources\OrderResource;
 use App\Models\Orders;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -72,7 +73,7 @@ class OrderController extends Controller
 
     }
 
-    public function createOrder(Request $request){
+    public function createOrder(Request $request, LogService $service){
 
         $this->validate($request,[
             'storage_id_from'=>'required',
@@ -98,6 +99,7 @@ class OrderController extends Controller
         }
 
         if ($newOrder->save()){
+            $service->newLog('createOrder', 'create order '.$newOrder->id, $newOrder->id);
             return response()->json(['status'=>'ok']);
         }
     }
@@ -108,13 +110,14 @@ class OrderController extends Controller
 
     }
 
-    public function setOrderStatus(Request $request){
+    public function setOrderStatus(Request $request, LogService $service){
 
         $order = Orders::findOrFail($request->id);
         $order->status = $request->status;
         $order->date_status = date('Y-m-d H:i:s');
         $order->user_id_handler = Auth::id();
         if($order->save()) {
+            $service->newLog('setOrderStatus', 'set order status '. $request->status, $request->id);
             return response()->json(['status' => 'ok']);
         }else{
             return response()->json(['status' => 'some problem with setStatus']);

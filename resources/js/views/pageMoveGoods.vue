@@ -47,6 +47,7 @@
                                        id="f1"
                                        v-model="goods_amount"
                                        @input="checkAmount"
+                                       @focus="$event.target.select()"
                                 >
 <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                                 <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -279,7 +280,7 @@ export default {
             )
 
             this.type=localStorage.getItem('type')
-            if(this.type=='grow')
+            if(this.type === 'grow')
             {
 // шаг 1/2. создать продукт на теплице
                 axios.post('/api/goodsMovementPush',{
@@ -306,7 +307,7 @@ export default {
                             }
                         }).catch(err => {
                             this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                            console.log(this.message)
+                            console.error(this.message)
                         })
 
                     }else {
@@ -316,7 +317,7 @@ export default {
 
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                    console.log(this.message)
+                    console.error(this.message)
                 })
             }
             // это не теплица - поэтому перемещение товара - за 2й шаг

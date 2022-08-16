@@ -5,11 +5,7 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
-
-            <!-- ERROR -->
-            <error
-                :message="message"
-            ></error>
+            <!-- ERROR --> <error :message="message"></error>
 
             <div class="content-boxed bg-blue-dark mb-3 pb-1 text-uppercase text-center">
                 <h4 class="color-white">
@@ -62,7 +58,9 @@
                                 </tbody>
                             </table>
                         </div>
-
+                        <div class="text-center mt-2" style="font-size: 18px;">
+                            ИТОГО: {{ Number.parseInt(totalAmount.split('.')[0]).toLocaleString('en-US').replace(',', ' ') }},{{ totalAmount.split('.')[1]}} грн
+                        </div>
 
 
                     </div>
@@ -107,7 +105,6 @@ import Error from "../Components/Error";
 import headBar from "../Components/HeadBar";
 import NavBar from "../Components/NavBar";
 import NavBarMenu from "../Components/NavBarMenu";
-
 import CardGoods from "../Components/cardGoods";
 
 export default {
@@ -124,6 +121,13 @@ export default {
             storage_id: null,
             storage_name: null, // имя текущего склада
         }
+    },
+    computed: {
+      totalAmount() {
+          let total = 0;
+          this.listGoods.forEach(el => total += el.amount * el.price);
+          return total.toFixed(2);
+      }
     },
     updated() {
         update_template()

@@ -18,6 +18,7 @@
 
 
             <router-link v-if="isCook" :to="{name: 'makeProducts'}"><i class="fa fa-hat-hard "></i><span>приготовить</span></router-link>
+            <router-link v-if="isFinance" :to="{name: 'FinanceDashboard'}"><i class="fa fa-hat-hard "></i><span>Статистика</span></router-link>
             <router-link v-if="isMoveGoods" :to="{name: 'MoveGoods'}"><i class="fa">  </i><span>передать</span></router-link>
             <router-link v-if="isListGoods"  :to="{name: 'pageListGoods', params: {type: 'available'}}"><i class="fa fa-search"></i><span>товары на складе</span></router-link>
 
@@ -42,6 +43,8 @@ export default {
         this.pagesListGoods = ['sale', 'buy', 'storage', 'creditor', 'cook']
         this.pagesMoveGoods = ['sale', 'buy', 'grow', 'cook'];
         this.pagesCook = ['cook'];
+        this.pagesFinance = ['finance'];
+        this.pagesSelectStorage = ['sale', 'buy', 'storage', 'creditor', 'debtor','cook'];
 
         this.my_storage_id = localStorage.getItem('my_storage_id')
         this.my_storage_name = localStorage.getItem('my_storage_name')
@@ -51,6 +54,10 @@ export default {
 
     },
     computed: {
+        isFinance(){
+            if(this.pagesFinance.includes(this.my_storage_type))
+                return 1
+        },
         isCook(){
             if(this.pagesCook.includes(this.my_storage_type))
                 return 1
@@ -64,11 +71,10 @@ export default {
                 return 1
         },
         isSelectStorage(){
-            return 1
+            if(this.pagesSelectStorage.includes(this.my_storage_type))
+                return 1
         }
     }
-
-
 
 }
 </script>
