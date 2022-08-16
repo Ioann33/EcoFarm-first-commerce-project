@@ -21,8 +21,8 @@
                     <div class="row mb-0">
                         <div class="col-12 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
-                                <label for="f6" class="color-blue-dark">Теплица</label>
-                                <select id="f6" v-model="selected_storage_id" @change="changeStorage" class="form-control">
+                                <label for="grow-select" class="color-blue-dark">Теплица</label>
+                                <select id="grow-select" v-model="selected_storage_id" @change="changeStorage" class="form-control">
                                     <option value="default" disabled selected>выбрать теплицу</option>
 
                                     <option
@@ -44,8 +44,8 @@
 
                         <div class="col-7 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
-                                <label for="f6" class="color-blue-dark">Продукт</label>
-                                <select id="f6" v-model="selected_goods_id" @change="changeProduct" class="form-control">
+                                <label for="prod-select" class="color-blue-dark">Продукт</label>
+                                <select id="prod-select" v-model="selected_goods_id" @change="changeProduct" class="form-control">
                                     <option value="default" disabled  selected>выбрать продукт</option>
                                     <option
                                         v-for="(goods, index) in listGoods"
@@ -56,7 +56,7 @@
 
                                 </select>
                                 <span><i class="fa fa-chevron-down"></i></span>
-<!--                                <i class="fa fa-check disabled valid color-green-dark"></i>-->
+                                <i class="fa fa-check disabled valid color-green-dark"></i>
                                 <em></em>
                             </div>
                         </div>

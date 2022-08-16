@@ -68,7 +68,7 @@
                 password: '',
                 regex_name: /[\wа-я]+/ig,
                 regex_login: /^[\SA-Za-z0-9]{5,15}$/,
-                regex_password: /[A-Za-z]{2}[A-Za-z]*[ ]?[A-Za-z]*/,
+                regex_password: /^[\SA-Za-z0-9]{3,15}$/,
             }
         },
         computed: {
@@ -85,7 +85,7 @@
                 return false;
             },
             isValidPassword(){
-                if(this.regex_password.test(this.password) && this.password.length >=3){
+                if(this.regex_password.test(this.password)){
                     return true;
                 }
                 return false;

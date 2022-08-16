@@ -11,7 +11,8 @@
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
 
                 <div class="row mb-0" v-for="(item, i) in sale_goods" :key="item.goods_id">
-                    <div class="col-12 p-1">
+                    <div class="col-12 p-1 position-relative">
+                        <button v-if="sale_goods.length > 1" class="fa fa-times-circle font-18 delete-product" @click="deleteProduct(i)"></button>
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label for="storage-list" class="color-blue-dark">Товар {{ i+ 1}}</label>
                             <select id="storage-list" v-model="item.goods_id" @change="selectedGoods(item.goods_id, i)" class="form-control">
@@ -149,6 +150,9 @@
             update_template()
         },
         methods: {
+            deleteProduct(i){
+               this.sale_goods.splice(i, 1);
+            },
             selectedGoods(id, index){
                 if(!Number.isInteger(id)) return ;
 
@@ -185,16 +189,16 @@
                 });
             },
             async saleProducts(){
-                let sales = this.sale_goods.map(el => {
-                    if(Number.isInteger(el.goods_id)){
-                        return {
-                            storage_id: this.my_storage_id,
-                            goods_id: el.goods_id,
-                            amount: el.amount,
-                            price: el.price
-                        }
-                    }
-                });
+                let sales = [];
+                this.sale_goods.forEach(el => {
+                    if(el.goods_id === 'default' || el.amount === 0) return;
+                    sales.push({
+                        storage_id: this.my_storage_id,
+                        goods_id: el.goods_id,
+                        amount: el.amount,
+                        price: el.price
+                    })
+                })
                 console.log(sales)
                 console.log('>>> продажа товара: ')
                 console.log(sales)
@@ -223,6 +227,13 @@
 </script>
 
 <style>
+    .delete-product {
+        position: absolute;
+        z-index: 1;
+        right: -2px;
+        top: 60px;
+        color: #DA4453;
+    }
     .btn-default {
         background-color: #A0D468;
         border-radius: 10px;
