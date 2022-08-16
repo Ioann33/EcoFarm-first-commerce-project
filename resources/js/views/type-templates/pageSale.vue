@@ -8,7 +8,7 @@
     <div class="col-4 ps-3 pe-0">
         <div class="card card-style mx-0 mb-3">
             <div class="p-3 bg-yellow-dark ">
-                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">Готовая Продукция </h4>
+                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">ГП </h4>
                 <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
                     {{ this.costReady }}</h1>
             </div>

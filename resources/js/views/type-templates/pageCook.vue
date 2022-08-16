@@ -91,44 +91,6 @@
         <!--ПЕРЕДАТЬ ТОВАР    -->
 
 
-        Нужно сделать АПИ:
-        <div class="card card-style bg-red-dark" style="padding-top: 12px;">
-            <div class="row mb-n2">
-
-                <div class="col-6 ps-3 pe-2">
-                    <router-link :to="{name: 'buyProducts'}">
-                        <div class="card card-style mx-0 mb-3">
-                            <div class="p-3 bg-grass-light text-center">
-                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">
-                                    стоимость готовой продукции</h4>
-
-                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                    4232 </h1>
-                            </div>
-                        </div>
-                    </router-link>
-                </div>
-
-
-
-                <div class="col-6 ps-2 pe-3">
-                    <router-link :to="{name: 'saleProducts'}">
-                        <div class="card card-style mx-0 mb-3">
-                            <div class="p-3 bg-grass-light text-center">
-                                <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">
-                                    стоимость товара на складе</h4>
-
-                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                    4232 </h1>
-                            </div>
-                        </div>
-                    </router-link>
-                </div>
-            </div>
-        </div>
-
-
-
 
     </div>
 </template>
