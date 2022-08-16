@@ -22,7 +22,7 @@ class HandleGoods
      * @param $order_main
      * @param $user
      * @param $data
-     * @return \Illuminate\Http\JsonResponse|string|void
+     * @return \Illuminate\Http\JsonResponse|string|mixed
      */
     static public function movements($storage_id_from = null, $storage_id_to= null, $goods_id = null, $category = null, $link_id = null, $amount = null, $order_main = null, $pricePerUnit = null, $user = null, $data =null){
         $newMovement = new Movements();
@@ -58,7 +58,9 @@ class HandleGoods
         //TODO handle possible error
 
         $newMovement->save();
-        return $newMovement->id;
+        return [
+            'productID'=>$newMovement->id
+        ];
 
     }
 
@@ -83,49 +85,36 @@ class HandleGoods
 
         if (isset($storage_id_from)){
 
-            $available = StockBalance::all()
-                ->where('storage_id','=',$storage_id_from)
-                ->where('goods_id', '=', $goods_id)
-                ->sum('amount');
+           $goodsOnStock = StockBalance::where('storage_id','=',$storage_id_from)
+                ->where('goods_id', '=', $goods_id);
+            $goods = $goodsOnStock->get();
+            if (count($goods)==0){
+
+                throw new NotEnoughGoods();
+            }
+
+           $available = $goodsOnStock->get('amount');
 
 
-            if ($amount<=$available) {
-                $price = 0;
-                $balance = StockBalance::all()
-                    ->where('storage_id', '=', $storage_id_from)
-                    ->where('goods_id', '=', $goods_id)
-                    ->sort();
-
-                $result = $amount;
-                foreach ($balance as $value) {
-                    if ($result <= $value->amount){
+           $stockBalanceID = $goodsOnStock->get('id');
 
 
-                        $price += $value->price * $result;
-                        $stock = StockBalance::findOrFail($value->id);
-                        $stock->amount = $value->amount - $result;
 
-                        $stock->save();
+            if ($amount<=$available[0]['amount']) {
 
-                        $pricePerUnit = number_format($price/$amount, 2);
-
-                        if ($stock->amount == 0){
-                            $stock->delete();
-                        }
-
-                        if ($param){
-                            return $pricePerUnit;
-                        }
-                        return self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main, $pricePerUnit, $user, $data);
-
-
-                    }else{
-                        $price += $value->price * $value->amount;
-                        $result-= $value->amount;
-                        $emptyBox = StockBalance::findOrFail($value->id);
-                        $emptyBox->delete();
-                    }
+                $stock = StockBalance::findOrFail((int)$stockBalanceID[0]['id']);
+                $stock->amount = (float) $available[0]['amount'] - (float) $amount;
+                $stock->save();
+                if ($price === null){
+                    $price = $stock->price;
                 }
+                if ($stock->amount == 0){
+                    $stock->delete();
+                }
+                if ($param){
+                    return true;
+                }
+                return self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main, $price, $user, $data);
             }else{
                 throw new NotEnoughGoods();
 
@@ -134,12 +123,13 @@ class HandleGoods
 
             $user = Auth::id();
             $data = date('Y-m-d H:i:s');
+
             $productID = self::movements($storage_id_from,$storage_id_to,$goods_id, $category, $link_id,$amount, $order_main, $price, $user, $data);
 
             $stockBalanceID = self::addGoodsOnStockBalance($storage_id_to, $goods_id, $amount, $data, $price);
 
             return [
-               'productID'=>$productID,
+               'productID'=>$productID['productID'],
                 'stockBalanceID'=>$stockBalanceID,
             ];
         }
@@ -158,6 +148,26 @@ class HandleGoods
      * @return bool
      */
     static public function addGoodsOnStockBalance($storage_id, $goods_id, $amount ,  $date = null , $price = null){
+        $searchGoods = StockBalance::where('storage_id', '=', $storage_id)->where('goods_id', '=', $goods_id);
+
+        if (count($searchGoods->get())>0){
+            $stockBalanceID = $searchGoods->get('id');
+            $stock = StockBalance::findOrFail((int)$stockBalanceID[0]['id']);
+            if ($price!=null){
+                $totalExistPrice = $stock->price * $stock->amount;
+                $totalInputPrice = $amount*$price;
+
+                $totalAmount = $stock->amount + $amount;
+
+                $averagePrice = ($totalExistPrice+$totalInputPrice)/$totalAmount;
+                $stock->price = number_format($averagePrice,2);
+
+            }
+
+            $stock->amount+=$amount;
+            $stock->save();
+            return $stock->id;
+        }
         $stockBalance = new StockBalance();
         $stockBalance->storage_id = $storage_id;
         $stockBalance->goods_id = $goods_id;
