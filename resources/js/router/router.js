@@ -75,6 +75,11 @@ const router = createRouter({
             path: '/transferMoney',
             name: 'transferMoney',
             component: () => import('../views/pageTransferMoney')
+        },,
+        {
+            path: '/FinanceDashboard',
+            name: 'FinanceDashboard',
+            component: () => import('../views/pageFinanceDashboard')
         },
         {
             path: '/buyProducts',

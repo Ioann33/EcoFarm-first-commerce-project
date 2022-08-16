@@ -307,7 +307,7 @@ export default {
                             }
                         }).catch(err => {
                             this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                            console.log(this.message)
+                            console.error(this.message)
                         })
 
                     }else {
@@ -317,7 +317,7 @@ export default {
 
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                    console.log(this.message)
+                    console.error(this.message)
                 })
             }
             // это не теплица - поэтому перемещение товара - за 2й шаг
