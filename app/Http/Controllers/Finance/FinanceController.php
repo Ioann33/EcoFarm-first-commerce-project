@@ -302,9 +302,9 @@ class FinanceController extends Controller
 
                 $move_id = HandleGoods::movements(null, null, $sale['goods_id'],'pre_sale', null, $sale['amount'], null, $sale['price']);
 
-                $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'предпродажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 701, $move_id,$user_id);
+                $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'предпродажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 701, $move_id['productID'],$user_id);
 
-                $movement = Movements::findOrFail($move_id);
+                $movement = Movements::findOrFail($move_id['productID']);
                 $movement->link_id = $trance_id;
                 $movement->save();
 
@@ -330,7 +330,7 @@ class FinanceController extends Controller
 
                 $move_id = HandleGoods::moveGoods($sale['storage_id'], null, $sale['goods_id'], $sale['amount'],'sale', null,null, $user_id, $dateNow);
 
-                $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 700, $move_id, $user_id);
+                $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 700, $move_id['productID'], $user_id);
 
                 $service->newLog('doSale', 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], $trance_id);
 
@@ -354,7 +354,7 @@ class FinanceController extends Controller
             foreach ($request->buy as $buy){
                 $costProduct = (int) $buy['amount'] * (int) $buy['price'];
 
-                $move_id = HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $costProduct);
+                $move_id = HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $buy['price']);
 
                 $trance_id = MoneyTransfer::moneyTransfer(-$costProduct, $dateNow, $buy['storage_id'], 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], 800, $move_id['productID'],$user_id);
                 $service->newLog('doBuy', 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], $trance_id);

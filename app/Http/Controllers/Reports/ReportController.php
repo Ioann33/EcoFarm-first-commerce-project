@@ -81,4 +81,31 @@ class ReportController extends Controller
             'saldo' => $saldo,
             ]);
      }
+
+    /**
+     *
+     * @param Request $request
+     * @return mixed
+     */
+     public function checkStockBalance(Request $request){
+        return$goods_input = Movements::where('date_accepted', '!=', null)
+            ->where('goods_id', '=', $request->goods_id)
+            ->where(function($query) use ($request) {
+                $query->where('storage_id_to', '=', $request->storage_id)
+                    ->orWhere('storage_id_from', '=', $request->storage_id);
+})->get();
+
+//         select
+//         *
+//         from
+//  "movements"
+//      where
+//  "date_accepted" is not null
+//         and "goods_id" = '17'
+//         and (
+//             "storage_id_to" = '1'
+//             or "storage_id_from" = '1'
+//         )
+
+     }
 }

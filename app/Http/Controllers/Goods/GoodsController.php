@@ -174,7 +174,7 @@ class GoodsController extends Controller
 
         try {
             $move = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
-            $service->newLog('moveGoods', 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $move);
+            $service->newLog('moveGoods', 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $move['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -205,7 +205,7 @@ class GoodsController extends Controller
 
             $push = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
 
-            $pull = Movements::findOrFail($push);
+            $pull = Movements::findOrFail($push['productID']);
 
             $pull->user_id_accepted = $user_id;
             $pull->date_accepted = $dateNow;
@@ -214,7 +214,7 @@ class GoodsController extends Controller
 
             $result = HandleGoods::addGoodsOnStockBalance($pull->storage_id_to, $pull->goods_id, $pull->amount, $dateNow, $pull->price);
 
-            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.$request->goods_id.'), from storage '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $push);
+            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.$request->goods_id.'), from storage '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $push['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -352,7 +352,7 @@ class GoodsController extends Controller
                 'status'=> 'error'
             ]);
         }
-        $service->newLog('doTrash','продукт ('.$request->goods_id.'), был утилизирован на складе ('.$request->storage_id.'), в количестве ('.$request->amount.')', $trashID);
+        $service->newLog('doTrash','продукт ('.$request->goods_id.'), был утилизирован на складе ('.$request->storage_id.'), в количестве ('.$request->amount.')', $trashID['productID']);
         DB::commit();
         return response()->json([
             'status'=>'ok',
