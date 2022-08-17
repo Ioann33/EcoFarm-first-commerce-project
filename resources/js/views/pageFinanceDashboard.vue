@@ -64,7 +64,7 @@
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
     import TitlePage from "../Components/Title";
-    import {forEach} from "lodash";
+    // import {forEach} from "lodash";
 
     export default {
         name: "FinanceDashboard",
@@ -99,6 +99,7 @@
             })
         },
         updated() {
+            update_template()
         },
         methods: {
              changeRule() {

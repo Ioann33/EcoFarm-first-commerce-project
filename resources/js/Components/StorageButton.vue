@@ -40,13 +40,13 @@ export default {
                 this.storage_prop = res.data.data
                 //console.log(this.storage_prop)
                 localStorage.setItem('storage_name', this.storage_prop[0]['name'])
-                localStorage.setItem('money_in', this.storage_prop[0]['money_in'])
-                localStorage.setItem('money_out', this.storage_prop[0]['money_out'])
-                localStorage.setItem('move_in', this.storage_prop[0]['money_in'])
-                localStorage.setItem('move_out', this.storage_prop[0]['money_out'])
-                localStorage.setItem('order_in', this.storage_prop[0]['money_in'])
-                localStorage.setItem('order_out', this.storage_prop[0]['money_out'])
-                localStorage.setItem('type', this.storage_prop[0]['type'])
+                // localStorage.setItem('money_in', this.storage_prop[0]['money_in'])
+                // localStorage.setItem('money_out', this.storage_prop[0]['money_out'])
+                // localStorage.setItem('move_in', this.storage_prop[0]['money_in'])
+                // localStorage.setItem('move_out', this.storage_prop[0]['money_out'])
+                // localStorage.setItem('order_in', this.storage_prop[0]['money_in'])
+                // localStorage.setItem('order_out', this.storage_prop[0]['money_out'])
+                localStorage.setItem('my_storage_type', this.storage_prop[0]['type'])
 
                 this.$router.push({name: 'home'});
             })

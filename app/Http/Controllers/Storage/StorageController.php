@@ -47,9 +47,19 @@ class StorageController extends Controller
 
         if ($newStorage->save()){
             $service->newLog('addStorage', 'added storage '.$newStorage->id, $newStorage->id);
-            return response()->json(['storage_id'=>$newStorage->id]);
+            return response()->json(
+                [
+                    'status' => 'ok',
+                    'message' => "склад({$request->name}) был добавлен. id:{$newStorage->id}",
+                    'storage_id' => $newStorage->id
+                ]);
         }else{
-            return response()->json(['error'=>'some errors with adding storage']);
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message'=>'some errors with adding storage'
+                ]
+            );
         }
     }
 }

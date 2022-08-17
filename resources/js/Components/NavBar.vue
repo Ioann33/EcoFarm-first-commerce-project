@@ -48,7 +48,7 @@ export default {
 
         this.my_storage_id = localStorage.getItem('my_storage_id')
         this.my_storage_name = localStorage.getItem('my_storage_name')
-        this.my_storage_type = localStorage.getItem('type')
+        this.my_storage_type = localStorage.getItem('my_storage_type')
     },
     mounted() {
 
