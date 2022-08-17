@@ -48,7 +48,7 @@ export default {
     },
     computed: {
         typeTemplate(){
-          const type = localStorage.getItem('type');
+          const type = localStorage.getItem('my_storage_type');
           if(!type){
               return false;
           }

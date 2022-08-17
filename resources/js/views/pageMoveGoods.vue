@@ -26,7 +26,7 @@
                             <div class="input-style input-style-always-active has-borders no-icon">
                                 <label for="f6" class="color-blue-dark">Товар</label>
                                 <select id="f6" v-model="selected_goods_id" @change="changeProduct" class="form-control">
-                                    <option value="default"  selected>выбрать</option>
+                                    <option value="default" disabled selected>выбрать</option>
                                     <option
                                         v-for="(goods, index) in listGoods"
                                         v-bind:value="goods.goods_id"
@@ -81,9 +81,9 @@
 
                                     <option
                                         v-for="(storage, index) in listStorage"
-                                        v-bind:value="storage.id"
+                                        v-bind:value="storage.storage_id"
                                     >
-                                        {{ storage.name }}
+                                        {{ storage.storage_name }}
                                     </option>
 
                                 </select>
@@ -158,6 +158,7 @@ export default {
     beforeMount() {
         this.my_storage_id = localStorage.getItem('my_storage_id')
         this.my_storage_name = localStorage.getItem('my_storage_name')
+        this.my_storage_type = localStorage.getItem('my_storage_type')
     },
     mounted() {
 
@@ -170,33 +171,33 @@ export default {
 
 
 
-        axios.get('/api/getStorageProp/'+this.my_storage_id).then(res => {
-            this.storage_id_prop = res.data.data[0]
 
-            if(this.storage_id_prop.type === 'grow')
-            {
-                this.selected_storage_id    = localStorage.getItem('main_storage_id')
 
-                this.rule = 'allowed'
-            }
-            else
-                this.rule = 'available'
+        if(this.my_storage_type === 'grow')
+        {
+            this.selected_storage_id    = localStorage.getItem('main_storage_id')
 
-            axios.get('/api/getStorageGoods/' + this.rule + '/' + this.my_storage_id + '/all').then(res => {
+            this.rule = 'allowed'   // для теплиц
+        }
+        else
+        {
+            this.rule = 'available' // для всего остального (не теплицы)
+        }
 
-                if(this.rule === 'available')
-                    this.listGoods = res.data.data.filter(el => el.amount >0)   // отобразим только те товары, которые есть на складе: amount >0
-                else // allowed
-                    this.listGoods = res.data.data  // отобразим все разрешенные товары
-            }).catch(err => {
-                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                console.log(this.message)
-            })
 
+        // получить все разрешенные/доступные товары на текущей теплице
+        axios.get('/api/getStorageGoods/' + this.rule + '/' + this.my_storage_id + '/all').then(res => {
+
+            if(this.rule === 'available')
+                this.listGoods = res.data.data.filter(el => el.amount >0)   // отобразим только те товары, которые есть на складе: amount >0
+            else // allowed
+                this.listGoods = res.data.data  // отобразим все разрешенные товары
         }).catch(err => {
             this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-            console.log(this.message)
+            console.error(this.message)
         })
+
+
 
         // Если перешли на эту страницу без order_id
         // if(this.order_id.length ===  0) {
@@ -228,15 +229,16 @@ export default {
     },
     computed: {
         canSelectStorageTo() {
-            if(this.my_storage_id == localStorage.getItem('main_storage_id'))
+            if(this.my_storage_id === localStorage.getItem('main_storage_id'))
             {
-                axios.get('/api/getListStorages').then(res => {
-                    this.listStorage = res.data.data.filter(el => el.id !== Number.parseInt(this.storage_id))
+                // axios.get('/api/getListStorages').then(res => {
+                //     this.listStorage = res.data.data.filter(el => el.id !== Number.parseInt(this.storage_id))
+                //
+                // }).catch(err => {
+                //     this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                //     console.log(this.message)
+                // })
 
-                }).catch(err => {
-                    this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                    console.log(this.message)
-                })
                 return 1
             } else
             {
@@ -264,12 +266,22 @@ export default {
             }
         },
         changeProduct(){
-            const current_good = this.listGoods.find(el => el.goods_id == this.selected_goods_id);
+            const current_good = this.listGoods.find(el => el.goods_id === this.selected_goods_id);
             if(current_good) {
                 const {amount, unit} = current_good;
                 this.max_amount = amount;
                 this.unit = unit;
+
             }
+
+            // после смены товара - отобразить на каких складах он доступен
+
+            axios.get('/api/getListStoragesGoodsPermit/' + this.selected_goods_id).then(res => {
+                this.listStorage = res.data.data.filter(el => el.allowed === true)
+            }).catch(err => {
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.error(this.message)
+            })
         },
         makeMoveGoods(){
             console.log('Move Goods:' +

@@ -3,7 +3,7 @@
         <div class="input-style input-style-always-active has-borders no-icon">
             <label v-if="label" for="storage-list-from" class="color-blue-dark">{{label}}</label>
             <select id="storage-list-from" :disabled="disabled" v-model="selected_goods" class="form-control">
-                <option value="default" selected>{{ defaultOption }}</option>
+                <option value="default" disabled selected>{{ defaultOption }}</option>
                 <option
                     v-for="(item, index) in data"
                     v-bind:value="item[keyOfValue]"
