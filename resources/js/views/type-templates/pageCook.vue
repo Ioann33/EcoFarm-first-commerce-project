@@ -19,7 +19,8 @@
         </div>
 
         <!-- КУПИТЬ / ПРОДАТЬ -->
-        <div class="card card-style" style="padding-top: 12px;">
+
+        <div class="card card-style" style="padding-top: 12px;" v-if="0">
             <div class="row mb-n2">
 
                 <div class="col-6 ps-3 pe-2">
@@ -72,15 +73,6 @@
                             <!-- принять --> <card-movement-in-opened :storage_id="my_storage_id"></card-movement-in-opened>
                         </div>
                     </div>
-
-                    <!--Список продукции на складе-->
-<!--                    <a href="#">-->
-<!--                        <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">-->
-<!--                            <i class="fa bg-green-dark rounded-s"></i>-->
-<!--                            <span class="font-20">Товары на складе: {{ my_storage_name }}</span>-->
-<!--                        </router-link>-->
-<!--                    </a>-->
-
 
                 </div>
 

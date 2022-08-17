@@ -291,9 +291,10 @@ export default {
                 '\n     storage_from: ' + this.my_storage_id
             )
 
-            this.type=localStorage.getItem('type')
+            this.type=localStorage.getItem('my_storage_type')
             if(this.type === 'grow')
             {
+                console.log(this.type)
 // шаг 1/2. создать продукт на теплице
                 axios.post('/api/goodsMovementPush',{
                     storage_id_from: null,
