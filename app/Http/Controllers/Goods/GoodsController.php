@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Goods;
 use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Storage\StorageController;
+use App\Http\Resources\CostGoodsOnStockResource;
 use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
@@ -114,9 +115,9 @@ class GoodsController extends Controller
 
         $result = HandleGoods::addGoodsOnStockBalance($movement->storage_id_to, $movement->goods_id, $movement->amount, $dateNow, $movement->price);
 
-        $service->newLog('pullGoods', 'pull goods('.$movement->goods_id.'), from '.$movement->storage_id_from.'->'.$movement->storage_id_to.', amount: '.$movement->amount, $request->movement_id);
+        $service->newLog('pullGoods', 'pull goods('.$movement->goods_id.'), from '.$movement->storage_id_from.'->'.$movement->storage_id_to.', amount: '.$movement->amount. ', price: '.$movement->price, $request->movement_id);
         if($movement->save() && $result) {
-            return response()->json(['status'=>'ok']);
+            return response()->json(['status'=>'ok', 'message'=>'pull goods('.$movement->goods_id.'), from '.$movement->storage_id_from.'->'.$movement->storage_id_to.', amount: '.$movement->amount. ', price: '.$movement->price]);
         }
     }
 
@@ -175,7 +176,8 @@ class GoodsController extends Controller
 
         try {
             $move = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
-            $service->newLog('moveGoods', 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $move['productID']);
+            $price = Movements::findOrFail($move['productID']);
+            $service->newLog('moveGoods', 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount.' price: '.$price->price, $move['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -186,7 +188,7 @@ class GoodsController extends Controller
         DB::commit();
         return response()->json([
             'status'=>'ok',
-            'message' => 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount
+            'message' => 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount.' price: '.$price->price
 
         ]);
     }
@@ -215,7 +217,7 @@ class GoodsController extends Controller
 
             $result = HandleGoods::addGoodsOnStockBalance($pull->storage_id_to, $pull->goods_id, $pull->amount, $dateNow, $pull->price);
 
-            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.$request->goods_id.'), from storage '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $push['productID']);
+            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.$request->goods_id.'), from storage '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price, $push['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -226,7 +228,7 @@ class GoodsController extends Controller
         DB::commit();
         return response()->json([
             'status'=>'ok',
-            'message' => 'grow and push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount
+            'message' => 'grow and push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price
 
         ]);
 
@@ -270,27 +272,41 @@ class GoodsController extends Controller
 
             HandleGoods::moveGoods($request->storage_id, $mainStore[0]['param'], $request->goods_id, $request->amount,'move', $readyProductID['productID']);
 
-            $service->newLog('makeProduct', 'made product '.$request->goods_id.' in the amount '. $request->amount.' and move to main storage', $readyProductID['productID']);
+            $service->newLog('makeProduct', 'made product '.$request->goods_id.' in the amount '. $request->amount.' ,self cost :'.$setSelfCostProduct->price.' and move to main storage', $readyProductID['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json(['status'=>$e->resMess()]);
         }
         DB::commit();
-        return response()->json(['status'=>'ok']);
+        return response()->json(['status'=>'ok', 'message'=>'made product '.$request->goods_id.' in the amount '. $request->amount.' ,self cost :'.$setSelfCostProduct->price.' and move to main storage']);
     }
 
     public function costGoods(Request $request){
-//        ($request->type === 'ready') ? $type=2 : $type=1;
 
-        $costGoods = StockBalance::all()->where('storage_id', '=', $request->storage_id);
 
+        if ($request->storage_id === 'all'){
+            $costGoods = StockBalance::all();
+
+        }else{
+            $costGoods = StockBalance::all()->where('storage_id', '=', $request->storage_id);
+        }
+
+
+        if ($request->type === 'all'){
+
+//            return CostGoodsOnStockResource::collection($costGoods);
+            $res = $costGoods->sum(function ($item){
+                return $item->amount * $item->price;
+            });
+        }
         if ($request->type === 'ready'){
             $res = $costGoods->sum(function ($item){
                 if ($item->goods->type === 2){
                     return $item->amount * $item->price;
                 }
             });
-        }else{
+        }
+        if($request->type === 'ingredients'){
             $res = $costGoods->sum(function ($item){
                 if ($item->goods->type === 1){
                     return $item->amount * $item->price;
