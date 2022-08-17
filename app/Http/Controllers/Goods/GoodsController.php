@@ -93,9 +93,8 @@ class GoodsController extends Controller
             $dir = 'storage_id_from';
         }
 
-        $movement = Movements::all()
-            ->where($dir, '=', $request->id)
-            ->where('user_id_accepted', $operator,null);
+        $movement = Movements::where($dir, '=', $request->id)
+            ->where('user_id_accepted', $operator,null)->get();
 
         return getMovementResource::collection($movement);
     }
