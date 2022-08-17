@@ -88,13 +88,40 @@ class ReportController extends Controller
      * @return mixed
      */
      public function checkStockBalance(Request $request){
-        return$goods_input = Movements::where('date_accepted', '!=', null)
+         $price = 0;
+         $amount = 0;
+        $goods = Movements::where('date_accepted', '!=', null)
             ->where('goods_id', '=', $request->goods_id)
             ->where(function($query) use ($request) {
                 $query->where('storage_id_to', '=', $request->storage_id)
                     ->orWhere('storage_id_from', '=', $request->storage_id);
-})->get();
+            })->get();
 
+        foreach ($goods as $value){
+             if($value['storage_id_to'] == $request->storage_id){
+                if ($price == 0){
+                    $price = $value['price'];
+                }else{
+                    $existValue = $price * $amount;
+                    $inputValue = $value['price']*$value['amount'];
+                    $totalAmount = $amount + $value['amount'];
+                    $price = ($existValue + $inputValue)/$totalAmount;
+                }
+                 $amount+= $value['amount'];
+             }
+
+            if($value['storage_id_from'] == $request->storage_id){
+                $amount-= $value['amount'];
+            }
+        }
+        $price = number_format($price,2);
+        return response()->json([
+            'status'=>'ok',
+            'storage_id'=>$request->storage_id,
+            'goods_id'=>$request->goods_id,
+            'amount'=>$amount,
+            'price'=>$price
+            ]);
 //         select
 //         *
 //         from

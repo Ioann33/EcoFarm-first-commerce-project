@@ -130,6 +130,7 @@ class GoodsController extends Controller
     public function getStorageGoods(Request $request){
 
         if ($request->storage_id === 'all'){
+
             //return dd($request->input());
             return $storages = StorageGoods::where('goods_id', $request->goods_id);
             //return getAllowedStoragesResource::collection($storages);
