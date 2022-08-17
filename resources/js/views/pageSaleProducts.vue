@@ -36,14 +36,14 @@
                     </div>
                     <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <input type="number" :disabled="true" class="form-control focus-color focus-blue validate-name "
+                            <input :id="'price'+i" type="number" :disabled="true" class="form-control focus-color focus-blue validate-name "
                                    id="f15"
                                    v-model="item.price"
                             >
                             <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
                             <i class="fa fa-check disabled valid color-green-dark"></i>
-                            <em>цена за ед.</em>
+                            <em>₴</em>
                         </div>
                     </div>
                     <div class="col-4 p-1">
@@ -129,7 +129,7 @@
             total() {
                 let total = 0;
                 this.sale_goods.forEach(el => {
-                    total += el.total;
+                    total += Number.parseFloat(el.total);
                 })
                 return total;
             },
@@ -176,7 +176,7 @@
                 if(this.sale_goods[i].amount > this.sale_goods[i].max_amount){
                     this.sale_goods[i].amount = this.sale_goods[i].max_amount;
                 }
-                this.sale_goods[i].total = this.sale_goods[i].amount * this.sale_goods[i].price;
+                this.sale_goods[i].total = (this.sale_goods[i].amount * this.sale_goods[i].price).toFixed(2);
             },
             addGoods(){
                 this.sale_goods.push({
