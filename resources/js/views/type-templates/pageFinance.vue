@@ -9,8 +9,8 @@
             <div class="col-4 ps-3 pe-0">
                 <div class="card card-style mx-0 mb-3">
                     <div class="p-3 bg-yellow-dark ">
-                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">зарплата </h4>
-                        <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                        <h4 class="font-700 text-uppercase font-10 opacity-50 mt-n2">зарплата </h4>
+                        <h1 class="font-700 font-24 opacity-60 mb-0 text-center">
                             {{ this.salaryWeek }}</h1>
                     </div>
                 </div>
@@ -18,8 +18,8 @@
             <div class="col-4 ps-1 pe-0">
                 <div class="card card-style mx-0 mb-3">
                     <div class="p-3 bg-yellow-dark ">
-                        <h4 class="font-700 text-uppercase font-12 opacity-50 mt-n2">капитальные </h4>
-                        <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                        <h4 class="font-700 text-uppercase font-10 opacity-50 mt-n2">капитальные </h4>
+                        <h1 class="font-700 font-24 opacity-60 mb-0 text-center">
                             {{ this.capitalWeek }}</h1>
                     </div>
                 </div>
@@ -28,7 +28,7 @@
                 <div class="card card-style mx-0 mb-3">
                     <div class="p-3 bg-yellow-dark ">
                         <h4 class="font-700 text-uppercase font-10 opacity-50 mt-n2">не профильные </h4>
-                        <h1 class="font-700 font-34 opacity-60 mb-0 text-center">
+                        <h1 class="font-700 font-24 opacity-60 mb-0 text-center">
                             {{ this.non_profitWeek }}</h1>
                     </div>
                 </div>

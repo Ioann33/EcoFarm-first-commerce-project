@@ -4,10 +4,6 @@
         <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
 
-        1. продажа товара без отгрузки <br>
-        2. просмотр всех сделок без откгрузки <br>
-        3. кнопка отгрузки в списке всех сделок, если такое кол-во товара есть на текущем складе <br>
-
         <!--ПЕРЕДАТЬ ТОВАР    -->
         <div class="card card-style" style="padding-top: 12px;">
             <div class="content mb-3 mt-0">
@@ -41,13 +37,13 @@
                     <router-link :to="{name: 'ListPreSale'}">
                         <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
                         <span>Незакрытые сделки</span>
-                        <strong>Список не закрытых сделок</strong>
+<!--                        <strong>Список не закрытых сделок</strong>-->
                         <i class="fa fa-angle-right"></i>
                     </router-link>
                     <router-link :to="{name: 'PreSaleProducts'}">
                         <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
                         <span>Продажа товара</span>
-                        <strong>Продажа товара без отгрузки</strong>
+<!--                        <strong>Продажа товара без отгрузки</strong>-->
                         <i class="fa fa-angle-right"></i>
                     </router-link>
                 </div>
@@ -59,14 +55,14 @@
         <!--ПЕРЕДАТЬ ТОВАР    -->
 
         <div class="row text-center mb-0 mt-n2">
-            <router-link :to="{name: 'preSale'}" class="col-6 ps-3">
+            <router-link :to="{name: 'PreSaleProducts'}" class="col-6 ps-3">
                 <div class="card card-style me-2 mb-3">
                     <i class="fa fa-arrow-up color-red-dark fa-2x mt-3"></i>
                     <h1 class="pt-2 font-18">Продажа без отгрузки</h1>
                     <p class="font-11 opacity-50 mt-n2 mb-3">деньги поступят на счет этого склада. движение товара отсутствует</p>
                 </div>
             </router-link>
-            <router-link :to="{name: 'SpendInvest', params: {type: 'in'}}" class="col-6 ps-0">
+            <router-link :to="{name: 'ListPreSale'}" class="col-6 ps-0">
                 <div class="card card-style ms-2 mb-3">
                     <i class="fa fa-arrow-down color-green-dark fa-2x mt-3"></i>
                     <h1 class="pt-2 font-18">Посмотреть открытые сделки</h1>
@@ -91,7 +87,7 @@ import cardMovementInOpened from "../../Components/cardMovementInOpened";
         },
         data() {
             return {
-
+                message: ''
             }
         },
         computed: {},
