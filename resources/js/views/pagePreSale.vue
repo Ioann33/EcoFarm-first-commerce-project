@@ -7,7 +7,7 @@
             <!-- ERROR -->  <error :message="message"></error>
 
             <title-page title_main="Предпродажа"></title-page>
-продажа товара, без его отгрузки
+
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
 
                 <div class="row mb-0" v-for="(item, i) in sale_goods" :key="item.goods_id">
