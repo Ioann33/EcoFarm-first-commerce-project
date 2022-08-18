@@ -141,6 +141,11 @@ const router = createRouter({
             path: '/addStorage',
             name: 'addStorage',
             component: () => import('../views/pageAddStorage')
+        },
+        {
+            path: '/cookStat',
+            name: 'cookStat',
+            component: () => import('../views/pageCookStat')
         }
     ]
 })
