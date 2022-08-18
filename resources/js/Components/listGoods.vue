@@ -19,7 +19,6 @@ export default {
         'storage_id'
     ],
     async mounted() {
-        console.log('ffff')
         // Получить список продукции на складе
          await axios.get('/api/getStorageGoods/available/' + this.storage_id+'/all').then(res => {
             this.listGoods = res.data.data.filter(el => el.amount >0)

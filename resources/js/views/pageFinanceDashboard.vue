@@ -11,8 +11,8 @@
             <div class="card-title text-center">Остатки на складах</div>
 
             <div class="tab-controls tabs-small tabs-rounded mb-2" data-highlight="bg-blue-dark">
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-10" class="bg-blue-dark no-click">Продукты</a>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-11" class="collapsed" @click.once="changeRule('ingredients')">Ингредиенты</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-10" class="bg-blue-dark no-click">Продукция</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-11" class="collapsed" @click.once="changeRule('ingredients')">Продукты</a>
                 <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-12" class="collapsed">Все</a>
             </div>
 
