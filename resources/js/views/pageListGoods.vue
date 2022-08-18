@@ -43,7 +43,7 @@
 
                             <div class="tab-controls tabs-small tabs-rounded mb-2" data-highlight="bg-blue-dark">
                                 <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-15" class="bg-blue-dark no-click">Ингредиенты</a>
-                                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-16" class="collapsed" @click.once="changeRule('ingredients')">Продукты</a>
+                                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-16" class="collapsed">Продукты</a>
                                 <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-17" class="collapsed">Все</a>
                             </div>
 
