@@ -5,6 +5,26 @@
 
 
 
+        <div class="card card-style">
+            <div class="content mb-0">
+                <div class="row mb-0">
+                    <div class="col-6 pe-1">
+                        <div class="mx-0 mb-3">
+                            <h6 class="font-12 font-800 text-uppercase opacity-30">отгружено</h6>
+                            <h3 class="color-green-dark font-20 mb-0">{{ this.sumMovement }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-6 ps-1">
+                        <div class="mx-0 mb-3">
+                            <h6 class="font-12 font-800 text-uppercase opacity-30">ЗП</h6>
+                            <h3 class="color-red-dark font-20 mb-0">{{ this.sumSalary }}</h3>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <!--ИСХОДЯЩИЕ ЗАКАЗЫ-->
         <div class="card card-style" v-if="0">
             <div class="content mb-0 mt-0">
@@ -182,8 +202,8 @@
             return {
                 message: '',
                 storage_id: null,
-                storage_name: null,
-                balance: 1000,
+
+
 
 
                 count_order_out_opened: 0,
@@ -195,13 +215,16 @@
                 count_order_in_progres: 0,
 
                 count_movement_out_opened: 0,
-                count_movement_in_opened: 0
+                count_movement_in_opened: 0,
+
+                sumMovement: '',    // сумма отгруженых товаров
+                sumSalary: '',     //  ЗП
             }
         },
         computed: {
             isMain(){
                 const main_id = localStorage.getItem('main_storage_id');
-                if(main_id === this.storage_id) {
+                if(main_id === this.my_storage_id) {
                     return true;
                 }
                 return false;
@@ -213,36 +236,36 @@
         },
         mounted() {
             console.log('     Component views/Home mounted....')
+            this.df = '2022-06-01 00:00:00'
+            this.dt = '2022-09-05 00:00:00'
 
-            // получить мой склад
-            this.storage_id = localStorage.getItem('my_storage_id');
-            console.log('my_storage_id: ' + this.storage_id)
 
-            // если склад не выбран - перекинуть на страницу выбор склада
-            if(this.storage_id == null) {
-                console.log('my_storage_id is null \nRedirect to /selectStorage')
-                this.$router.push({name: 'selectStorage'});
-            }
-
-            // иначе - склад выбран - и нужно подтянуть привелегии этого склада
-            // this.order_in = localStorage.getItem('order_in');
-            // this.order_out = localStorage.getItem('order_out');
-            // this.money_in = localStorage.getItem('money_in');
-            // this.money_out = localStorage.getItem('money_out');
-            // this.move_in = localStorage.getItem('move_in');
-            // this.move_out = localStorage.getItem('move_out');
-            this.storage_name = localStorage.getItem('my_storage_name');
-
-            console.log('storage_name: '+this.storage_name)
-
-            // получим сумму перемещений на этом складе
-            this.date_from = '2022-08-01'
-            this.date_to = '2022-08-05'
-            axios.get('/api/getSumMoneyMovementGoods/'+ this.storage_id+'/'+this.date_from+'/'+this.date_to).then(res => {
-                this.balance = res.data.sum
-
+            // получим все перемещений на этом складе
+            // getListGoodsMovements/3/2022-08-01/2022-09-01
+            let total = 0
+            axios.get('/api/getListGoodsMovements/'+ this.my_storage_id+'/'+this.df+'/'+this.dt).then(res => {
+                res.data.data.forEach((el, index) => {
+                    if(el.category === 'move' && el.user_id_accepted !== null) // товар отгружен и принят гл.складом
+                    {
+                        total += el.price * el.amount
+                        this.sumMovement = total
+                        //console.log('+ id:'+el.id+' goods:'+el.goods_id+ ': '+ el.price +'*'+ el.amount+' = '+total)
+                    }
+                    //else
+                        //console.log('-'+el.id+' '+el.goods_id)
+                })
             }).catch(err => {
-                console.log(err)
+                console.error(err)
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            })
+
+            // получим затраты на ЗП
+            // api/getSalary/total/3/100/2022-06-01 00:00:00/2022-09-05 00:00:00
+            total = 0
+            axios.get('/api/getSalary/total/'+ this.my_storage_id+'/100/'+this.df+'/'+this.dt).then(res => {
+                this.sumSalary = res.data.sum
+            }).catch(err => {
+                console.error(err)
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
 
@@ -256,7 +279,7 @@
         methods: {
             loadStoragesParams(){
 
-                axios.get('/api/getStorageOrder/out/'+ this.storage_id).then(res => {
+                axios.get('/api/getStorageOrder/out/'+ this.my_storage_id).then(res => {
                     //console.log(res.data)
                     this.count_order_out_opened = res.data.data.opened
                     this.count_order_out_canceled = res.data.data.canceled
@@ -266,7 +289,7 @@
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
 
-                axios.get('/api/getStorageOrder/in/'+ this.storage_id).then(res => {
+                axios.get('/api/getStorageOrder/in/'+ this.my_storage_id).then(res => {
                     //console.log(res.data)
                     this.count_order_in_opened = res.data.data.opened
                     this.count_order_in_canceled = res.data.data.canceled
@@ -277,20 +300,20 @@
                 })
 
                 // получить ОТКРЫТЫЕ ИСХОДЯЩИЕ заявки на ПЕРЕДАЧУ товара  (нужно только количество, для отображения на главной странице)
-                axios.get('/api/getMovement/out/opened/'+ this.storage_id).then(res => {
+                axios.get('/api/getMovement/out/opened/'+ this.my_storage_id).then(res => {
                     this.count_movement_out_opened = res.data.data.length
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
 
                 // получить ОТКРЫТЫЕ ВХОДЯЩИЕ заявки на ПОЛУЧЕНИЕ товара (нужно только количество, для отображения на главной странице)
-                axios.get('/api/getMovement/in/opened/'+ this.storage_id).then(res => {
+                axios.get('/api/getMovement/in/opened/'+ this.my_storage_id).then(res => {
                     this.count_movement_in_opened = res.data.data.length
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 })
 
-                console.log('loaded all params for storage: ' + this.storage_id)
+                console.log('loaded all params for storage: ' + this.my_storage_id)
             }
         }
     }
