@@ -31,6 +31,7 @@ class getMovementResource extends JsonResource
             'storage_name' => $storageName->name,
             'goods_id' => $this->goods_id,
             'goods_name' => $this->goods->name,
+            'goods_type' => $this->goods->type,
             'unit' => $this->goods->unit,
             'amount' => $this->amount,
             'user_id_accepted' => $this->user_id_accepted,
