@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Storage\StorageController;
 use App\Http\Resources\CostGoodsOnStockResource;
 use App\Http\Resources\getListGoodsResource;
+use App\Http\Resources\GetMovementInfoResource;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
@@ -317,7 +318,9 @@ class GoodsController extends Controller
     }
 
     public function getMovementInfo(Request $request){
-        return response()->json(Movements::findOrFail($request->id));
+        $movement = Movements::findOrFail($request->id);
+
+        return GetMovementInfoResource::make($movement);
     }
 
     public function addGoods(Request $request, LogService $service){

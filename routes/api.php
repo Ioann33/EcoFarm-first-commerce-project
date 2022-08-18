@@ -13,6 +13,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getListStorages', [\App\Http\Controllers\Storage\StorageController::class, 'getListStorages']);
     Route::get('/getStorageProp/{id}', [\App\Http\Controllers\Storage\StorageController::class, 'getStorageProp']);
     Route::post('/addStorage', [\App\Http\Controllers\Storage\StorageController::class, 'addStorage']);
+    Route::post('/updateStorage', [\App\Http\Controllers\Storage\StorageController::class, 'updateStorage']);
 
     Route::get('/getStorageOrder/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'getStorageOrder']);
 
