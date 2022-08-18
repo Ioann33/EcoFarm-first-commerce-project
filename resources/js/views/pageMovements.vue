@@ -90,7 +90,8 @@ export default {
             movement_id: '',
             price: -0,
             editPrice: false,
-            oneUpdate: 0
+            oneUpdate: 0,
+            my_storage_type: ''
         }
     },
     mounted() {
@@ -129,17 +130,46 @@ export default {
             if(!this.editPrice){
                 this.pullGoods(this.movement_id)
             } else {
-                //this.price = '0000'
-                // если отгрузка из type=grow - то цену не нужно брать
+
+
+
                 // установить цену на товар "по умолчанию" взятую из этого перемещения
                 axios.get('/api/getMovementInfo/' + this.movement_id).then(res => {
-                    this.price = res.data.data.price
-                    console.log('цена продукта взять из базы: ' + this.price)
+
+                    // если отгрузка из type=grow - то цену  нужно брать рекомендованную
+                    axios.get('api/getStorageProp/' + res.data.data.storage_id_from).then(res2 => {
+
+                        // если отгрузка из type=grow - то цену  нужно брать рекомендованную
+                        if(res2.data.data[0].type==='grow')
+                        {
+                            // api/getStorageGoods/available/1/2
+                            axios.get('/api/getStorageGoods/available/' + res.data.data.storage_id_to +'/'+ res.data.data.goods_id).then(res3 => {
+                                this.price = res3.data.data[0].price
+                                console.log('цену продукта взять из стока склада: ' + this.price)
+                            }).catch(err => {
+                                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                                console.error(this.message)
+                            })
+                        }
+                        else {
+                            this.price = res.data.data.price
+                            console.log('цена продукта взять из базы: ' + this.price)
+                        }
+                    }).catch(err => {
+                        this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                        console.error(this.message)
+                    })
+
+                    // this.price = res.data.data.price
+                    // console.log('цена продукта взять из базы: ' + this.price)
 
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                    console.log(this.message)
+                    console.error(this.message)
                 })
+
+
+
             }
 
 
