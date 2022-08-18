@@ -6,50 +6,73 @@
         <div class="page-content header-clear-medium">
             <title-page title_main="Статистика"></title-page>
 
-        <div class="card card-style overflow-visible p-4 pt-3 mt-3">
+        <div class="card card-style overflow-visible p-4 pt-3 mt-3 content" id="tab-group-2">
 
             <div class="card-title text-center">Остатки на складах</div>
 
-            <div class="d-flex no-effect bg-light rounded-m justify-content-between p-2 pb-1 mb-2"
-                 data-trigger-switch="toggle-id-4"
-                 data-bs-toggle="collapse"
-                 href="#collapseExample4"
-                 role="button"
-                 aria-expanded="false"
-                 aria-controls="collapseExample4">
-
-                <div class="ps-2 pt-1">
-                    <h6 class="font-400">готовая продукция</h6>
-                </div>
-
-                <div class=" me-4 pe-2">
-                    <div class="custom-control android-switch">
-                        <input type="checkbox" class="android-input" id="toggle-id-4" @change="changeRule">
-                        <label class="custom-control-label" for="toggle-id-4"></label>
-                    </div>
-                </div>
-
-                <div class="pe-2 pt-1">
-                    <h6 class="font-400">ингридиенты</h6>
-                </div>
+            <div class="tab-controls tabs-small tabs-rounded mb-2" data-highlight="bg-blue-dark">
+                <a href="#" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-5" class="bg-blue-dark no-click" aria-expanded="true">Продукты</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-6" class="collapsed" @click.once="changeRule('ingredients')" aria-expanded="false">Ингредиенты</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-7" class="collapsed" aria-expanded="false">Все</a>
             </div>
-            <div v-if="loading" class="spinner-border text-light position-absolute" style="top: 112px; left: 50%;" role="status">
-                <span class="sr-only">Loading...</span>
+
+            <div data-bs-parent="#tab-group-2" class="collapse show" id="tab-5" style="">
+                <div v-if="loading.ready" class="spinner-border text-light position-absolute" style="top: 100px; left: 50%;" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
+                    <thead>
+                    <tr class="bg-grass-light">
+                        <th scope="col" class="color-black opacity-50">Склад</th>
+                        <th scope="col" class="color-black opacity-50">Итого, грн</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(storage, index) in listStorages" :key="storage.id">
+                        <th scope="row" class="align-self-center ">{{ storage.name }}</th>
+                        <td ><h4 class="font-600">{{ sum.ready[storage.id] ? sum.ready[storage.id] : '...' }}</h4></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-            <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
-                <thead>
-                <tr class="bg-grass-light">
-                    <th scope="col" class="color-black opacity-50">Склад</th>
-                    <th scope="col" class="color-black opacity-50">Итого, грн</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="(storage, index) in listStorages" :key="storage.id">
-                    <th scope="row" class="align-self-center ">{{ storage.name }}</th>
-                    <td ><h4 class="font-600">{{ storage.sum }} </h4></td>
-                </tr>
-                </tbody>
-            </table>
+            <div data-bs-parent="#tab-group-2" class="collapse" id="tab-6" style="">
+                <div v-if="loading.ingredients" class="spinner-border text-light position-absolute" style="top: 100px; left: 50%;" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
+                    <thead>
+                    <tr class="bg-grass-light">
+                        <th scope="col" class="color-black opacity-50">Склад</th>
+                        <th scope="col" class="color-black opacity-50">Итого, грн</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(storage, index) in listStorages" :key="storage.id">
+                        <th scope="row" class="align-self-center ">{{ storage.name }}</th>
+                        <td ><h4 class="font-600">{{ sum.ingredients[storage.id] ? sum.ingredients[storage.id] : '...' }}</h4></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div data-bs-parent="#tab-group-2" class="collapse" id="tab-7" style="">
+                <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
+                    <thead>
+                    <tr class="bg-grass-light">
+                        <th scope="col" class="color-black opacity-50">Склад</th>
+                        <th scope="col" class="color-black opacity-50">Итого, грн</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(storage, index) in listStorages" :key="storage.id">
+                        <th scope="row" class="align-self-center ">{{ storage.name }}</th>
+                        <td ><h4 class="font-600">{{ Number.parseFloat(sum.ready[storage.id]) + Number.parseFloat(sum.ingredients[storage.id]) }}</h4></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
 
 
         </div>
@@ -75,8 +98,15 @@
         },
         data(){
             return {
-                loading: true,
+                loading: {
+                    ready: false,
+                    ingredients: false
+                },
                 listStorages: [],
+                sum: {
+                    ready: {},
+                    ingredients: {}
+                },
                 rule: 'ready'
             }
         },
@@ -89,9 +119,9 @@
 
                 console.log(this.listStorages)
 
-                this.loading = true;
+                this.loading.ready = true;
                 this.listStorages.forEach((el, index) => {
-                    this.getCostGoodsOnStock(el.id, index, this.listStorages.length)
+                    this.getCostGoodsOnStock(el.id, index, this.listStorages.length, 'ready')
                 })
             }).catch(err => {
                 this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
@@ -102,29 +132,20 @@
             update_template()
         },
         methods: {
-             changeRule() {
-                switch (this.rule) {
-                    case 'ready':
-                        this.rule = 'ingredient';
-                        break;
-                    case 'ingredient':
-                        this.rule = 'ready';
-                        break;
-                }
+             changeRule(rule) {
 
-                this.loading = true;
+                this.loading[rule] = true;
                 console.log('Стартуем список запросов')
                 this.listStorages.forEach((el, index) => {
-                    this.getCostGoodsOnStock(el.id, index, this.listStorages.length)
+                    this.getCostGoodsOnStock(el.id, index, this.listStorages.length, rule)
                 })
             },
-            getCostGoodsOnStock(id, index, length) {
-                axios.get('/api/costGoodsOnStock/'+id+'/'+this.rule).then(res => {
-                    let current = this.listStorages.find(el => el.id === id);
-                    current.sum = res.data.sum;
+            getCostGoodsOnStock(id, index, length, rule) {
+                axios.get('/api/costGoodsOnStock/'+id+'/'+rule).then(res => {
+                    this.sum[rule][id] = res.data.sum;
 
                     if((index+1) === length ) {
-                        this.loading = false;
+                        this.loading[rule] = false;
                         console.log('Получили последний ответ')
                     }
                 }).catch(err => {
