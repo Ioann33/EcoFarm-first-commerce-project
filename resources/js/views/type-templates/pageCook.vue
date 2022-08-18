@@ -95,6 +95,11 @@
                 </router-link>
             </div>
         </div>
+ утилизировали: {{this.sumTrash}} <sup>грн</sup><br>
+ произвели и отгрузили(конечная стоимость): {{ this.sumProduce }} грн (список) <br>
+ произвели и отгрузили(себеСтоимость): {{ this.sumCostPrice }} грн (список) <br>
+        ЗП за изготовление: {{  this.sumCostProduce }} <br>
+ получили ЗП: {{ this.sumSalary}} грн <br>
 
         <list-goods :storage_id="this.my_storage_id"></list-goods>
 
@@ -122,7 +127,14 @@
                 my_storage_id: 0,
                 my_storage_name: '',
                 message: '',
-                listGoods: []
+                listMovements: [],  // весь список отгруженных, утилизированных, затраченых на ГП товаров
+                listTrash: '',  // список утилизированного
+
+                sumProduce: '',  // итого сколько произведено и отгружено
+                sumTrash: '',   // сумма утилизированного
+                sumSalary: '',  // сумма ЗП
+                sumCostProduce: '', // стоимость изготовления продукции (ЗП)
+                sumCostPrice: '',   // сумма ГП по себестоимости
             }
         },
         computed: {},
@@ -130,8 +142,66 @@
             this.my_storage_id = localStorage.getItem('my_storage_id')
             this.my_storage_name = localStorage.getItem('my_storage_name')
         },
-        mounted() {
+        async mounted() {
+            this.df = '2022-06-01 00:00:00'
+            this.dt = '2022-09-05 00:00:00'
 
+// http://127.0.0.1:8000/api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
+
+            await axios.get('api/getSumMoneyMovementGoods/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
+                .then(res => {
+                    this.sumProduce = res.data.sum
+                    console.log(res.data)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+// /api/getSalary/total/2/100/2022-06-01 00:00:00/2022-09-05 00:00:00
+            await axios.get('api/getSalary/total/'+this.my_storage_id+'/100/'+this.df+'/'+this.dt)
+                .then(res => {
+                    this.sumSalary = Math.abs(res.data.sum)
+                    console.log(res.data)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+
+//api/getListGoodsMovements/2/2022-08-01/2022-09-01
+            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
+                .then(res => {
+                    this.listMovements = res.data.data
+                    // this.listTrash = this.listMovements.filter(el => el.category=='trash')
+                    let totalCostPrice = 0
+                    this.listMovements.forEach((el ,index) => {
+                        if(el.category == 'trash'){ // Утилизация
+                            this.sumTrash =+ el.amount * el.price
+                        }else
+                        if(el.category == 'move'){  // отгружена ГП
+                            if(el.link_id !== null) // если null то это было перемещение сырья, а не ГП
+                            {
+                                console.log(el.link_id)
+                                // получить данные про изготовление ГП
+                                // api/getMovementInfo/538
+
+                                 axios.get('api/getMovementInfo/'+el.link_id)
+                                    .then(res => {
+                                        totalCostPrice +=  Number.parseFloat(res.data.data.price) * Number.parseFloat(res.data.data.amount)
+                                        this.sumCostPrice = totalCostPrice.toFixed(2)
+                                        this.sumCostProduce = (this.sumProduce - this.sumCostPrice).toFixed(2)
+                                        //console.log(el.link_id + ': '+res.data.data.price+' * '+res.data.data.amount+' === '+totalCostPrice)
+                                    }).catch(err => {
+                                        this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                                        console.error(this.message)
+                                    })
+                            }
+                        }
+                    })
+
+
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
 
             update_template()
         },
