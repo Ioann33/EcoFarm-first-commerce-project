@@ -32,6 +32,11 @@ const router = createRouter({
             component: () => import('../views/pageMovements')
         },
         {
+            path: '/pageSetPriceAndPull/:movement_id',
+            name: 'SetPriceAndPull',
+            component: () => import('../views/pageSetPriceAndPull')
+        },
+        {
             path: '/pageListGoods/:type',
             name: 'pageListGoods',
             component: () => import('../views/pageListGoods')
@@ -57,7 +62,7 @@ const router = createRouter({
             component: () => import('../views/pageMakeProducts')
         },
         {
-            path: '/trashProducts',
+            path: '/trashProducts/',
             name: 'trashProducts',
             component: () => import('../views/pageTrashProducts')
         },

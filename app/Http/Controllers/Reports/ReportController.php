@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Reports;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\Reports\ListSalaryResource;
+use App\Models\Log;
 use App\Models\Money;
 use App\Models\Movements;
 use Illuminate\Http\Request;
@@ -134,5 +135,9 @@ class ReportController extends Controller
 //             or "storage_id_from" = '1'
 //         )
 
+     }
+
+     public function getLog(Request $request){
+         return$logs = Log::where('event', '=', $request->event)->limit(5)->get();
      }
 }

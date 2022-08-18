@@ -6,12 +6,12 @@
         <div class="page-content header-clear-medium">
             <error :message="error"></error>
             <div class="card card-style p-4">
-                <div class="row mb-0">
+                <div class="row mb-0" v-if="isMain">
                     <div class="col-12 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label for="storage-list" class="color-blue-dark">Склад</label>
                             <select id="storage-list" v-model="selected_storage_id" @change="getStorageGoods(selected_storage_id)" class="form-control">
-                                <option value="default" selected>выбрать склад</option>
+                                <option value="default" disabled selected>выбрать склад</option>
                                 <option
                                     v-for="(storage, index) in storageList"
                                     v-bind:value="storage.id"
@@ -36,7 +36,7 @@
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label for="prod_2" class="color-blue-dark">Товар</label>
                             <select id="prod_2" v-model="selected_goods_id" @change="changeGoods" class="form-control">
-                                <option value="default" selected>выбрать</option>
+                                <option value="default" disabled selected>выбрать</option>
                                 <option
                                     v-for="(goods, index) in availableGoods"
                                     v-bind:value="goods.goods_id"
@@ -115,8 +115,29 @@
                 error: ''
             }
         },
+        beforeMount() {
+            this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.my_storage_name = localStorage.getItem('my_storage_name')
+            this.main_storage_id = localStorage.getItem('main_storage_id')
+        },
         async mounted() {
-            await this.getStorageList();
+           if(this.isMain)
+                await this.getStorageList();
+           else {
+                this.storageList = [{"id": this.my_storage_id, "name": this.my_storage_name}]
+                this.selected_storage_id = this.my_storage_id
+               console.log('dddd')
+                await this.getStorageGoods(this.my_storage_id)
+               console.log('ddd444')
+           }
+
+           update_template()
+        },
+        computed:{
+            isMain(){
+                if(this.my_storage_id === this.main_storage_id)
+                    return 1
+            }
         },
         methods: {
             checkAmount(){
@@ -141,7 +162,8 @@
                 console.table(this.storageList)
             },
             async getStorageGoods(id){
-                if(!Number.isInteger(id)) return ;
+                // console.log('dfg'+Number.isInteger(id) + id)
+                // if(!Number.isInteger(id)) return ;
                 this.loading_goods = true;
                 const res = await axios.get(`/api/getStorageGoods/available/${id}/all`);
                 this.loading_goods = false;
@@ -149,6 +171,7 @@
                     return ;
                 }
                 this.availableGoods = res.data.data.filter(el => el.amount>0);
+                console.log(this.availableGoods )
             },
             async doTrash(){
                 const res = await axios.post(`/api/doTrash`, {

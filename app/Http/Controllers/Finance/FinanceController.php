@@ -8,6 +8,7 @@ use App\Models\Money;
 use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\MyModel\MoneyTransfer;
+use App\Models\TransactionCategory;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -100,11 +101,12 @@ class FinanceController extends Controller
         $transaction->user_id = $user;
 
         if ($transaction->save()){
-            $service->newLog('doSpends', "списано {$request->size_pay}грн с департамента: {$request->storage_id}, на склад: {$request->param_id}. Категория: {$request->category}", $transaction->id);
+            $transactionCategory = TransactionCategory::where('id', '=', $request->category)->get('name');
+            $service->newLog('doSpends', "{$transactionCategory[0]['name']} в количестве {$request->size_pay} грн с департамента: {$request->storage_id}, на склад: {$request->param_id}. Категория: {$request->category}", $transaction->id);
             return response()->json(
                 [
                     'status'=>'ok',
-                    'message'=>"списано {$request->size_pay}грн с департамента: {$request->storage_id}, на склад: {$request->param_id}. Категория: {$request->category}"
+                    'message'=>"{$transactionCategory[0]['name']} в количестве {$request->size_pay}грн с департамента: {$request->storage_id}, на склад: {$request->param_id}. Категория: {$request->category}"
                 ]
             );
         }else{

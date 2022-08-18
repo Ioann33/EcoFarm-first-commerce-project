@@ -82,7 +82,21 @@
         </div>
         <!--ПЕРЕДАТЬ ТОВАР    -->
 
+        <!--УТИЛИЗАРОВАТЬ ТОВАР    -->
+        <div class="row mb-n2 align-content-center p-3">
+            <div class="col-12 ">
+                <router-link :to="{name: 'trashProducts'}">
+                    <div class="card card-style mx-0 mb-5">
+                        <div class="p-3 bg-grass-light text-center">
+                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                Утилизировать </h1>
+                        </div>
+                    </div>
+                </router-link>
+            </div>
+        </div>
 
+        <list-goods :storage_id="this.my_storage_id"></list-goods>
 
     </div>
 </template>
@@ -92,19 +106,23 @@
     import CardBalance from "../../Components/cardBalance";
     import cardMovementOutOpened from "../../Components/cardMovementOutOpened";
     import cardMovementInOpened from "../../Components/cardMovementInOpened";
+    import listGoods from "../../Components/listGoods";
+
     export default {
         name: "pageProduce",
         components: {
             Error,
             CardBalance,
             cardMovementOutOpened,
-            cardMovementInOpened
+            cardMovementInOpened,
+            listGoods
         },
         data() {
             return {
                 my_storage_id: 0,
                 my_storage_name: '',
-                message: ''
+                message: '',
+                listGoods: []
             }
         },
         computed: {},
@@ -113,6 +131,8 @@
             this.my_storage_name = localStorage.getItem('my_storage_name')
         },
         mounted() {
+
+
             update_template()
         },
         updated() {

@@ -44,7 +44,7 @@ export default {
         this.pagesMoveGoods = ['sale', 'buy', 'grow', 'cook'];
         this.pagesCook = ['cook'];
         this.pagesFinance = ['finance'];
-        this.pagesSelectStorage = ['sale', 'buy', 'storage', 'creditor', 'debtor','cook'];
+        this.pagesSelectStorage = ['sale', 'buy', 'storage', 'creditor', 'debtor'];
 
         this.my_storage_id = localStorage.getItem('my_storage_id')
         this.my_storage_name = localStorage.getItem('my_storage_name')

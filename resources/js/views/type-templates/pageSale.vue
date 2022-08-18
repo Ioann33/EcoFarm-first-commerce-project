@@ -105,6 +105,12 @@
 
         </div>
         <!--ПЕРЕДАТЬ ТОВАР    -->
+
+<list-goods :storage_id="this.my_storage_id"></list-goods>
+
+
+
+
     </div>
 </template>
 
@@ -113,6 +119,7 @@
     import CardBalance from "../../Components/cardBalance";
     import cardMovementOutOpened from "../../Components/cardMovementOutOpened";
     import cardMovementInOpened from "../../Components/cardMovementInOpened";
+    import listGoods from "../../Components/listGoods";
 
 
     export default {
@@ -120,14 +127,16 @@
         components: {
             Error,
             CardBalance,
-            cardMovementInOpened, cardMovementOutOpened
+            cardMovementInOpened, cardMovementOutOpened,
+            listGoods
         },
         data() {
             return {
                 message: '',    // сообщения системы
                 costReady: -0,
                 costIngredients: -0,
-                costProductsTotal: -0
+                costProductsTotal: -0,
+                listGoods: []
             }
         },
         computed: {},
@@ -151,6 +160,7 @@
                 }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
             })
+
 
             this.costProductsTotal = this.costIngredients + this.costReady
 
