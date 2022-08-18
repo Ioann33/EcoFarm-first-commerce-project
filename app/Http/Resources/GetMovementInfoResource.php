@@ -42,6 +42,7 @@ class GetMovementInfoResource extends JsonResource
             "storage_id_to" => $this->storage_id_to,
             "storage_name_to" => $storageNameTo,
             "goods_id" => $this->goods_id,
+            "goods_name" => $this->goods->name,
             "amount" => $this->amount,
             "user_id_accepted" => $this->user_id_accepted,
             "user_name_accepted" => $userAcceptedName,
