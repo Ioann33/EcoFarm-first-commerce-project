@@ -334,6 +334,23 @@ class GoodsController extends Controller
         return response()->json(['goods_id'=>$id, 'status'=>'ok', 'message'=>'added new goods ']);
     }
 
+    public function updateGoods(Request $request, LogService $service){
+        $item = Goods::findOrFail($request->goods_id);
+        $oldName = $item->name;
+        $item->name = $request->name;
+        $item->unit = $request->unit;
+        $item->image = $request->image;
+        $item->group_id = $request->group_id;
+        $oldType = $item->type;
+        $item->type = $request->type;
+        if ($item->save()){
+            $service->newLog('updateGoods', 'changed goods name from ('.$oldName.') to ('.$request->name.'), type from ('.$oldType.') to ('. $request->type, $request->goods_id);
+            return response()->json(['status'=>'ok', 'message'=>'changed goods name from ('.$oldName.') to ('.$request->name.'), type from ('.$oldType.') to ('. $request->type]);
+        }else{
+            return response()->json(['status'=>'error', 'message'=>'edit goods is failed']);
+        }
+    }
+
     public function setGoodsPermit(Request $request, LogService $service){
         if ($request->allowed == 'true'){
             $set = new StorageGoods();
