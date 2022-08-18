@@ -39,6 +39,7 @@ class ReportController extends Controller
             ->where('storage_id_from', '=', $request->storage_id)
             ->where('date_accepted','>=', $request->date_from)
             ->where('date_accepted','<=', $request->date_to)
+            ->where('category','=','move')
             ->sum(function ($item){
             return $item->price*$item->amount;
         });

@@ -82,11 +82,11 @@
                         return {
                             goods_name: 'Товар ' + item.goods_id, // Змінити назву товару, коли буде в API goods_id
                             amount: Number.parseFloat(item.amount),
-                            production: Number.parseFloat(item.price),
-                            totalProduction: Number.parseFloat(item.amount) * Number.parseFloat(item.price),
+                            sum: Number.parseFloat(item.price),
+                            //totalProduction: Number.parseFloat(item.amount) * Number.parseFloat(item.price),
                             cost: '',
                             totalCost: '',
-                            sum: '',
+                            production: '',
                             totalSum: '',
                             link_id: item.link_id
                         }
@@ -110,7 +110,8 @@
 
                         this.listMovements[index].goods_name = res.data.data.goods_name;
                         this.listMovements[index].cost = Number.parseFloat(res.data.data.price);
-                        this.listMovements[index].sum = this.listMovements[index].production + this.listMovements[index].cost;
+                        this.listMovements[index].production =  this.listMovements[index].sum - this.listMovements[index].cost;
+                        this.listMovements[index].totalProduction =  this.listMovements[index].production * this.listMovements[index].amount;
                         this.listMovements[index].totalCost = this.listMovements[index].amount * this.listMovements[index].cost;
                         this.listMovements[index].totalSum = this.listMovements[index].amount * this.listMovements[index].sum;
 

@@ -194,15 +194,6 @@
             this.df = '2022-06-01 00:00:00'
             this.dt = '2022-09-05 00:00:00'
 
-            // api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
-            await axios.get('api/getSumMoneyMovementGoods/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
-                .then(res => {
-                    this.sumProduce = res.data.sum
-                    //console.log(res.data)
-                }).catch(err => {
-                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                    console.error(this.message)
-                })
 
             // api/getSalary/total/2/100/2022-06-01 00:00:00/2022-09-05 00:00:00
             await axios.get('api/getSalary/total/'+this.my_storage_id+'/100/'+this.df+'/'+this.dt)
@@ -220,28 +211,32 @@
                     this.listMovements = res.data.data
                     // this.listTrash = this.listMovements.filter(el => el.category=='trash')
                     let totalCostPrice = 0
+                    let totalProduce = 0
                     this.listMovements.forEach((el ,index) => {
                         if(el.category == 'trash'){ // Утилизация
                             this.sumTrash =+ el.amount * el.price
                         }else
-                        if(el.category == 'move'){  // отгружена ГП
-                            if(el.link_id !== null) // если null то это было перемещение сырья, а не ГП
-                            {
-                                //console.log(el.link_id)
-                                // получить данные про изготовление ГП
-                                // api/getMovementInfo/538
-                                 axios.get('api/getMovementInfo/'+el.link_id)
-                                    .then(res => {
-                                        totalCostPrice +=  Number.parseFloat(res.data.data.price) * Number.parseFloat(res.data.data.amount)
-                                        this.sumCostPrice = totalCostPrice.toFixed(2)
-                                        this.sumCostProduce = (this.sumProduce - this.sumCostPrice).toFixed(2)
-                                        //console.log(el.link_id + ': '+res.data.data.price+' * '+res.data.data.amount+' === '+totalCostPrice)
-                                    }).catch(err => {
-                                        this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                                        console.error(this.message)
-                                    })
-                            }
+                        if(el.category == 'move' && el.link_id !== null){
+                            // отгружена ГП
+                            // если null то это было перемещение сырья, а не ГП
+
+                            //console.log(el.link_id)
+                            totalProduce += parseFloat(el.amount) * parseFloat(el.price)
+                            this.sumProduce = totalProduce
+                            // получить данные про изготовление ГП
+                            // api/getMovementInfo/538
+                             axios.get('api/getMovementInfo/'+el.link_id)
+                                .then(res => {
+                                    totalCostPrice +=  Number.parseFloat(res.data.data.price) * Number.parseFloat(res.data.data.amount)
+                                    this.sumCostPrice = totalCostPrice.toFixed(2)
+                                    this.sumCostProduce = (this.sumProduce - this.sumCostPrice).toFixed(2)
+                                    console.log(el.link_id + ': '+res.data.data.price+' * '+res.data.data.amount+' === '+totalCostPrice)
+                                }).catch(err => {
+                                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                                    console.error(this.message)
+                                })
                         }
+
                     })
 
 
@@ -251,7 +246,7 @@
                 })
 
             // api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
-            this.otherSpending = 4444
+            this.otherSpending = ''
             // await axios.get('api/getSumMoneyMovementGoods/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
             //     .then(res => {
             //         this.sumProduce = res.data.sum
