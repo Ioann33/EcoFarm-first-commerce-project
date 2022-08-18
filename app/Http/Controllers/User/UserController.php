@@ -80,6 +80,23 @@ class UserController extends Controller
 */
     }
 
+    public function updateUser(Request $request, LogService $service){
+        $user = User::findOrFail($request->user_id);
+        $oldName = $user->name;
+        $user->name = $request->name;
+        $oldLogin = $user->login;
+        $user->login = $request->login;
+
+        $user->password = Hash::make($request->password);
+        if($user->save()){
+            $service->newLog('updateUser', 'changed name from ('.$oldName.') to ('.$request->name.'), login from ('.$oldLogin.') to ('. $request->login, $request->user_id);
+            return response()->json(['status'=>'ok', 'message'=>'changed name from ('.$oldName.') to ('.$request->name.'), login from ('.$oldLogin.') to ('. $request->login]);
+        }else{
+            return response()->json(['status'=>'error', 'message'=>'edit user is failed']);
+        }
+
+    }
+
     public function setUserPermit(Request $request, LogService $service){
         if ($request->allowed == 'true'){
             $set = new UserStorages();

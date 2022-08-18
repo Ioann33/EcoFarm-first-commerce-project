@@ -292,7 +292,6 @@ class GoodsController extends Controller
 
 
         if ($request->type === 'all'){
-
 //            return CostGoodsOnStockResource::collection($costGoods);
             $res = $costGoods->sum(function ($item){
                 return $item->amount * $item->price;
@@ -378,5 +377,16 @@ class GoodsController extends Controller
 
     }
 
+    public function deleteMovement(Request $request, LogService $service){
+        $movement = Movements::findOrFail($request->movement_id);
+        if ($movement->date_accepted === null){
+            HandleGoods::addGoodsOnStockBalance($movement->storage_id_from, $movement->goods_id, $movement->amount, $movement->price);
+            $movement->delete();
+            $service->newLog('deleteMovement', 'пермещение '.$request->movement_id.' было отменено', $request->movement_id);
+            return response()->json(['status'=>'ok', 'message'=>'пермещение '.$request->movement_id.' было отменено']);
+        }else{
+            return response()->json(['status'=>'ok', 'message'=>'пермещение уже завершино '.$request->movement_id.' , не возможно отменить']);
+        }
+    }
 
 }
