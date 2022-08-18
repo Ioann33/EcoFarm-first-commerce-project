@@ -110,8 +110,8 @@
 
                         this.listMovements[index].cost = Number.parseFloat(res.data.data.price);
                         this.listMovements[index].sum = this.listMovements[index].production + this.listMovements[index].cost;
-                        this.listMovements[index].totalCost = this.listMovements[index].amount + this.listMovements[index].cost;
-                        this.listMovements[index].totalSum = this.listMovements[index].amount + this.listMovements[index].sum;
+                        this.listMovements[index].totalCost = this.listMovements[index].amount * this.listMovements[index].cost;
+                        this.listMovements[index].totalSum = this.listMovements[index].amount * this.listMovements[index].sum;
 
 
                     }).catch(err => {
