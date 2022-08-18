@@ -100,7 +100,7 @@
  произвели и отгрузили(себеСтоимость): {{ this.sumCostPrice }} грн (список) <br>
         ЗП за изготовление: {{  this.sumCostProduce }} <br>
  получили ЗП: {{ this.sumSalary}} грн <br>
-
+прочие затраты: {{ this.otherSpending }}грн
         <list-goods :storage_id="this.my_storage_id"></list-goods>
 
     </div>
@@ -135,6 +135,7 @@
                 sumSalary: '',  // сумма ЗП
                 sumCostProduce: '', // стоимость изготовления продукции (ЗП)
                 sumCostPrice: '',   // сумма ГП по себестоимости
+                otherSpending: ''   // другие затраты
             }
         },
         computed: {},
@@ -146,8 +147,7 @@
             this.df = '2022-06-01 00:00:00'
             this.dt = '2022-09-05 00:00:00'
 
-// http://127.0.0.1:8000/api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
-
+            // api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
             await axios.get('api/getSumMoneyMovementGoods/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.sumProduce = res.data.sum
@@ -156,7 +156,8 @@
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                     console.error(this.message)
                 })
-// /api/getSalary/total/2/100/2022-06-01 00:00:00/2022-09-05 00:00:00
+
+            // api/getSalary/total/2/100/2022-06-01 00:00:00/2022-09-05 00:00:00
             await axios.get('api/getSalary/total/'+this.my_storage_id+'/100/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.sumSalary = Math.abs(res.data.sum)
@@ -166,7 +167,7 @@
                     console.error(this.message)
                 })
 
-//api/getListGoodsMovements/2/2022-08-01/2022-09-01
+            //api/getListGoodsMovements/2/2022-08-01/2022-09-01
             await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.listMovements = res.data.data
@@ -179,10 +180,9 @@
                         if(el.category == 'move'){  // отгружена ГП
                             if(el.link_id !== null) // если null то это было перемещение сырья, а не ГП
                             {
-                                console.log(el.link_id)
+                                //console.log(el.link_id)
                                 // получить данные про изготовление ГП
                                 // api/getMovementInfo/538
-
                                  axios.get('api/getMovementInfo/'+el.link_id)
                                     .then(res => {
                                         totalCostPrice +=  Number.parseFloat(res.data.data.price) * Number.parseFloat(res.data.data.amount)
@@ -202,6 +202,17 @@
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                     console.error(this.message)
                 })
+
+            // api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
+            this.otherSpending = 4444
+            // await axios.get('api/getSumMoneyMovementGoods/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
+            //     .then(res => {
+            //         this.sumProduce = res.data.sum
+            //         console.log(res.data)
+            //     }).catch(err => {
+            //         this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            //         console.error(this.message)
+            //     })
 
             update_template()
         },
