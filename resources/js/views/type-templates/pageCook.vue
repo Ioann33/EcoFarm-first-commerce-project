@@ -3,6 +3,53 @@
         <!-- ERROR -->  <error :message="message"></error>
         <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
+        <!--статистика эффективность         -->
+        <div class="card card-style">
+            <div class="content mb-0">
+                <div class="row mb-0">
+                    <div class="col-6 pe-1">
+                        <div class="mx-0 mb-3">
+                            <h6 class="font-12 font-800 text-uppercase opacity-30">Утилизировано</h6>
+                            <h3 class="color-red-dark font-20 mb-0">{{this.sumTrash}} </h3>
+                        </div>
+                    </div>
+
+                    <div class="col-6 ps-1">
+                        <router-link :to="{name: 'cookStat'}">
+                        <div class="mx-0 mb-3">
+                            <h6 class="font-12 font-800 text-uppercase opacity-30">Произведено</h6>
+                            <h3 class="color-red-dark font-20 mb-0">{{ this.sumProduce }}</h3>
+                        </div>
+                        </router-link>
+                    </div>
+
+                    <div class="col-6 pe-1">
+                        <div class="mx-0 mb-3">
+                            <h6 class="font-12 font-800 text-uppercase opacity-30">Прочие затраты</h6>
+                            <h3 class="color-brown-dark font-20 mb-0">{{ this.otherSpending}}</h3>
+                        </div>
+                    </div>
+                    <div class="col-6 ps-1">
+                        <div class="mx-0 mb-3">
+                            <h6 class="font-12 font-800 text-uppercase opacity-30">Себестоимость</h6>
+                            <h3 class="color-blue-dark font-20 mb-0">{{  this.sumCostPrice }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-6 pe-1">
+                        <div class="mx-0 mb-3">
+                            <h6 class="font-12 font-800 text-uppercase opacity-30">ЗП</h6>
+                            <h3 class="color-green-dark font-20 mb-0">{{ this.sumSalary }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-6 ps-1">
+                        <div class="mx-0 mb-3">
+                            <h6 class="font-12 font-800 text-uppercase opacity-30">Изготовление</h6>
+                            <h3 class="color-green-dark font-20 mb-0">{{  this.sumCostProduce }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ПРИГОТОВИТЬ -->
         <div class="row mb-n2 align-content-center p-3">
@@ -95,12 +142,8 @@
                 </router-link>
             </div>
         </div>
- утилизировали: {{this.sumTrash}} <sup>грн</sup><br>
- произвели и отгрузили(конечная стоимость): {{ this.sumProduce }} грн (список) <br>
- произвели и отгрузили(себеСтоимость): {{ this.sumCostPrice }} грн (список) <br>
-        ЗП за изготовление: {{  this.sumCostProduce }} <br>
- получили ЗП: {{ this.sumSalary}} грн <br>
-прочие затраты: {{ this.otherSpending }}грн
+
+
         <list-goods :storage_id="this.my_storage_id"></list-goods>
 
     </div>
@@ -151,7 +194,7 @@
             await axios.get('api/getSumMoneyMovementGoods/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.sumProduce = res.data.sum
-                    console.log(res.data)
+                    //console.log(res.data)
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                     console.error(this.message)
@@ -161,7 +204,7 @@
             await axios.get('api/getSalary/total/'+this.my_storage_id+'/100/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.sumSalary = Math.abs(res.data.sum)
-                    console.log(res.data)
+                    //console.log(res.data)
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                     console.error(this.message)
