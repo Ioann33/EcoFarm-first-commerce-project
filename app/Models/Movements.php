@@ -21,6 +21,10 @@ class Movements extends Model
         return $this->belongsTo(User::class, 'user_id_created');
     }
 
+    public function userAccepted(){
+        return $this->belongsTo(User::class, 'user_id_accepted');
+    }
+
     public function storageFrom(){
         return $this->belongsTo(Storages::class, 'storage_id_from');
     }

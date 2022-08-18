@@ -13,6 +13,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getListStorages', [\App\Http\Controllers\Storage\StorageController::class, 'getListStorages']);
     Route::get('/getStorageProp/{id}', [\App\Http\Controllers\Storage\StorageController::class, 'getStorageProp']);
     Route::post('/addStorage', [\App\Http\Controllers\Storage\StorageController::class, 'addStorage']);
+    Route::post('/updateStorage', [\App\Http\Controllers\Storage\StorageController::class, 'updateStorage']);
 
     Route::get('/getStorageOrder/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'getStorageOrder']);
 
@@ -41,6 +42,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getSumMoneyMovementGoods/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSumMoneyMovementGoods']);
     Route::get('/getSalary/{type}/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSalary']);
     Route::get('/getSaldo/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSaldo']);
+    Route::get('/getLog/{event}/{date_from?}/{date_to?}', [\App\Http\Controllers\Reports\ReportController::class, 'getLog']);
     Route::get('/checkStockBalance/{storage_id}/{goods_id}', [\App\Http\Controllers\Reports\ReportController::class, 'checkStockBalance']);
 
     Route::get('/getFinance/{storage_id}/{type?}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
@@ -57,10 +59,13 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getListMoneyByCategoryOnStorage/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Finance\FinanceController::class, 'getListMoneyByCategoryOnStorage']);
     Route::post('/doBuy', [\App\Http\Controllers\Finance\FinanceController::class, 'doBuy']);
     Route::post('/addGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'addGoods']);
+    Route::post('/updateGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'updateGoods']);
     Route::post('/setGoodsPermit', [\App\Http\Controllers\Goods\GoodsController::class, 'setGoodsPermit']);
     Route::post('/doTrash', [\App\Http\Controllers\Goods\GoodsController::class, 'doTrash']);
+    Route::post('/deleteMovement', [\App\Http\Controllers\Goods\GoodsController::class, 'deleteMovement']);
 
     Route::post('/addUser', [\App\Http\Controllers\User\UserController::class, 'addUser']);
+    Route::post('/updateUser', [\App\Http\Controllers\User\UserController::class, 'updateUser']);
     Route::get('/listUsers', [\App\Http\Controllers\User\UserController::class, 'listUsers']);
     Route::get('/getUserPermit/{user_id}', [\App\Http\Controllers\User\UserController::class, 'getUserPermit']);
     Route::post('/setUserPermit', [\App\Http\Controllers\User\UserController::class, 'setUserPermit']);
