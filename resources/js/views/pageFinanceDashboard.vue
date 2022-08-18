@@ -6,17 +6,17 @@
         <div class="page-content header-clear-medium">
             <title-page title_main="Статистика"></title-page>
 
-        <div class="card card-style overflow-visible p-4 pt-3 mt-3 content" id="tab-group-2">
+        <div class="card card-style overflow-visible p-4 pt-3 mt-3 content" id="tab-group-7">
 
             <div class="card-title text-center">Остатки на складах</div>
 
             <div class="tab-controls tabs-small tabs-rounded mb-2" data-highlight="bg-blue-dark">
-                <a href="#" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-5" class="bg-blue-dark no-click" aria-expanded="true">Продукты</a>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-6" class="collapsed" @click.once="changeRule('ingredients')" aria-expanded="false">Ингредиенты</a>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-7" class="collapsed" aria-expanded="false">Все</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-10" class="bg-blue-dark no-click">Продукты</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-11" class="collapsed" @click.once="changeRule('ingredients')">Ингредиенты</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-12" class="collapsed">Все</a>
             </div>
 
-            <div data-bs-parent="#tab-group-2" class="collapse show" id="tab-5" style="">
+            <div data-bs-parent="#tab-group-7" class="collapse show" id="tab-10" style="">
                 <div v-if="loading.ready" class="spinner-border text-light position-absolute" style="top: 100px; left: 50%;" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
@@ -35,7 +35,7 @@
                     </tbody>
                 </table>
             </div>
-            <div data-bs-parent="#tab-group-2" class="collapse" id="tab-6" style="">
+            <div data-bs-parent="#tab-group-7" class="collapse" id="tab-11" style="">
                 <div v-if="loading.ingredients" class="spinner-border text-light position-absolute" style="top: 100px; left: 50%;" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
@@ -54,7 +54,7 @@
                     </tbody>
                 </table>
             </div>
-            <div data-bs-parent="#tab-group-2" class="collapse" id="tab-7" style="">
+            <div data-bs-parent="#tab-group-7" class="collapse" id="tab-12" style="">
                 <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
                     <thead>
                     <tr class="bg-grass-light">
