@@ -83,6 +83,13 @@
         <!--ПЕРЕДАТЬ ТОВАР    -->
 
 
+        <div class="content mb-0">
+            <div class="d-flex mb-0" v-for="(goods, index) in listGoods" :key="goods.id">
+                <div class="align-self-center">{{ goods.name }}</div>
+                <div class="ms-auto align-self-center"><h4 class="pt-3 font-600">{{ goods.amount }} <sup class="font-400">{{ goods.unit }}</sup></h4>   </div>
+            </div>
+        </div>
+
 
     </div>
 </template>
@@ -104,7 +111,8 @@
             return {
                 my_storage_id: 0,
                 my_storage_name: '',
-                message: ''
+                message: '',
+                listGoods: []
             }
         },
         computed: {},
@@ -113,6 +121,17 @@
             this.my_storage_name = localStorage.getItem('my_storage_name')
         },
         mounted() {
+
+            // Получить список продукции на складе
+            axios.get('/api/getStorageGoods/available/' + this.my_storage_id+'/all').then(res => {
+                this.listGoods = res.data.data.filter(el => el.amount >0)
+                console.log('listGoods:')
+                console.log(this.listGoods)
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.log(this.message)
+            })
+
             update_template()
         },
         updated() {

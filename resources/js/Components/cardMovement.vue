@@ -2,7 +2,7 @@
 
     <div class="card card-style">
         <div class="content mb-0">
-            <div>
+
                 <div class="d-flex mb-0 pb-2">
                     <div>
                         <img src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">
@@ -47,28 +47,15 @@
                     </div>
                     <div class="col-6 pe-1">
 
-<!--                        @click.prevent="pullGoods(movement.order_id)"-->
 
 
-<!--                        <div v-if="!this.clk">-->
-<!--                            <div v-if="needEditPrice"><a href="#" @click.prevent="this.clk=true"> установить цену и оприходовать </a></div>-->
-<!--                            <div v-else> только оприходовать</div>-->
-<!--                        </div>-->
-<!--                        <div v-else>-->
-<!--                            <div class="input-style input-style-always-active has-borders no-icon">-->
-<!--                                <div class="input-group input-group-lg">-->
-<!--                                    <div class="input-group-prepend">-->
-<!--                                        <span class="input-group-text" id="inputGroup-sizing-lg">₴</span>-->
-<!--                                    </div>-->
-<!--                                    <input type="number" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price">-->
-<!--                                </div>-->
-<!--                                <a href="#"   @click.prevent='' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену и Оприходовать</a>-->
-
-<!--                            </div>-->
-<!--                        </div>-->
+                        <router-link :to="{name: 'SetPriceAndPull', params: {movement_id: movement.id}}">
+                            <a v-if="editPrice"  class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">Установить цену продукции и Оприходовать</a>
+                        </router-link>
+<!--    <a v-else href="#" @click='this.editPrice=true' class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">dfsd</a>-->
 
 
-                        <a href="#" v-if="editPrice" data-menu="menu-setPrice" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену и Оприходовать</a>
+                        <a href="#" v-if="editPrice" data-menu="menu-setPrice" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену продукта и Оприходовать</a>
                         <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
 <!--                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(movement.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</a>-->
 
@@ -76,7 +63,12 @@
                     </div>
 
                 </div>
-            </div>
+
+
+
+
+
+
         </div>
     </div>
 
@@ -93,7 +85,6 @@ export default {
             editPrice2: false,
             my_storage_id: 0,
             main_storage_id: 0,
-            clk: false
         }
     },
     props: [
@@ -174,6 +165,10 @@ export default {
 
     },
     methods: {
+        setPrice(move_id){
+            console.log(move_id)
+            this.editPrice2=true
+        }
     // setOrderStatus(order_id, status){
     //     console.log('(cardMovement.vue) order_id: '+order_id + '. set Status to '+status)
     //     //this.dir = this.$route.params.dir

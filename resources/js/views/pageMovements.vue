@@ -17,7 +17,6 @@
     </div>
 
 
-
     <div v-for="(movement, index) in listMovements" :key="movement.id">
         <card-movement
             :movement="movement"
@@ -35,10 +34,10 @@
 </div> <!-- page-contend -->
 
     <!-- меню Установить цену -->
-    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached bg-orange-light rounded-m" data-menu-effect="menu-over" data-menu-height="200">
+    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached bg-orange-light rounded-m" data-menu-effect="menu-over" data-menu-height="400">
         <div class="menu-title mt-n1">
             <h1>Установить цену</h1>
-<!--            <a href="#" class="close-menu"><i class="fa fa-times"></i></a>-->
+            <a href="#" class="close-menu"><i class="fa fa-times"></i></a>
         </div>
         <div class="content mb-0 mt-2">
             <div class="divider mb-3"></div>

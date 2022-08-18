@@ -87,7 +87,7 @@
 
         <!--ВХОДЯЩИЕ ЗАЯВКИ-->
 
-        <div class="card card-style" v-if="0">
+        <div class="card card-style" v-if="1">
             <div class="content mb-3 mt-0">
                 <div class="list-group list-custom-small">
                     <a href="#">
@@ -187,31 +187,7 @@
         </div>
 
 
-        <div class="card card-style">
-            <div class="content mt-0 mb-0">
-                <div class="list-group list-custom-large short-border">
-<!--Список продукции на складе-->
-                    <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">
-                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>
-                        <span>Товары на складе</span>
-                        <strong>{{ my_storage_name }}</strong>
-                        <i class="fa fa-angle-right"></i>
-                    </router-link>
 
-                </div>
-<!--Забрать выращенную продукцию со склада и установить цену              -->
-                <div class="list-group list-custom-large short-border">
-
-                <router-link :to="{name: 'GrowMoveGoods'}">
-                    <i class="fa fa-inbox  bg-green-dark rounded-s"></i>
-                    <span>Забрать продукцию с теплиц</span>
-                    <strong>установить цену и оприходовать на главный склад</strong>
-                    <i class="fa fa-angle-right"></i>
-                </router-link>
-
-            </div>
-            </div>
-        </div>
 
 <!--УТИЛИЗАРОВАТЬ ТОВАР    -->
         <div class="row mb-n2 align-content-center p-3">
@@ -245,6 +221,32 @@
 <!--            </div>-->
 <!--        </div>-->
 
+
+        <div class="card card-style">
+            <div class="content mt-0 mb-0">
+<!--                <div class="list-group list-custom-large short-border">-->
+<!--                    &lt;!&ndash;Список продукции на складе&ndash;&gt;-->
+<!--                    <router-link :to="{name: 'pageListGoods', params: {type: 'available'}}">-->
+<!--                        <i class="fa bg-blue-dark fa-dollar-sign rounded-s">  </i>-->
+<!--                        <span>Товары на складе</span>-->
+<!--                        <strong>{{ my_storage_name }}</strong>-->
+<!--                        <i class="fa fa-angle-right"></i>-->
+<!--                    </router-link>-->
+
+<!--                </div>-->
+                <!--Забрать выращенную продукцию со склада и установить цену              -->
+                <div class="list-group list-custom-large short-border">
+
+                    <router-link :to="{name: 'GrowMoveGoods'}">
+                        <i class="fa fa-inbox  bg-green-dark rounded-s"></i>
+                        <span>Забрать продукцию с теплиц</span>
+                        <strong>установить цену и оприходовать на главный склад</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
+                </div>
+            </div>
+        </div>
 
 
     </div>
