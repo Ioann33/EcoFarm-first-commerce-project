@@ -108,6 +108,7 @@
                 axios.get('api/getMovementInfo/'+id)
                     .then(res => {
 
+                        this.listMovements[index].goods_name = res.data.data.goods_name;
                         this.listMovements[index].cost = Number.parseFloat(res.data.data.price);
                         this.listMovements[index].sum = this.listMovements[index].production + this.listMovements[index].cost;
                         this.listMovements[index].totalCost = this.listMovements[index].amount * this.listMovements[index].cost;
