@@ -10,11 +10,8 @@
             <div class="card card-style">
                 <div class="content-boxed bg-blue-dark mb-1 pb-3 text-center">
                     <h4 class="color-white">Установить цену и оприходовать</h4>
+                    {{ movement.goods_name }}, {{ movement.amount }} <sup>{{ movement.goods_unit }}</sup>
                 </div>
-
-
-
-
 
 
 
@@ -124,7 +121,7 @@
             </div>
 
 <!--    карточка товара    -->
-            <div class="d-flex m-2 pb-2">
+            <div class="d-flex m-2 pb-1">
                 <div>
                     <img src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">
                 </div>
@@ -132,11 +129,11 @@
                     <h3 class="font-600">{{ movement.goods_name }}
                         <!--                            <span class="font-300" style="margin-left: 15px">{{ movement.amount }} <sup>{{ movement.unit }}</sup></span>-->
                     </h3>
-                    <h4 class="pt-3 font-600">{{ movement.amount }} <sup>{{ movement.unit }}</sup></h4>
-                    <h4 class="pt-3 font-600" v-if="movement.price>0">{{ movement.price }} <sup>₴</sup></h4>
+                    <h4 class="pt-1 font-600">{{ movement.amount }} <sup>{{ movement.goods_unit }}</sup></h4>
+                    <h4 class="pt-1 font-600" v-if="movement.price>0">{{ movement.price }} <sup>₴</sup></h4>
                     <div v-else class="opacity-20">цена не установленна</div>
-                    <p></p>
-                    Отгрузка из <br> <i class="fa-fw select-all fas "></i> {{ movement.storage_name }}
+
+                    Отгрузка из:     <i class="fa-fw select-all fas "></i> {{ movement.storage_name_from }}
                 </div>
                 <div class="ms-auto opacity-40 font-11">#{{ movement.id }}</div>
             </div>
@@ -198,20 +195,20 @@
         mounted() {
             // загрузить данные по этому перемещению
             axios.get('/api/getMovementInfo/'+this.movement_id).then(res => {
-                this.movement = res.data
-
-                this.price = this.movement.price
-                this.amount = this.movement.amount
+                this.movement = res.data.data
+                console.log(this.movement)
+                this.price = Number.parseFloat(this.movement.price)
+                this.amount = Number.parseFloat(this.movement.amount)
                 this.total = this.movement.price * this.movement.amount
 
-                this.total_with_produce = this.amount * (this.price + this.cost_produce_one)
+                this.total_with_produce = this.amount * (this.price + Number.parseFloat(this.cost_produce_one))
 
-                console.log('this m'+ this.movement_id)
+
 
 
             }).catch(err => {
                 this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                console.log(this.message)
+                console.error(this.message)
             })
 
 
@@ -222,15 +219,15 @@
         },
         methods: {
             checkPrice(){
-                this.total = this.amount * this.price
-                this.total_with_produce = this.amount * (this.price + this.cost_produce_one)
-                this.total_price_one = this.price + this.cost_produce_one
+                this.total = this.amount * Number.parseFloat(this.price)
+                this.total_with_produce = this.amount * (Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one))
+                this.total_price_one = Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one)
             },
             checkCostProduceOne(){
                 this.total = this.amount * this.price
-                this.total_with_produce = this.amount * (parseInt(this.price) + parseInt(this.cost_produce_one))
-                this.total_produce = this.cost_produce_one * this.amount
-                this.total_price_one = (parseInt(this.price) + parseInt(this.cost_produce_one))
+                this.total_with_produce = this.amount * (Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one))
+                this.total_produce = this.amount * Number.parseFloat(this.cost_produce_one)
+                this.total_price_one = Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one)
             },
             doSetPriceAndPull(){
                 console.log('установить цену и оприходовать')

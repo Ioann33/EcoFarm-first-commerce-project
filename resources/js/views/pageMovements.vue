@@ -34,7 +34,7 @@
 </div> <!-- page-contend -->
 
     <!-- меню Установить цену -->
-    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached bg-orange-light rounded-m" data-menu-effect="menu-over" data-menu-height="400">
+    <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached bg-orange-light rounded-m" data-menu-effect="menu-over" data-menu-height="200">
         <div class="menu-title mt-n1">
             <h1>Установить цену</h1>
             <a href="#" class="close-menu"><i class="fa fa-times"></i></a>
@@ -51,7 +51,9 @@
 
             <div class="input-group input-group-lg">
                 <span class="input-group-text">₴</span>
-                <input type="number" class="form-control validate-text" id="form2a63"  placeholder="0.00" v-model="price" @focus="$event.target.select()">
+                <input type="number" class="form-control validate-text" id="form2a63"  placeholder="0.00"
+                       v-model="price"
+                       @focus="$event.target.select()">
             </div>
 
             <a href="#" @click.prevent="pullGoods(movement_id)"  data-menu="menu-setPrice" class="btn btn-l mt-4 rounded-sm btn-full bg-blue-dark text-uppercase font-800">Установить цену</a>
@@ -131,7 +133,7 @@ export default {
                 // если отгрузка из type=grow - то цену не нужно брать
                 // установить цену на товар "по умолчанию" взятую из этого перемещения
                 axios.get('/api/getMovementInfo/' + this.movement_id).then(res => {
-                    this.price = res.data.price
+                    this.price = res.data.data.price
                     console.log('цена продукта взять из базы: ' + this.price)
 
                 }).catch(err => {

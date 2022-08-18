@@ -82,14 +82,21 @@
         </div>
         <!--ПЕРЕДАТЬ ТОВАР    -->
 
-
-        <div class="content mb-0">
-            <div class="d-flex mb-0" v-for="(goods, index) in listGoods" :key="goods.id">
-                <div class="align-self-center">{{ goods.name }}</div>
-                <div class="ms-auto align-self-center"><h4 class="pt-3 font-600">{{ goods.amount }} <sup class="font-400">{{ goods.unit }}</sup></h4>   </div>
+        <!--УТИЛИЗАРОВАТЬ ТОВАР    -->
+        <div class="row mb-n2 align-content-center p-3">
+            <div class="col-12 ">
+                <router-link :to="{name: 'trashProducts'}">
+                    <div class="card card-style mx-0 mb-5">
+                        <div class="p-3 bg-grass-light text-center">
+                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                Утилизировать </h1>
+                        </div>
+                    </div>
+                </router-link>
             </div>
         </div>
 
+        <list-goods :storage_id="this.my_storage_id"></list-goods>
 
     </div>
 </template>
@@ -99,13 +106,16 @@
     import CardBalance from "../../Components/cardBalance";
     import cardMovementOutOpened from "../../Components/cardMovementOutOpened";
     import cardMovementInOpened from "../../Components/cardMovementInOpened";
+    import listGoods from "../../Components/listGoods";
+
     export default {
         name: "pageProduce",
         components: {
             Error,
             CardBalance,
             cardMovementOutOpened,
-            cardMovementInOpened
+            cardMovementInOpened,
+            listGoods
         },
         data() {
             return {
@@ -122,15 +132,6 @@
         },
         mounted() {
 
-            // Получить список продукции на складе
-            axios.get('/api/getStorageGoods/available/' + this.my_storage_id+'/all').then(res => {
-                this.listGoods = res.data.data.filter(el => el.amount >0)
-                console.log('listGoods:')
-                console.log(this.listGoods)
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                console.log(this.message)
-            })
 
             update_template()
         },

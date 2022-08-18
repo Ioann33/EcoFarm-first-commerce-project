@@ -31,7 +31,7 @@
                                         v-for="(goods, index) in listGoods"
                                         v-bind:value="goods.goods_id"
                                     >
-                                        {{ goods.name }} <span v-if="this.rule==='available'">{{ goods.amount }} {{ goods.unit }}</span>
+                                        {{ goods.name }}<span v-if="this.rule==='available'">, {{ goods.amount }} {{ goods.unit }}</span>
                                     </option>
 
                                 </select>

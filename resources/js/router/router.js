@@ -62,7 +62,7 @@ const router = createRouter({
             component: () => import('../views/pageMakeProducts')
         },
         {
-            path: '/trashProducts',
+            path: '/trashProducts/',
             name: 'trashProducts',
             component: () => import('../views/pageTrashProducts')
         },

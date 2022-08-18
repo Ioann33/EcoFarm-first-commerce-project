@@ -6,6 +6,8 @@
                 <div class="d-flex mb-0 pb-2">
                     <div>
                         <img src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">
+<!--                        <img v-if="movement.goods_img !== null"  :src="'images/goods/'+movement.goods_id+'.jpg'" class="rounded-m shadow-xl" width="130">-->
+<!--                        <img v-else src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">-->
                     </div>
                     <div class="ms-3">
                         <h3 class="font-600">{{ movement.goods_name }}
@@ -48,17 +50,20 @@
                     <div class="col-6 pe-1">
 
 
-
-                        <router-link :to="{name: 'SetPriceAndPull', params: {movement_id: movement.id}}">
-                            <a v-if="editPrice"  class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">Установить цену продукции и Оприходовать</a>
+<div v-if="movement.goods_type===2">
+                        <router-link v-if="editPrice" :to="{name: 'SetPriceAndPull', params: {movement_id: movement.id}}">
+                            <a   class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">Установить цену продукции и Оприходовать</a>
                         </router-link>
-<!--    <a v-else href="#" @click='this.editPrice=true' class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">dfsd</a>-->
 
+                        <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)'                           class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
 
-                        <a href="#" v-if="editPrice" data-menu="menu-setPrice" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену продукта и Оприходовать</a>
-                        <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)' class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
+</div>
+<div v-else>
+
+                        <a href="#" v-if="editPrice"            @click='this.$emit("getMovementId", movement.id)' data-menu="menu-setPrice" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену продукта и Оприходовать</a>
+                        <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)'                           class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
 <!--                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(movement.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</a>-->
-
+</div>
 
                     </div>
 
