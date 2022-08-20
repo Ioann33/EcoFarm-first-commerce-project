@@ -75,7 +75,7 @@ class ReportController extends Controller
             ->where('date', '<=', $request->date_to)
             ->sum('size_pay');
         $profit = $this->getSumMoneyMovementGoods($request);
-        $saldo =(int) $profit['sum'] - (int) $salary - (int) $spending;
+        $saldo =(float) $profit['sum'] - (float) $salary - (float) $spending;
         return response()->json([
             'salary'=>$salary,
             'spending'=>$spending,
