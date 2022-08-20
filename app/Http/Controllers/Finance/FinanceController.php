@@ -197,22 +197,27 @@ class FinanceController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getSumMoneyByCategoryOnStorage(Request $request){
-        if($request->storage_id == 'all')
-        {
-            $sum = Money::where('category', '=', $request->category_id)
-                ->where('date', '>=', $request->date_from)
-                ->where('date', '<=', $request->date_to)
-                ->sum('size_pay');
+    public function getMoneyByCategoryOnStorage(Request $request){
+        $sum = Money::where('date', '>=', $request->date_from)
+            ->where('date', '<=', $request->date_to);
+
+        if($request->storage_id != 'all') {
+            $sum->where('storage_id', '=', $request->storage_id);
         }
-        else {
-            $sum = Money::where('storage_id', '=', $request->storage_id)
-                ->where('category', '=', $request->category_id)
-                ->where('date', '>=', $request->date_from)
-                ->where('date', '<=', $request->date_to)
-                ->sum('size_pay');
+        if($request->category_id != 'all') {
+            $sum->where('category', '=', $request->category_id);
         }
-        return response()->json(['sum'=>$sum]);
+
+        if($request->param_id != 'all') {
+            $sum->where('param_id', '=', $request->param_id);
+        }
+        if ($request->type == 'sum'){
+            $res = $sum->sum('size_pay');
+        }else{
+            $res = $sum->get();
+        }
+
+        return response()->json(['sum'=>$res]);
     }
 /*
 {
