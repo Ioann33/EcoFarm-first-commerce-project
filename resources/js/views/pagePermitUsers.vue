@@ -13,11 +13,14 @@
                     <select-input :data="users"
                                   :label="'Пользователи'"
                                   :value="selected_user"
-                                  :loading="loading_goods" @getSelected="changeGoods" :defaultOption="'выбрать пользователя'" :keyOfValue="'id'">
+                                  :loading="loading_goods"
+                                  @getSelected="changeGoods"
+                                  :defaultOption="'выбрать пользователя'"
+                                  :keyOfValue="'id'">
                     </select-input>
                 </div>
 
-                <div v-if="loading_storages_goods" class="spinner-border spinner-oading_storages_goods text-light" role="status">
+                <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
 
@@ -85,7 +88,7 @@
         methods: {
             async getStorageGoods(){
                 this.loading_goods = true;
-                // const res = await axios.get(`/api/getStorageGoods/available/1/all`);
+
                 const res = await axios.get(`/api/listUsers`);
                 this.loading_goods = false;
                 if(!res.data){
@@ -93,9 +96,12 @@
                     console.log(res.data)
                     return ;
                 }
-                this.users = res.data;
-                console.log(res.data)
-                //this.message = 'апи создано? /api/getListGoods https://homenet.youtrack.cloud/issue/EF-27/sozdat-api-apigetListGoods'
+
+                res.data.forEach(el => {
+                    this.users.push({id: el.id, name: el.name + ' ('+el.login+')', })
+                })
+                console.log(this.users)
+
             },
             getListStorages(){
                 const res = axios.get('/api/getListStorages').then(res => {
