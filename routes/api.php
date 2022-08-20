@@ -55,8 +55,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/doSale', [\App\Http\Controllers\Finance\FinanceController::class, 'doSale']);
     Route::post('/doPreSale', [\App\Http\Controllers\Finance\FinanceController::class, 'doPreSale']);
     Route::post('/closePreSale', [\App\Http\Controllers\Finance\FinanceController::class, 'closePreSale']);
-    Route::get('/getSumMoneyByCategoryOnStorage/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Finance\FinanceController::class, 'getSumMoneyByCategoryOnStorage']);
-    Route::get('/getListMoneyByCategoryOnStorage/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Finance\FinanceController::class, 'getListMoneyByCategoryOnStorage']);
+    Route::get('/getMoneyByCategoryOnStorage/{type}/{storage_id}/{category_id}/{param_id}/{date_from}/{date_to}', [\App\Http\Controllers\Finance\FinanceController::class, 'getMoneyByCategoryOnStorage']);
+    Route::get('/getListMoneyByCategoryOnStorage/{storage_id}/{category_id}/{param_id}/{date_from}/{date_to}', [\App\Http\Controllers\Finance\FinanceController::class, 'getListMoneyByCategoryOnStorage']);
     Route::post('/doBuy', [\App\Http\Controllers\Finance\FinanceController::class, 'doBuy']);
     Route::post('/addGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'addGoods']);
     Route::post('/updateGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'updateGoods']);

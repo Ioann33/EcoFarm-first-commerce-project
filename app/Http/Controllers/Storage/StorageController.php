@@ -17,21 +17,18 @@ class StorageController extends Controller
 {
     public function getListMyStorages(){
         $user_id = Auth::id();
-        $userStorage = UserStorages::all()
-            ->where('user_id', '=', $user_id);
+        $userStorage = UserStorages::where('user_id', '=', $user_id)->get();
         return UserStorageResource::collection($userStorage);
     }
 
     public function getStorageProp(Request $request){
-        $storage = Storages::all()
-            ->where('id', '=', $request->id);
+        $storage = Storages::where('id', '=', $request->id)->get();
         return StoragesPropResource::collection($storage);
     }
 
     public function getMainStorage(){
-        $mainStore = MainStore::all()
-            ->where('name', '=', 'main_storage')
-            ->toArray();
+        $mainStore = MainStore::where('name', '=', 'main_storage')
+            ->get()->toArray();
         return response()->json(['storage_id'=>$mainStore[0]['param']]);
     }
 
