@@ -177,7 +177,7 @@ class GoodsController extends Controller
         try {
             $move = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
             $price = Movements::findOrFail($move['productID']);
-            $service->newLog('moveGoods', 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount.' price: '.$price->price, $move['productID']);
+            $service->newLog('moveGoods', 'push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount.' price: '.$price->price, $move['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -188,7 +188,7 @@ class GoodsController extends Controller
         DB::commit();
         return response()->json([
             'status'=>'ok',
-            'message' => 'push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount.' price: '.$price->price
+            'message' => 'push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount.' price: '.$price->price
 
         ]);
     }
@@ -217,7 +217,7 @@ class GoodsController extends Controller
 
             $result = HandleGoods::addGoodsOnStockBalance($pull->storage_id_to, $pull->goods_id, $pull->amount, $dateNow, $pull->price);
 
-            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.$request->goods_id.'), from storage '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price, $push['productID']);
+            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price, $push['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -228,7 +228,7 @@ class GoodsController extends Controller
         DB::commit();
         return response()->json([
             'status'=>'ok',
-            'message' => 'grow and push goods('.$request->goods_id.'), from '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price
+            'message' => 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price
 
         ]);
 
