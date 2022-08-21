@@ -3,7 +3,7 @@
         <head-bar></head-bar>
         <nav-bar></nav-bar>
 
-        <div class="page-content header-clear-medium text-center">
+        <div class="page-content header-clear-medium">
             <!-- ERROR -->          <error :message="message"></error>
             <!-- cardBalance -->    <card-balance :storage_id="my_storage_id"></card-balance>
 
@@ -17,11 +17,21 @@
                                   :value="item.goods_id"
                                   @getSelected="getGoodsId($event, index)">
                     </select-input>
+
+                    <div class="col-12 d-flex justify-content-end">
+                        <div class="form-check icon-check">
+                            <input v-model="item.totalMode" @input="inputTotal(index)" class="form-check-input" type="checkbox" value="" :id="'check'+index" checked="">
+                            <label class="form-check-label" :for="'check'+index">Указать итого</label>
+                            <i class="icon-check-1 far fa-square color-gray-dark font-16"></i>
+                            <i class="icon-check-2 far fa-check-square font-16 color-highlight"></i>
+                        </div>
+                    </div>
                     <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="number" class="form-control focus-color focus-blue validate-name "
                                    :id="'price'+index"
                                    v-model="item.price"
+                                   :disabled="item.totalMode"
                             >
                             <label :for="'price'+index" class="color-blue-dark">цена за ед.</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -45,7 +55,7 @@
                     </div>
                     <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <input type="number" :disabled="true" class="form-control focus-color focus-blue validate-name "
+                            <input type="number" :disabled="!item.totalMode" class="form-control focus-color focus-blue validate-name "
                                    :id="'total'+index"
                                    v-model="item.total"
                                    @input="calculateTotal(index)"
@@ -56,6 +66,7 @@
                             <em></em>
                         </div>
                     </div>
+
                 </div>
                 <button @click="addGoods" style="padding: 15px 24px; background-color: #A0D468; border-radius: 28px; color: #fff;" class="add-goods-btn">+</button>
             </div>
@@ -107,7 +118,8 @@
                     amount: 0,
                     price: 0,
                     unit: 'кг',
-                    total: 0
+                    total: 0,
+                    totalMode: false
                 }],
                 list_goods: []
             }
@@ -115,7 +127,7 @@
         computed: {
           total(){
               let total = 0;
-              this.buy_goods.forEach(el => total += el.total);
+              this.buy_goods.forEach(el => total += Number.parseFloat(el.total));
               return total
           }
         },
@@ -154,11 +166,21 @@
                     amount: 0,
                     price: 0,
                     unit: 'кг',
-                    total: 0
+                    total: 0,
+                    totalMode: false
                 })
             },
             calculateTotal(index){
-                this.buy_goods[index].total = this.buy_goods[index].price * this.buy_goods[index].amount;
+                if(this.buy_goods[index].totalMode){
+                    this.buy_goods[index].price = (this.buy_goods[index].total / this.buy_goods[index].amount).toFixed(2);;
+                } else {
+                    this.buy_goods[index].total = (this.buy_goods[index].price * this.buy_goods[index].amount).toFixed(2);
+                }
+            },
+            inputTotal(index){
+              if(this.buy_goods[index].totalMode && this.buy_goods[index].amount != 0){
+                  this.buy_goods[index].price = (this.buy_goods[index].total / this.buy_goods[index].amount).toFixed(2);;
+              }
             },
             async buyProducts(){
                 let buy = this.buy_goods.map(el => {
@@ -212,5 +234,11 @@
         left: 50%;
         bottom: 0;
         transform: translate(-50%, 50%);
+    }
+    .icon-check {
+        margin-right: 0;
+    }
+    .icon-check label {
+        padding: 0px 0px 0px 40px;
     }
 </style>
