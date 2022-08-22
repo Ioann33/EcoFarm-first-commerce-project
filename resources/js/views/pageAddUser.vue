@@ -99,7 +99,7 @@
             addUser(){
                 const res = axios.post('/api/addUser', {
                     name: this.name,
-                    login: this.login,
+                    login: this.login.toLowerCase(),
                     password: this.password,
                 }).then(res => {
                     if(res.data.status === 'ok'){

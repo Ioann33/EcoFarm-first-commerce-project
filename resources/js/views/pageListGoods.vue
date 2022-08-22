@@ -29,7 +29,7 @@
 
 
 
-            <div class="card card-style bg-theme pb-0">
+<!--            <div class="card card-style bg-theme pb-0">-->
                 <div class="content" id="tab-group-2">
                     <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-blue-dark">
                         <a href="#" data-active data-bs-toggle="collapse" data-bs-target="#tab-5"><i class="fa fa-heart"></i></a>
@@ -145,7 +145,7 @@
 
                     </div>
                 </div>
-            </div>
+<!--            </div>-->
 
 
         </div> <!-- page-contend -->

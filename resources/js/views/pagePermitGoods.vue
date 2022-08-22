@@ -95,7 +95,6 @@
                 }
                 this.available_goods = res.data.data;
                 console.log(res.data)
-                //this.message = 'апи создано? /api/getListGoods https://homenet.youtrack.cloud/issue/EF-27/sozdat-api-apigetListGoods'
             },
             getListStorages(){
                 const res = axios.get('/api/getListStorages').then(res => {
