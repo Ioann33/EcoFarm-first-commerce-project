@@ -66,7 +66,7 @@ export default {
             console.log('Auth...');
             axios.get('/sanctum/csrf-cookie').then(response => {
                 axios.post('/login', {
-                    login: this.user_login,
+                    login: this.user_login.toLowerCase(),
                     password: this.user_password
                 })
                     .then(r => {

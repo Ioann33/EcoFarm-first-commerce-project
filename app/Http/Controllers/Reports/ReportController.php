@@ -118,27 +118,49 @@ class ReportController extends Controller
                 $amount-= $value['amount'];
             }
         }
+
+
+        $price = number_format($price,2);
+
+
+
+
         $stock_balance = StockBalance::where('goods_id', '=', $request->goods_id)->where('storage_id','=', $request->storage_id)->get();
 
+        if($stock_balance->count()>0) {
+            if ($amount != $stock_balance[0]['amount'] || $price != $stock_balance[0]['price']) {
+                $compare = 'miss match';
+            } else {
+                $compare = 'match';
+            }
 
-         $price = number_format($price,2);
+            if ($request->action == 'fix') {
+                $updateStock = StockBalance::findOrFail($stock_balance[0]['id']);
+                $updateStock->price = $price;
+                $updateStock->amount = $amount;
+                if ($updateStock->save()) {
+                    $compare = 'fixed';
+                }
+            }
+        }
+        else
+        {
+            if ($request->action == 'fix') {
+                // создать новую запись в StockBalance
+                $newStockBalance = new StockBalance();
+                $newStockBalance->goods_id = $request->goods_id;
+                $newStockBalance->price = $price;
+                $newStockBalance->amount = $amount;
+                $newStockBalance->storage_id = $request->storage_id;
+                $newStockBalance->date_accepted = date('Y-m-d H:i:s');
+                $newStockBalance->save();
 
-
-
-        if ($amount != $stock_balance[0]['amount'] ||  $price !=  $stock_balance[0]['price']){
-            $compare = 'not match';
-        }else{
-            $compare = 'match';
+                $compare = 'fixed';
+            }
+            else
+                $compare = 'miss match';
         }
 
-         if ($request->action == 'fix'){
-             $updateStock = StockBalance::findOrFail($stock_balance[0]['id']);
-             $updateStock->price = $price;
-             $updateStock->amount = $amount;
-             if($updateStock->save()){
-                 $compare = 'fixed';
-             }
-         }
 
         return response()->json([
             'status'=>'ok',

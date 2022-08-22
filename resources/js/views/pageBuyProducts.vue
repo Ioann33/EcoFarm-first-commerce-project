@@ -32,6 +32,7 @@
                                    :id="'price'+index"
                                    v-model="item.price"
                                    :disabled="item.totalMode"
+                                   @focus="$event.target.select()"
                             >
                             <label :for="'price'+index" class="color-blue-dark">цена за ед.</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -46,6 +47,7 @@
                                    :id="'amount'+index"
                                    v-model="item.amount"
                                    @input="calculateTotal(index)"
+                                   @focus="$event.target.select()"
                             >
                             <label :for="'amount'+index" class="color-blue-dark">кол-во</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -59,6 +61,7 @@
                                    :id="'total'+index"
                                    v-model="item.total"
                                    @input="calculateTotal(index)"
+                                   @focus="$event.target.select()"
                             >
                             <label :for="'total'+index" class="color-blue-dark">итого</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -85,7 +88,19 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-lg btn-default" @click="buyProducts">Купить</button>
+
+            <div class="row mb-n2 align-content-center p-3">
+                    <a href="#" @click.prevent="buyProducts">
+                        <div class="card card-style mx-0 mb-5">
+                            <div class="p-3 bg-grass-light text-center">
+                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                    Купить </h1>
+                            </div>
+                        </div>
+                    </a>
+            </div>
+
+<!--            <button type="button" class="btn btn-lg btn-default" @click="buyProducts">Купить</button>-->
 
         </div>
 
@@ -144,14 +159,30 @@
         },
         methods: {
             async getAllowedGoods(storage_id){
-                const res = await axios.get(`/api/getStorageGoods/allowed/${storage_id}/all`);
+                const res = await axios.get(`/api/getStorageGoods/available/${storage_id}/all`);
                 if(!res.data){
-                    console.log('Some error');
+                    console.error('Some error');
                     return ;
                 }
 
                 // из списка покупаемого продукта исклчюим готовую продукцию (type=2)
-                this.list_goods = res.data.data.filter(el => el.type!=2);
+                //this.list_goods = res.data.data.filter(el => el.type!=2);
+                let name = '';
+                res.data.data.forEach(el => {
+                    if(el.type !=2) {
+                        if(el.amount>0)
+                            name = el.name + ' ('+ el.amount+el.unit+' ➠ '+ el.price+'грн)'
+                        else
+                            name = el.name
+
+                       this.list_goods.push({
+                            goods_id: el.goods_id,
+                            amount: el.amount,
+                            price: el.price,
+                           name
+                        })
+                    }
+                })
                 console.log(res)
             },
             getGoodsId(e, index) {
