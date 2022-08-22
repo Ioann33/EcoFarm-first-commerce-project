@@ -22,6 +22,7 @@ use App\Models\Orders;
 use App\Models\StockBalance;
 use App\Models\StorageGoods;
 use App\Models\Storages;
+use App\Models\User;
 use App\Services\LogService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -409,4 +410,8 @@ class GoodsController extends Controller
         }
     }
 
+    public function searchGoods(Request $request){
+        $goods = Goods::where('name', 'like', "%$request->name%")->get();
+        return response()->json($goods);
+    }
 }
