@@ -43,7 +43,8 @@ class GoodsController extends Controller
     }
 
     public function getListGoods(){
-        $allGoods = Goods::all();
+
+        $allGoods = DB::table('goods')->orderBy('name', 'asc')->get();
         return getListGoodsResource::collection($allGoods);
     }
 
