@@ -8,6 +8,8 @@ use App\Http\Resources\Reports\ListSalaryResource;
 use App\Models\Log;
 use App\Models\Money;
 use App\Models\Movements;
+use App\Models\StockBalance;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -89,7 +91,7 @@ class ReportController extends Controller
      * @param Request $request
      * @return mixed
      */
-     public function checkStockBalance(Request $request){
+     public function checkStockBalance(Request $request, LogService $service){
          $price = 0;
          $amount = 0;
         $goods = Movements::where('date_accepted', '!=', null)
@@ -116,13 +118,35 @@ class ReportController extends Controller
                 $amount-= $value['amount'];
             }
         }
-        $price = number_format($price,2);
+        $stock_balance = StockBalance::where('goods_id', '=', $request->goods_id)->where('storage_id','=', $request->storage_id)->get();
+
+
+         $price = number_format($price,2);
+
+
+
+        if ($amount != $stock_balance[0]['amount'] ||  $price !=  $stock_balance[0]['price']){
+            $compare = 'not match';
+        }else{
+            $compare = 'match';
+        }
+
+         if ($request->action == 'fix'){
+             $updateStock = StockBalance::findOrFail($stock_balance[0]['id']);
+             $updateStock->price = $price;
+             $updateStock->amount = $amount;
+             if($updateStock->save()){
+                 $compare = 'fixed';
+             }
+         }
+
         return response()->json([
             'status'=>'ok',
             'storage_id'=>$request->storage_id,
             'goods_id'=>$request->goods_id,
             'amount'=>$amount,
-            'price'=>$price
+            'price'=>$price,
+            'compare'=>$compare
             ]);
 //         select
 //         *
