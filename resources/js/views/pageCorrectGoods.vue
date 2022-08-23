@@ -46,6 +46,8 @@
                         </div>
                     </div>
                 </div>
+                {{selected_storage}}
+                {{selected_goods}}
                 <button type="button" class="btn btn-lg btn-default" :disabled="selected_storage === 'default' || selected_goods === 'default'" @click="correctGoods">Корректировать</button>
             </div>
         </div>
@@ -100,6 +102,7 @@
                     this.goods = [];
                     return;
                 }
+                this.selected_storage = value;
                 this.getGoods(value)
             },
             getGoods(storage_id){
@@ -113,6 +116,7 @@
             },
             selectGoods(value){
                 if(value === 'default') return;
+                this.selected_goods = value;
                 const current_goods = this.goods.find(el => el.goods_id === value);
                 this.price = current_goods.price;
                 this.amount = current_goods.amount;
