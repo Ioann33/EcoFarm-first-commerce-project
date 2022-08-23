@@ -244,6 +244,13 @@
                         <i class="fa fa-angle-right"></i>
                     </router-link>
 
+                    <router-link :to="{name: 'correctGoods'}">
+                        <i class="fa fa-inbox  bg-green-dark rounded-s"></i>
+                        <span>Скорректировать остатки</span>
+                        <strong>Скорректировать остатки</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
                 </div>
             </div>
         </div>

@@ -146,6 +146,11 @@ const router = createRouter({
             path: '/cookStat',
             name: 'cookStat',
             component: () => import('../views/pageCookStat')
+        },
+        {
+            path: '/correctGoods',
+            name: 'correctGoods',
+            component: () => import('../views/pageCorrectGoods')
         }
     ]
 })
