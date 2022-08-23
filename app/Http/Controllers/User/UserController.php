@@ -137,7 +137,7 @@ class UserController extends Controller
     }
 
     public function searchUser(Request $request){
-        $user = User::where('login', 'like', "%$request->login%")->get();
+        $user = User::where('login', 'like', "$request->login%")->get();
         return response()->json($user);
     }
 }

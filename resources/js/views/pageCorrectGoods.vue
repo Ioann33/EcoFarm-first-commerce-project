@@ -128,7 +128,8 @@
                     storage_id: this.selected_storage,
                     goods_id: this.selected_goods
                 }).then(res => {
-
+                    console.log('скорректировали товар('+this.selected_goods+')')
+                    this.$router.push({name: 'home'});
                 }).catch(e => {
                     console.log(e)
                 })
