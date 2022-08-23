@@ -9,15 +9,23 @@
             <title-page title_main="Разрешить выбранный товар"></title-page>
 
             <div class="card card-style p-4 pt-3 mt-3">
-                <div class="row mb-0">
-                    <select-input :data="available_goods"
-                                  :label="'Весь список товаров'"
-                                  :value="selected_goods"
-                                  :loading="loading_goods" @getSelected="changeGoods" :defaultOption="'выбрать продукт'">
-                    </select-input>
-                </div>
 
-                <div v-if="loading_storages_goods" class="spinner-border spinner-oading_storages_goods text-light" role="status">
+<!--                <div class="row mb-0">-->
+<!--                    <select-input :data="available_goods"-->
+<!--                                  :label="'Весь список товаров'"-->
+<!--                                  :value="selected_goods"-->
+<!--                                  :loading="loading_goods" @getSelected="changeGoods" :defaultOption="'выбрать продукт'">-->
+<!--                    </select-input>-->
+<!--                </div>-->
+                <span>Весь список товаров</span>
+                <v-select :options="available_goods"
+                          :value="'id'"
+                          :label="'name'"
+                          :placeholder="'выбрать продукт'"
+                          :map-keydown="handlers"
+                          @option:selected="changeGoods" @search="searchGoods">
+                </v-select>
+                <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
 
@@ -54,6 +62,8 @@
     import error from "../Components/Error";
     import TitlePage from "../Components/Title";
     import SelectInput from "../Components/SelectInput";
+    import vSelect from "vue-select"
+    import 'vue-select/dist/vue-select.css';
 
     export default {
         name: "pagePermitGoods",
@@ -61,7 +71,7 @@
             error,
             TitlePage,
             headBar, NavBar, NavBarMenu,
-            SelectInput
+            SelectInput, vSelect
         },
         data(){
             return {
@@ -79,18 +89,25 @@
         updated() {
         },
         mounted() {
-            this.getStorageGoods()
+            // this.getStorageGoods()
             this.getListStorages()
         },
         methods: {
+            handlers: (map, vm) => ({
+                ...map,
+                13: (e) => {
+                    e.preventDefault()
+                    vm.deselect()
+                    vm.onSearchBlur()
+                },
+            }),
             async getStorageGoods(){
                 this.loading_goods = true;
                 // const res = await axios.get(`/api/getStorageGoods/available/1/all`);
                 const res = await axios.get(`/api/getListGoods`);
                 this.loading_goods = false;
                 if(!res.data){
-                    console.log(11111)
-                    console.log(res.data)
+                    console.log('Error get search')
                     return ;
                 }
                 this.available_goods = res.data.data;
@@ -115,10 +132,15 @@
             },
             changeGoods(value){
                 this.selected_goods = value;
-                if(value === 'default'){
-
-                }
-                this.getListStoragesGoodsPermit(value)
+                this.getListStoragesGoodsPermit(value.id)
+            },
+            searchGoods(value){
+                if(!value) return;
+                axios.get('/api/searchGoods/'+value).then(res => {
+                    this.available_goods = res.data;
+                }).catch(e => {
+                   console.log(e)
+                });
             },
             async changeGoodsAllow(id, value){
                 if(this.selected_goods === 'default') return;
@@ -141,7 +163,11 @@
 </script>
 
 <style>
-    .spinner-oading_storages_goods {
+    .vs__selected-options > input, .vs__selected-options > input:focus {
+        padding: 12px 6px;
+        border: none;
+    }
+    .spinner-loading_storages_goods {
         position: absolute;
         left: calc(50% - 16px);
         top: 90px;
