@@ -3,19 +3,18 @@
         <!-- ERROR -->  <error :message="message"></error>
         <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
 
-        <!-- КУПИТЬ / ПРОДАТЬ -->
-        <div class="card card-style" style="padding-top: 12px;">
-                    <!-- КУПИТЬ -->
-                    <router-link :to="{name: 'buyProducts'}">
-                        <div class="card card-style mx-0 mb-3">
-                            <div class="p-3 bg-blue-dark text-center">
-                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                    Купить </h1>
-                            </div>
+        <!-- КУПИТЬ  -->
+        <div class="row mb-n2 align-content-center p-3">
+            <router-link :to="{name: 'buyProducts'}">
+                    <div class="card card-style mx-0 mb-5">
+                        <div class="p-3 bg-blue-dark text-center">
+                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                Купить </h1>
                         </div>
-                    </router-link>
+                    </div>
+            </router-link>
         </div>
-        <!-- КУПИТЬ / ПРОДАТЬ -->
+        <!-- КУПИТЬ -->
 
 
         <!--ПЕРЕДАТЬ ТОВАР    -->
@@ -56,6 +55,9 @@
 
         </div>
         <!--ПЕРЕДАТЬ ТОВАР    -->
+
+        <list-goods :storage_id="this.my_storage_id"></list-goods>
+
     </div>
 </template>
 
@@ -63,14 +65,15 @@
     import Error from "../../Components/Error";
     import CardBalance from "../../Components/cardBalance";
     import cardMovementOutOpened from "../../Components/cardMovementOutOpened";
-
+    import listGoods from "../../Components/listGoods";
 
     export default {
         name: "pageProduce",
         components: {
             Error,
             CardBalance,
-            cardMovementOutOpened
+            cardMovementOutOpened,
+            listGoods
         },
         data() {
             return {

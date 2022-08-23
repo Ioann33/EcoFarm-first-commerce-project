@@ -98,7 +98,9 @@
                     return;
                 }
                 const res = await axios.post('/api/addGoods', {
-                    name: this.name, unit: this.unit, type: this.type
+                    name: this.name.toLowerCase(),
+                    unit: this.unit.toLowerCase(),
+                    type: this.type
                 }).then(res => {
                    if(!res.data){
                        console.error('при добавлении товара произошла ошибка')

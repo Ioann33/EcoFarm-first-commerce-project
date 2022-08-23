@@ -106,7 +106,7 @@ class UserController extends Controller
         }else{
             $res =  UserStorages::where('storage_id','=', $request->storage_id)
                 ->where('user_id', '=', $request->user_id)->delete();
-            $service->newLog('setUserPermit', 'пользователь ('.$request->user_id.') ,был удален со склада('.$request->storage_id.')', null);
+            $service->newLog('setUserPermit', 'пользователь('.$request->user_id.'), был удален со склада('.$request->storage_id.')', null);
             $res =  UserStorages::
                       where('storage_id','=', $request->storage_id)
                     ->where('user_id', '=', $request->user_id)
@@ -115,7 +115,7 @@ class UserController extends Controller
             return response()->json(
                 [
                     'status' => 'ok',
-                    'message' => 'пользователь ('.$request->user_id.') ,был удален со склада('.$request->storage_id.')'
+                    'message' => 'пользователь('.$request->user_id.'), был удален со склада('.$request->storage_id.')'
                 ]);
         }
 

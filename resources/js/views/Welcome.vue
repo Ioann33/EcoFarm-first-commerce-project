@@ -38,7 +38,7 @@
                 </div>
                 <div v-if="error" class="mt-5 mx-3 alert alert-small rounded-s shadow-xl bg-red-dark login-error" role="alert">
                     <span><i class="fa fa-times"></i></span>
-                    <strong>{{ message_error ? message_error.message : 'Unfortunately error. Please try again!'}}</strong>
+                    <strong>{{ message_error ? message_error : 'Unfortunately error. Please try again!'}}</strong>
                     <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert" aria-label="Close">×</button>
                 </div>
                 <div class="card-overlay-infinite preload-img" data-src="images/pictures/_bg-infinite.jpg"></div>
@@ -53,8 +53,8 @@ export default {
     name: "Welcome",
     data() {
         return {
-            user_login: 'djeklu',
-            user_password: '12345678',
+            user_login: '',
+            user_password: '',
             error: false,
             message_error: ''
         }
@@ -66,7 +66,7 @@ export default {
             console.log('Auth...');
             axios.get('/sanctum/csrf-cookie').then(response => {
                 axios.post('/login', {
-                    login: this.user_login,
+                    login: this.user_login.toLowerCase(),
                     password: this.user_password
                 })
                     .then(r => {
@@ -124,16 +124,17 @@ export default {
                     })
                     .catch(err => {
                         console.log('Auth...no');
-                        this.message_error = err.response.data;
-                        this.error = true;
-                        console.log(err.response.data);
+                        this.message_error = "Проверьте Логин и пароль"
+                        this.error = true
+                        console.error(err.response.data)
+                        console.error(' [serv-error] ' + err.response.data.message)
                     })
             })
                 .catch(err => {
-                    console.log('Auth...no');
-                    this.message_error = err.response.data;
-                    this.error = true;
-                    console.log(err.response.data);
+                    console.log('Auth...no')
+                    this.message_error = err.response.data
+                    this.error = true
+                    console.error(err.response.data)
                 });
 
         }

@@ -305,7 +305,7 @@ class FinanceController extends Controller
         try {
             foreach ($request->sales as $sale){
 
-                $costProduct = (int) $sale['amount'] * (int) $sale['price'];
+                $costProduct = (float) $sale['amount'] * (float) $sale['price'];
 
                 $move_id = HandleGoods::movements(null, null, $sale['goods_id'],'pre_sale', null, $sale['amount'], null, $sale['price']);
 
@@ -333,7 +333,7 @@ class FinanceController extends Controller
         $dateNow = date('Y-m-d H:i:s');
         try {
             foreach ($request->sales as $sale){
-                $costProduct = (int) $sale['amount'] * (int) $sale['price'];
+                $costProduct = (float) $sale['amount'] * (float) $sale['price'];
 
                 $move_id = HandleGoods::moveGoods($sale['storage_id'], null, $sale['goods_id'], $sale['amount'],'sale', null,null, $user_id, $dateNow);
 
