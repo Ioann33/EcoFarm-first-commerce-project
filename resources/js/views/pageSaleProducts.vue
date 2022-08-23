@@ -199,7 +199,6 @@
                         price: el.price
                     })
                 })
-                console.log(sales)
                 console.log('>>> продажа товара: ')
                 console.log(sales)
                 console.dir(sales)

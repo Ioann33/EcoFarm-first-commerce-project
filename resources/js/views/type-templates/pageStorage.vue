@@ -191,12 +191,25 @@
 
 <!--УТИЛИЗАРОВАТЬ ТОВАР    -->
         <div class="row mb-n2 align-content-center p-3">
-            <div class="col-12 ">
+            <div class="col-6 ">
                 <router-link :to="{name: 'trashProducts'}">
                     <div class="card card-style mx-0 mb-5">
                         <div class="p-3 bg-grass-light text-center">
                             <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                Утилизировать </h1>
+                                <i class="fa fa-trash  rounded-s"></i> </h1>
+                            <div class="opacity-50">утилизация</div>
+                        </div>
+                    </div>
+                </router-link>
+            </div>
+            <div class="col-6">
+                <router-link :to="{name: 'correctGoods'}">
+                    <div class="card card-style mx-0 mb-5">
+                        <div class="p-3  bg-fade-teal-dark text-center">
+                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                <i class="fa fa-recycle rounded-s"></i>
+                                </h1>
+                            <div class="opacity-50">корректировка остатков</div>
                         </div>
                     </div>
                 </router-link>
@@ -247,7 +260,6 @@
                 </div>
             </div>
         </div>
-
 
     </div>
 </template>

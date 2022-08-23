@@ -18,7 +18,7 @@ class CostGoodsOnStockResource extends JsonResource
             'id'=>$this->storage_id,
             'name'=>$this->storage->name,
             'type'=>$this->storage->type,
-            'sum_ready' => $this->amount
+            'sum_ready' => $this->amount * $this->price
         ];
     }
 }

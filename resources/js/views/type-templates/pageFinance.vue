@@ -134,7 +134,7 @@
             this.dt = '2022-09-05 00:00:00'
 
 
-            await axios.get('api/getSumMoneyByCategoryOnStorage/all/500/'+this.df+'/'+this.dt)
+            await axios.get('api/getMoneyByCategoryOnStorage/sum/all/500/all/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.non_profitWeek = parseInt(res.data.sum)
                 }).catch(err => {
@@ -142,7 +142,7 @@
                     console.error(this.message)
                 })
 
-            await axios.get('api/getSumMoneyByCategoryOnStorage/all/600/'+this.df+'/'+this.dt)
+            await axios.get('api/getMoneyByCategoryOnStorage/sum/all/600/all/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.capitalWeek = parseInt(res.data.sum)
                 }).catch(err => {
@@ -150,7 +150,7 @@
                     console.error(this.message)
                 })
 
-            await axios.get('api/getSumMoneyByCategoryOnStorage/all/100/'+this.df+'/'+this.dt)
+            await axios.get('api/getMoneyByCategoryOnStorage/sum/all/100/all/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.salaryWeek = parseInt(res.data.sum)
                 }).catch(err => {
