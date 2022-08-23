@@ -248,6 +248,19 @@
             </div>
         </div>
 
+        <!--Корректировка остатков    -->
+        <div class="row mb-n2 align-content-center p-3">
+            <div class="col-12 ">
+                <router-link :to="{name: 'correctGoods'}">
+                    <div class="card card-style mx-0 mb-5">
+                        <div class="p-3  bg-fade-teal-dark text-center">
+                            <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
+                                Корректировка остатков </h1>
+                        </div>
+                    </div>
+                </router-link>
+            </div>
+        </div>
 
     </div>
 </template>
