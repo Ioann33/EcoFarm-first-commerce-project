@@ -291,6 +291,7 @@ class GoodsController extends Controller
 
         }else{
             $costGoods = StockBalance::all()->where('storage_id', '=', $request->storage_id);
+//            return$costGoods = DB::table('stock_balance')->where('storage_id', '=', $request->storage_id)->join('storages', 'stock_balance.storage_id', '=', 'storages.id')->select(DB::raw("stock_balance.storage_id, sum(stock_balance.amount*stock_balance.price) as total_cost, storages.name, storages.type "))->groupBy('storage_id', 'storages.name', 'storages.type')->get();
         }
 
 
@@ -414,5 +415,30 @@ class GoodsController extends Controller
     public function searchGoods(Request $request){
         $goods = Goods::where('name', 'like', "%$request->name%")->get();
         return response()->json($goods);
+    }
+
+    public function correctGoods(Request $request, LogService $service){
+        $user_id = Auth::id();
+        $dateNow = date('Y-m-d H:i:s');
+
+        if ($request->old_amount > $request->new_amount){
+
+            $actualAmount = $request->old_amount - $request->new_amount ;
+
+            $move = HandleGoods::moveGoods($request->storage_id, null, $request->goods_id, $actualAmount, 'stock_correct', null, null,$user_id, $dateNow, $request->price, null);
+
+            $service->newLog('correctGoods', 'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', written off amount: '.$actualAmount. ' with price: '.$request->price, $move['productID']);
+            return response()->json(['status'=> 'ok', 'message'=>'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', written off amount: '.$actualAmount. ' with price: '.$request->price]);
+        }else{
+            $actualAmount = $request->new_amount - $request->old_amount;
+
+            $move = HandleGoods::movements(null, $request->storage_id, $request->goods_id, 'stock_correct', null, $actualAmount, null, $request->price, $user_id, $dateNow);
+
+
+             HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $actualAmount, $dateNow, $request->price);
+            $service->newLog('correctGoods', 'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', added amount: '.$actualAmount. ' with price: '.$request->price, $move['productID']);
+
+            return response()->json(['status'=> 'ok', 'message'=>'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', added amount: '.$actualAmount. ' with price: '.$request->price]);
+        }
     }
 }
