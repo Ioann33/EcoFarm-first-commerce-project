@@ -151,6 +151,11 @@ const router = createRouter({
             path: '/correctGoods',
             name: 'correctGoods',
             component: () => import('../views/pageCorrectGoods')
+        },
+        {
+            path: '/editGoods',
+            name: 'editGoods',
+            component: () => import('../views/pageEditGoods')
         }
     ]
 })
