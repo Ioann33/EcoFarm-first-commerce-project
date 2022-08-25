@@ -205,7 +205,10 @@ class ReportController extends Controller
 
      }
 
-     public function getLog(Request $request){
-         return$logs = Log::where('event', '=', $request->event)->limit(5)->get();
+     public function getLogs(Request $request){
+         if($request->event == 'all')
+             return $logs = Log::orderBy('date', 'desc')->limit(25)->get();
+             else
+         return $logs = Log::where('event', '=', $request->event)->limit(25)->get();
      }
 }
