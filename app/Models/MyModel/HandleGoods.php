@@ -160,7 +160,7 @@ class HandleGoods
                 $totalAmount = $stock->amount + $amount;
 
                 $averagePrice = ($totalExistPrice+$totalInputPrice)/$totalAmount;
-                $stock->price = number_format($averagePrice,2);
+                $stock->price = number_format($averagePrice,2,'.','');
 
             }
 

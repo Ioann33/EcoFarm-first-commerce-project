@@ -83,6 +83,7 @@ class GoodsController extends Controller
     }
 
     public function getMovement(Request $request){
+        // @todo будем переходить на этот API: api/getListGoodsMovements/
 
         if($request->status === 'opened'){
             $operator = '=';
@@ -261,11 +262,11 @@ class GoodsController extends Controller
             });
 
             $setSelfCostProduct = StockBalance::findOrFail($readyProductID['stockBalanceID']);
-            $setSelfCostProduct->price = number_format($getSelfCostProduct/$request->amount,2);
+            $setSelfCostProduct->price = number_format($getSelfCostProduct/$request->amount,2,'.','');
             $setSelfCostProduct->save();
 
             $updateMovements = Movements::findOrFail($readyProductID['productID']);
-            $updateMovements->price = number_format($getSelfCostProduct/$request->amount,2);
+            $updateMovements->price = number_format($getSelfCostProduct/$request->amount,2,'.','');
             $updateMovements->save();
 
             $mainStore = MainStore::all()
@@ -367,7 +368,7 @@ class GoodsController extends Controller
             $param = 0;
         }
         if ($res){
-            $service->newLog('setGoodsPermit', 'set permit goods_id '.$request->goods_id.' to storage '. $request->storage_id, $param);
+            $service->newLog('setGoodsPermit', ($param ? 'set' : 'remove').' permit goods_id '.$request->goods_id.' to storage '. $request->storage_id, $param);
             return response()->json(['status'=>'ok']);
         }else{
             return response()->json(['status'=>'error']);
@@ -413,7 +414,8 @@ class GoodsController extends Controller
     }
 
     public function searchGoods(Request $request){
-        $goods = Goods::where('name', 'like', "$request->name%")->get();
+//        $goods = Goods::where('name', 'like', "$request->name%")->get();
+        $goods = Goods::whereRaw('LOWER(name) like \''.$request->name.'%\'')->get();
         return response()->json($goods);
     }
 

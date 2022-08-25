@@ -257,6 +257,13 @@
                         <i class="fa fa-angle-right"></i>
                     </router-link>
 
+                    <router-link :to="{name: 'editGoods'}">
+                        <i class="fa fa-inbox  bg-green-dark rounded-s"></i>
+                        <span>Редактировать товар</span>
+                        <strong>Редактировать товар</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
                 </div>
             </div>
         </div>

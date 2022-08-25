@@ -8,12 +8,12 @@
 
             <!-- ERROR -->  <error :message="message"></error>
 
-            <div class="card card-style overflow-visible card-custom-products pt-2 pb-0 bg-green-dark">
+            <div class="card card-style overflow-visible card-custom-products pt-2 pb-0 bg-orange-light">
                 <div class="row mb-0">
-                    <div class="col-8 p-1">
+                    <div class="col-7 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <label for="prod_1" class="color-blue-dark bg-green-dark">Готовая продукция</label>
-                            <select id="prod_1" v-model="selected_goods_id" class="form-control bg-green-dark">
+                            <label for="prod_1" class="color-white bg-orange-light">Готовая продукция</label>
+                            <select id="prod_1" v-model="selected_goods_id" class="form-control bg-orange-light">
                                 <option value="default" selected>выбрать</option>
                                 <option
                                     v-for="(goods, index) in listGoods"
@@ -30,15 +30,19 @@
                     </div>
                     <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
-                            <input type="number" class="form-control focus-color focus-blue validate-name bg-green-dark"
+                            <input type="number" class="form-control focus-color focus-blue validate-name bg-orange-light"
                                    id="f4"
                                    v-model="amount"
+                                   @focus="$event.target.select()"
                             >
-                            <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
+                            <label for="f1" class="bg-orange-light">кол-во</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
                             <i class="fa fa-check disabled valid color-green-dark"></i>
                             <em></em>
                         </div>
+                    </div>
+                    <div class="col-1">
+<!-- unit from selected_goods_id -->
                     </div>
                 </div>
             </div>
@@ -92,7 +96,7 @@
 <!--                        </div>-->
 <!--                    </div>-->
                 </div>
-                <button @click="addIngredient" style="padding: 15px 24px; background-color: #A0D468; border-radius: 28px; color: #fff;" class="add-ingredient-btn">+</button>
+                <button @click="addIngredient" style="padding: 15px 24px; background-color: #A0D468; border-radius: 28px; color: #fff;" class="add-ingredient-btn font-39">+</button>
             </div>
 
             <button v-if="isAllRight" type="button" class="btn btn-success btn-lg create-product-btn" @click="createProduct">Создать ГТ и передать ее на главный склад</button>
@@ -198,12 +202,12 @@ export default {
                     this.$router.push({name: 'home'})
                     this.message = 'приготовили' // это не работает. @todo уведомлять пользователя про успех
                 }else {
-                    console.error(res.data.message)
-                    this.message = res.data.message
+                    this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                    console.error(' [serv] '+this.message)
                 }
             }).catch(err => {
-                console.log('Error: ('+err.response.status+'): '+err.response.data.message)
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.error(' [serv] '+this.message)
             })
 
         },

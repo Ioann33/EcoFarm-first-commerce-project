@@ -120,47 +120,66 @@ class ReportController extends Controller
         }
 
 
-        $price = number_format($price,2);
+        $price = number_format($price,2,'.','');
 
 
 
 
-        $stock_balance = StockBalance::where('goods_id', '=', $request->goods_id)->where('storage_id','=', $request->storage_id)->get();
+       $stock_balance = StockBalance::where('goods_id', '=', $request->goods_id)->where('storage_id','=', $request->storage_id)->get();
 
         if($stock_balance->count()>0) {
             if ($amount != $stock_balance[0]['amount'] || $price != $stock_balance[0]['price']) {
                 $compare = 'miss match';
             } else {
+
                 $compare = 'match';
             }
 
             if ($request->action == 'fix') {
+
                 $updateStock = StockBalance::findOrFail($stock_balance[0]['id']);
-                $updateStock->price = $price;
-                $updateStock->amount = $amount;
-                if ($updateStock->save()) {
-                    $compare = 'fixed';
-                    $service->newLog('fixStockBalance', 'with amount: '.$stock_balance[0]['amount'].' fixed to '.$amount.', with price '.$stock_balance[0]['price'].' fixed to '.$price.' on storage '.$request->sorage_id.' , goods_id '.$request->goods_id, null);
+                if ($amount == $updateStock->amount){
+                    $compare = 'match';
+                }else{
+                    $updateStock->price = $price;
+                    $updateStock->amount = $amount;
+                    if ($updateStock->save()) {
+                        if ($amount == $updateStock->amount){
+                            $updateStock->delete();
+                        }
+                        $compare = 'fixed';
+                        $service->newLog('fixStockBalance', 'with amount: '.$stock_balance[0]['amount'].' fixed to '.$amount.', with price '.$stock_balance[0]['price'].' fixed to '.$price.' on storage '.$request->sorage_id.' , goods_id '.$request->goods_id, null);
+                    }
                 }
+
             }
         }
         else
         {
             if ($request->action == 'fix') {
                 // создать новую запись в StockBalance
-                $newStockBalance = new StockBalance();
-                $newStockBalance->goods_id = $request->goods_id;
-                $newStockBalance->price = $price;
-                $newStockBalance->amount = $amount;
-                $newStockBalance->storage_id = $request->storage_id;
-                $newStockBalance->date_accepted = date('Y-m-d H:i:s');
-                $newStockBalance->save();
+                if ($amount == 0){
 
-                $compare = 'fixed';
-                $service->newLog('fixStockBalance', 'fixed amount on stock balance by movement, added on stock balance goods_id '. $request->goods_id.', in amount '. $amount.'by price '.$price, null);
+                    $compare = 'match';
+                }else{
+                    $newStockBalance = new StockBalance();
+                    $newStockBalance->goods_id = $request->goods_id;
+                    $newStockBalance->price = $price;
+                    $newStockBalance->amount = $amount;
+                    $newStockBalance->storage_id = $request->storage_id;
+                    $newStockBalance->date_accepted = date('Y-m-d H:i:s');
+                    $newStockBalance->save();
+
+                    $compare = 'fixed';
+                    $service->newLog('fixStockBalance', 'fixed amount on stock balance by movement, added on stock balance goods_id '. $request->goods_id.', in amount '. $amount.'by price '.$price, null);
+                }
             }
             else
+
                 $compare = 'miss match';
+            if ($amount == 0 && count($stock_balance) == 0){
+                $compare = 'match';
+            }
         }
 
 
@@ -186,7 +205,10 @@ class ReportController extends Controller
 
      }
 
-     public function getLog(Request $request){
-         return$logs = Log::where('event', '=', $request->event)->limit(5)->get();
+     public function getLogs(Request $request){
+         if($request->event == 'all')
+             return $logs = Log::orderBy('date', 'desc')->limit(25)->get();
+             else
+         return $logs = Log::where('event', '=', $request->event)->limit(25)->get();
      }
 }
