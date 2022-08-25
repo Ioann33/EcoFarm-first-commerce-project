@@ -368,7 +368,7 @@ class GoodsController extends Controller
             $param = 0;
         }
         if ($res){
-            $service->newLog('setGoodsPermit', 'set permit goods_id '.$request->goods_id.' to storage '. $request->storage_id, $param);
+            $service->newLog('setGoodsPermit', ($param ? 'set' : 'remove').' permit goods_id '.$request->goods_id.' to storage '. $request->storage_id, $param);
             return response()->json(['status'=>'ok']);
         }else{
             return response()->json(['status'=>'error']);
@@ -414,7 +414,8 @@ class GoodsController extends Controller
     }
 
     public function searchGoods(Request $request){
-        $goods = Goods::where('name', 'like', "$request->name%")->get();
+//        $goods = Goods::where('name', 'like', "$request->name%")->get();
+        $goods = Goods::whereRaw('LOWER(name) like \''.$request->name.'%\'')->get();
         return response()->json($goods);
     }
 

@@ -23,7 +23,8 @@
                           :label="'name'"
                           :placeholder="'выбрать продукт'"
                           :map-keydown="handlers"
-                          @option:selected="changeGoods" @search="searchGoods">
+                          @option:selected="changeGoods"
+                          @search="searchGoods">
                 </v-select>
                 <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">
                     <span class="sr-only">Loading...</span>
@@ -131,14 +132,15 @@
                 })
             },
             changeGoods(value){
-                this.selected_goods = value;
+                this.selected_goods = value.id;
                 this.getListStoragesGoodsPermit(value.id)
             },
             searchGoods(value){
                 if(!value) return;
-                axios.get('/api/searchGoods/'+value).then(res => {
+                axios.get('/api/searchGoods/'+value.toLowerCase()).then(res => {
                     this.available_goods = res.data;
                 }).catch(e => {
+                    this.message = e.response.data.message
                    console.log(e)
                 });
             },
