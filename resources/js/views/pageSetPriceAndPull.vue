@@ -198,6 +198,7 @@
                 this.movement = res.data.data
                 console.log(this.movement)
                 this.price = Number.parseFloat(this.movement.price)
+                this.total_price_one = this.price
                 this.amount = Number.parseFloat(this.movement.amount)
                 this.total = (this.movement.price * this.movement.amount).toFixed(2)
 
