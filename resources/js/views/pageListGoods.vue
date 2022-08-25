@@ -42,9 +42,9 @@
                         <div class="content" id="tab-group-11">
 
                             <div class="tab-controls tabs-small tabs-rounded mb-2" data-highlight="bg-blue-dark">
-                                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-15" class="bg-blue-dark no-click">Продукты</a>
+                                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-15" class="collapsed">Продукты</a>
                                 <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-16" class="collapsed">Продукция</a>
-                                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-17" class="collapsed">Все</a>
+                                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-17" class="bg-blue-dark no-click">Все</a>
                             </div>
 
                             <div data-bs-parent="#tab-group-11" class="collapse show" id="tab-15" style="">
@@ -59,7 +59,7 @@
                                         </thead>
                                         <tbody>
                                             <tr v-for="(goods, index) in listGoods.filter(el => el.type === 1 )" :key="goods.id">
-                                                    <th scope="row" class="align-self-center ">{{ goods.name }}</th>
+                                                    <th scope="row" class="align-self-center ">{{ goods.name }} <sup class="opacity-10">{{goods.goods_id}}</sup></th>
                                                     <td ><h4 class="font-600">{{ goods.price }} <sup class="font-400">₴</sup></h4></td>
                                                     <td><h4 class="font-600">{{ goods.amount }} <sup class="font-400">{{ goods.unit }}</sup></h4></td>
                                             </tr>
@@ -82,7 +82,7 @@
                                         </thead>
                                         <tbody>
                                         <tr v-for="(goods, index) in listGoods.filter(el => el.type === 2 )" :key="goods.id">
-                                            <th scope="row" class="align-self-center ">{{ goods.name }}</th>
+                                            <th scope="row" class="align-self-center ">{{ goods.name }} <sup class="opacity-10">{{goods.goods_id}}</sup></th>
                                             <td ><h4 class="font-600">{{ goods.price }} <sup class="font-400">₴</sup></h4></td>
                                             <td><h4 class="font-600">{{ goods.amount }} <sup class="font-400">{{ goods.unit }}</sup></h4></td>
                                         </tr>
@@ -105,7 +105,7 @@
                                         </thead>
                                         <tbody>
                                         <tr v-for="(goods, index) in listGoods" :key="goods.id">
-                                            <th scope="row" class="align-self-center ">{{ goods.name }}</th>
+                                            <th scope="row" class="align-self-center ">{{ goods.name }} <sup class="opacity-10">{{goods.goods_id}}</sup></th>
                                             <td ><h4 class="font-600">{{ goods.price }} <sup class="font-400">₴</sup></h4></td>
                                             <td><h4 class="font-600">{{ goods.amount }} <sup class="font-400">{{ goods.unit }}</sup></h4></td>
                                         </tr>
