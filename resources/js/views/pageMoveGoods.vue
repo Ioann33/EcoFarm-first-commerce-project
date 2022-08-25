@@ -97,7 +97,7 @@
                 </div>
 
 
-                <a v-if="this.selected_storage_id!=='default'" @click.prevent="makeMoveGoods" href="#" >
+                <a v-if="canDoPull" @click.prevent="makeMoveGoods" href="#" >
                     <div class="content-boxed bg-blue-dark mt-1 pb-3 text-center text-uppercase">
                         <h4 class="color-white">Передать на склад</h4>
                     </div>
@@ -228,6 +228,12 @@ export default {
 
     },
     computed: {
+        canDoPull(){
+            if(this.selected_storage_id!=='default' && this.goods_amount > 0)
+                return 1
+            else
+                return 0
+        },
         canSelectStorageTo() {
             if(this.my_storage_id === localStorage.getItem('main_storage_id'))
             {
