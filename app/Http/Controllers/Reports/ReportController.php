@@ -139,6 +139,9 @@ class ReportController extends Controller
                 $updateStock->price = $price;
                 $updateStock->amount = $amount;
                 if ($updateStock->save()) {
+                    if ($amount == $updateStock->amount){
+                        $updateStock->delete();
+                    }
                     $compare = 'fixed';
                     $service->newLog('fixStockBalance', 'with amount: '.$stock_balance[0]['amount'].' fixed to '.$amount.', with price '.$stock_balance[0]['price'].' fixed to '.$price.' on storage '.$request->sorage_id.' , goods_id '.$request->goods_id, null);
                 }
@@ -160,7 +163,11 @@ class ReportController extends Controller
                 $service->newLog('fixStockBalance', 'fixed amount on stock balance by movement, added on stock balance goods_id '. $request->goods_id.', in amount '. $amount.'by price '.$price, null);
             }
             else
+
                 $compare = 'miss match';
+            if ($amount == 0 && count($stock_balance) == 0){
+                $compare = 'match';
+            }
         }
 
 
