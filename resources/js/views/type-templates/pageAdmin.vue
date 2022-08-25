@@ -1,9 +1,12 @@
 <template>
-    <div class="page-content header-clear-medium">
+    <div class="page-content header-clear-medium m-3">
         <!-- ERROR -->  <error :message="message"></error>
-       dffdg
-
-fddfddfdfg
+        <li
+            v-for="(log, index) in logs"
+        >
+            #{{log.id}} {{log.date}} <b>{{log.event}}</b> <br> {{log.log}}
+            <hr>
+        </li>
     </div>
 </template>
 
@@ -18,6 +21,7 @@ fddfddfdfg
         data() {
             return {
                 message: '',
+                logs: []
 
             }
         },
@@ -30,6 +34,18 @@ fddfddfdfg
         },
         mounted() {
             console.log('     Component views/Admin mounted....')
+
+
+            axios.get('/api/getLogs/all').then(res => {
+                console.log('logs:')
+
+                this.logs = res.data
+                console.log(this.logs)
+
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.error (' [serv] '+this.message)
+            })
 
             console.log('     Component views/Admin mounted......done!')
             update_template()

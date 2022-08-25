@@ -28,6 +28,7 @@ import pageCreditor from "./type-templates/pageCreditor";
 import pageServices from "./type-templates/pageServices";
 import pageSale from "./type-templates/pageSale";
 import pageBuy from "./type-templates/pageBuy";
+import pageAdmin from "./type-templates/pageAdmin";
 
 export default {
     name: "Home",
@@ -36,7 +37,7 @@ export default {
         headBar, NavBar, NavBarMenu,
 
         // types
-        pageStorage, pageCook, pageGrow, pageFinance, pageCreditor, pageServices,  pageSale, pageBuy
+        pageStorage, pageCook, pageGrow, pageFinance, pageCreditor, pageServices,  pageSale, pageBuy, pageAdmin
     },
     data(){
         return {
