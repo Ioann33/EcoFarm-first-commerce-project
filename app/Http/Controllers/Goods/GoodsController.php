@@ -83,6 +83,7 @@ class GoodsController extends Controller
     }
 
     public function getMovement(Request $request){
+        // @todo будем переходить на этот API: api/getListGoodsMovements/
 
         if($request->status === 'opened'){
             $operator = '=';
@@ -261,11 +262,11 @@ class GoodsController extends Controller
             });
 
             $setSelfCostProduct = StockBalance::findOrFail($readyProductID['stockBalanceID']);
-            $setSelfCostProduct->price = number_format($getSelfCostProduct/$request->amount,2);
+            $setSelfCostProduct->price = number_format($getSelfCostProduct/$request->amount,2,'.','');
             $setSelfCostProduct->save();
 
             $updateMovements = Movements::findOrFail($readyProductID['productID']);
-            $updateMovements->price = number_format($getSelfCostProduct/$request->amount,2);
+            $updateMovements->price = number_format($getSelfCostProduct/$request->amount,2,'.','');
             $updateMovements->save();
 
             $mainStore = MainStore::all()

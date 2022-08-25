@@ -30,7 +30,7 @@ class StorageGoodsResource extends JsonResource
             ->sum('amount');
 
         if ($totalPriceSum != 0){
-            $averagePrice = number_format($totalPriceSum / $sumGoods,2);
+            $averagePrice = number_format($totalPriceSum / $sumGoods,2,'.','');
         }else{
             $averagePrice = 0;
         }

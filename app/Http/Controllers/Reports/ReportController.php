@@ -120,7 +120,7 @@ class ReportController extends Controller
         }
 
 
-        $price = number_format($price,2);
+        $price = number_format($price,2,'.','');
 
 
 

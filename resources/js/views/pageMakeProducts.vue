@@ -198,12 +198,12 @@ export default {
                     this.$router.push({name: 'home'})
                     this.message = 'приготовили' // это не работает. @todo уведомлять пользователя про успех
                 }else {
-                    console.error(res.data.message)
-                    this.message = res.data.message
+                    this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                    console.error(' [serv] '+this.message)
                 }
             }).catch(err => {
-                console.log('Error: ('+err.response.status+'): '+err.response.data.message)
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+                console.error(' [serv] '+this.message)
             })
 
         },
