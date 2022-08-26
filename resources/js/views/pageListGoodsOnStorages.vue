@@ -4,9 +4,9 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium m-3">
+            <!-- ERROR -->  <error  :message="message"></error>
 
-
-            <span>Весь список товаров</span>
+            <span>Посмотреть остатки продукта на всех складах</span>
             <v-select :options="available_goods"
                       :value="'id'"
                       :label="'name'"
@@ -19,6 +19,15 @@
 <!--            <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">-->
 <!--                <span class="sr-only">Loading...</span>-->
 <!--            </div>-->
+<!--            <div class="row " v-for="(goods, index) in goods_in_storages" :key="goods.storage_id">-->
+                <div class="card card-style p-4 pt-3 mt-3">
+                    <div class="row m-0" v-for="(goods, index) in goods_in_storages" :key="goods.storage_id">
+                        <div class="col-8">{{goods.storage_name}}</div>
+                        <div class="col-4 align-content-end">{{goods.amount}} <sup class="opacity-50">{{goods.unit}}</sup></div>
+
+
+                    </div>
+            </div>
 
         </div>
 
@@ -47,14 +56,21 @@
         },
         data(){
             return {
+                message: '',
                 available_goods: [],
                 selected_goods: 'default',
                 loading_goods: false,
+                goods_in_storages: []
             }
         },
         computed: {},
+        beforeMount() {
+            this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.my_storage_name = localStorage.getItem('my_storage_name')
+        },
+
         mounted() {
-            this.getStorageGoods()
+            //this.getStorageGoods()
         },
         updated() {
         },
@@ -64,7 +80,7 @@
                 const res = await axios.get(`/api/getListGoods`);
                 this.loading_goods = false;
                 if(!res.data){
-                    console.log('Error get search')
+                    console.error('Error get search')
                     return ;
                 }
                 this.available_goods = res.data.data;
@@ -73,7 +89,15 @@
             changeGoods(value){
                 this.selected_goods = value.id;
                 console.log('selected goods: '+this.selected_goods)
-                //this.getListStoragesGoodsPermit(value.id)
+
+                axios.get('/api/getStorageGoods/available/all/'+this.selected_goods).then(res => {
+                    this.goods_in_storages = res.data.data.filter(el => el.amount >0);
+                    console.log(this.goods_in_storages)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+
             },
             handlers: (map, vm) => ({
                 ...map,
