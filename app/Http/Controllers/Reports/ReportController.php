@@ -146,7 +146,7 @@ class ReportController extends Controller
                     $updateStock->price = $price;
                     $updateStock->amount = $amount;
                     if ($updateStock->save()) {
-                        if ($amount == $updateStock->amount){
+                        if ($amount == $updateStock->amount && $amount == 0 && $updateStock->amount == 0){
                             $updateStock->delete();
                         }
                         $compare = 'fixed';
