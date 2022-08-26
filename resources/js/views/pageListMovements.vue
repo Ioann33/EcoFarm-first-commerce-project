@@ -66,7 +66,7 @@
         methods: {
             getListGoodsMovements(){
                 axios.get(`/api/getListGoodsMovements/3/2022-08-01/2022-09-01`).then(res => {
-                    this.movements = res.data.data.slice(0,3);
+                    this.movements = res.data.data.slice(0,30);
                     console.log(res.data)
                 }).catch(e => {
                     console.log(e)
