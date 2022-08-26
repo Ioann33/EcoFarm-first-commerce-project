@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getListGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'getListGoods']);
     Route::get('/searchGoods/{name}', [\App\Http\Controllers\Goods\GoodsController::class, 'searchGoods']);
     Route::post('/GrowAndMoveOnMainStorage', [\App\Http\Controllers\Goods\GoodsController::class, 'GrowAndMoveOnMainStorage']);
+    Route::post('/GrowAndMove', [\App\Http\Controllers\Goods\GoodsController::class, 'GrowAndMove']);
     Route::post('/doTransferMoney', [\App\Http\Controllers\Finance\FinanceController::class, 'doTransferMoney']);
     Route::post('/doSpends', [\App\Http\Controllers\Finance\FinanceController::class, 'doSpends']);
     Route::post('/doSale', [\App\Http\Controllers\Finance\FinanceController::class, 'doSale']);

@@ -237,6 +237,31 @@ class GoodsController extends Controller
 
         ]);
     }
+    public function GrowAndMove(Request $request, LogService $service){
+        DB::beginTransaction();
+
+        try {
+
+            HandleGoods::moveGoods(null, $request->storage_id_from, $request->goods_id, $request->amount,'grow');
+
+            $push = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
+
+
+            $service->newLog('GrowAndMove', 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price, $push['productID']);
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json([
+                'message'=>$e->resMess(),
+                'status'=> 'error'
+            ]);
+        }
+        DB::commit();
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price
+
+        ]);
+    }
 
     public function GrowAndMoveOnMainStorage(Request $request, LogService $service){
 
