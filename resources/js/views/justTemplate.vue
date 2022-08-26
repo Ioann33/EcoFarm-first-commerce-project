@@ -4,7 +4,7 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
-
+            <!-- ERROR -->  <error  :message="message"></error>
         </div>
 
         <nav-bar-menu></nav-bar-menu>
@@ -27,6 +27,7 @@
         },
         data(){
             return {
+                message: '',
 
             }
         },
@@ -36,6 +37,14 @@
         updated() {
         },
         methods: {
+            test(){
+                axios.get('/api/getStorageGoods/allowed/'+this.my_storage_id+'/all').then(res => {
+                    console.log(res.data.data)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+            }
 
         }
     }
