@@ -10,7 +10,7 @@
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Утилизировано</h6>
-                            <h3 class="color-red-dark font-20 mb-0">{{this.sumTrash}} </h3>
+                            <h3 class="color-red-dark font-20 mb-0">{{this.sumTrash.toFixed(2)}} </h3>
                         </div>
                     </div>
 
@@ -18,7 +18,7 @@
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Произведено</h6>
-                            <h3 class="color-red-dark font-20 mb-0">{{ this.sumProduce }}</h3>
+                            <h3 class="color-red-dark font-20 mb-0">{{ this.sumProduce.toFixed(2) }}</h3>
                         </div>
                         </router-link>
                     </div>
@@ -26,28 +26,28 @@
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Прочие затраты</h6>
-                            <h3 class="color-brown-dark font-20 mb-0">{{ this.otherSpending}}</h3>
+                            <h3 class="color-brown-dark font-20 mb-0">{{ this.otherSpending.toFixed(2)}}</h3>
                         </div>
                     </div>
                     <div class="col-6 ps-1">
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Себестоимость</h6>
-                            <h3 class="color-blue-dark font-20 mb-0">{{  this.sumCostPrice }}</h3>
+                            <h3 class="color-blue-dark font-20 mb-0">{{  this.sumCostPrice.toFixed(2) }}</h3>
                         </div>
                         </router-link>
                     </div>
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">ЗП</h6>
-                            <h3 class="color-green-dark font-20 mb-0">{{ this.sumSalary }}</h3>
+                            <h3 class="color-green-dark font-20 mb-0">{{ this.sumSalary.toFixed(2) }}</h3>
                         </div>
                     </div>
                     <div class="col-6 ps-1">
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Изготовление</h6>
-                            <h3 class="color-green-dark font-20 mb-0">{{  this.sumCostProduce }}</h3>
+                            <h3 class="color-green-dark font-20 mb-0">{{  this.sumCostProduce.toFixed(2) }}</h3>
                         </div>
                         </router-link>
                     </div>
@@ -177,12 +177,12 @@
                 listMovements: [],  // весь список отгруженных, утилизированных, затраченых на ГП товаров
                 listTrash: '',  // список утилизированного
 
-                sumProduce: '',  // итого сколько произведено и отгружено
-                sumTrash: '',   // сумма утилизированного
-                sumSalary: '',  // сумма ЗП
-                sumCostProduce: '', // стоимость изготовления продукции (ЗП)
-                sumCostPrice: '',   // сумма ГП по себестоимости
-                otherSpending: ''   // другие затраты
+                sumProduce: 0,  // итого сколько произведено и отгружено
+                sumTrash: 0,   // сумма утилизированного
+                sumSalary: 0,  // сумма ЗП
+                sumCostProduce: 0, // стоимость изготовления продукции (ЗП)
+                sumCostPrice: 0,   // сумма ГП по себестоимости
+                otherSpending: 0   // другие затраты
             }
         },
         computed: {},
