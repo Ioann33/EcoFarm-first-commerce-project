@@ -25,6 +25,9 @@
                     </v-select>
                     <div class="card card-style p-4 pt-3 mt-3" style="margin: 0 0 30px 0;">
                         <p class="text-center" v-if="selected_goods === 'default'">Выберете продукт</p>
+                        <div v-if="loading_goods" class="spinner-border text-light" role="status" style="margin: 0 auto;">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                         <div class="row m-0" v-for="(goods, index) in goods_in_storages" :key="goods.storage_id">
                             <div class="col-8">{{goods.storage_name}}</div>
                             <div class="col-4 align-content-end">{{goods.amount}} <sup class="opacity-50">{{goods.unit}}</sup></div>
@@ -35,8 +38,12 @@
                     <p class="mb-2 text-center">Посмотреть все продукты на выбранном складе</p>
                     <select-input :data="list_storages" :label="'Склады'" :value="selected_storage" :keyOfValue="'id'" @getSelected="selectStorage"></select-input>
                     <div class="card card-style p-4 pt-3 mt-1" style="margin: auto 4px 30px 4px;">
-                        <p class="text-center" v-if="selected_storage === 'default'">Нужно выбрать склад</p>
-                        <ul>
+                        <p class="text-center mb-0" v-if="selected_storage === 'default'">Нужно выбрать склад</p>
+                        <p class="text-center mb-0" v-if="empty_storage">На выбраном складе нет товара</p>
+                        <div v-if="loading_list_goods" class="spinner-border text-light" role="status" style="margin: 0 auto;">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <ul v-if="storage_goods.length !== 0" class="mb-0">
                             <li v-for="(goods, i) in storage_goods" :key="i">{{ goods.name }} - {{ goods.amount }} {{ goods.unit }} </li>
                         </ul>
                     </div>
@@ -84,7 +91,9 @@
                 goods_in_storages: [],
                 list_storages: [],
                 selected_storage: 'default',
-                storage_goods: []
+                storage_goods: [],
+                loading_list_goods: false,
+                empty_storage: false
             }
         },
         computed: {},
@@ -109,8 +118,15 @@
               });
             },
             getStorageGoods(){
+                this.loading_list_goods = true;
+                this.storage_goods = [];
+                this.empty_storage = false;
               axios.get(`/api/getStorageGoods/available/${this.selected_storage}/all`).then(res => {
-                  this.storage_goods = res.data.data;
+                  this.storage_goods = res.data.data.filter(el => Number.parseFloat(el.amount) !== 0 );
+                  if(this.storage_goods.length === 0){
+                      this.empty_storage = true;
+                  }
+                  this.loading_list_goods = false;
               }).catch(e => {
                   console.log(e)
               });
@@ -134,9 +150,10 @@
             changeGoods(value){
                 this.selected_goods = value.id;
                 console.log('selected goods: '+this.selected_goods)
-
+                this.loading_goods = true;
                 axios.get('/api/getStorageGoods/available/all/'+this.selected_goods).then(res => {
                     this.goods_in_storages = res.data.data.filter(el => el.amount >0);
+                    this.loading_goods = false;
                     console.log(this.goods_in_storages)
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
