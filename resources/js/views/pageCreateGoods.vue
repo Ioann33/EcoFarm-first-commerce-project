@@ -11,14 +11,33 @@
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
 
                 <div class="row mb-0">
-                    <div class="col-12">
+                    <div class="col-12 position-relative">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label class="color-blue-dark" for="product_name">Товар или продукт</label>
-                            <input id="product_name" type="text" class="form-control focus-color focus-blue" v-model="name">
-                            <i class="fa fa-times disabled invalid color-red-dark"></i>
-                            <i class="fa fa-check disabled valid color-green-dark"></i>
+                            <input id="product_name" type="text" class="form-control focus-color focus-blue" v-model="name" @blur="searchGoods">
+                            <i class="fa fa-times invalid color-red-dark" :class="existing_goods.length ? '' : 'disabled' "></i>
+                            <i class="fa fa-check valid color-green-dark" :class="!existing_goods.length && name ? '' : 'disabled' "></i>
                             <em></em>
                         </div>
+                        <div class="spinner-border text-light position-absolute" role="status" style="right: 45px; top: 12px;" v-if="searching">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="col-12" v-if="existing_goods.length">
+                        <p class="mb-0">Уже существуют похожие товары:</p>
+                        <ul>
+                            <li v-for="(exist, index) in existing_goods">{{ exist.name }}</li>
+                        </ul>
+                        <p class="mb-0">Продолжить создания продукта?</p>
+                        <div class="col-6 d-flex align-items-center justify-content-between">
+                            Нет
+                            <div class="custom-control android-switch" style="z-index: 10;">
+                                <input type="checkbox" class="android-input" id="toggle-id-4" v-model="ignore" @change="ignoreExistingGoods">
+                                <label class="custom-control-label" for="toggle-id-4"></label>
+                            </div>
+                            Да
+                        </div>
+
                     </div>
                     <div class="col-4">
                         <div class="input-style input-style-always-active has-borders no-icon">
@@ -42,7 +61,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-lg btn-default" @click="createGoods">Добавить в базу</button>
+                <button type="button" :disabled="searching || existing_goods.length" class="btn btn-lg btn-default" @click="createGoods">Добавить в базу</button>
             </div>
 
         </div>
@@ -78,6 +97,9 @@
                         value: 2
                     }
                 ],
+                searching: false,
+                existing_goods: [],
+                ignore: false,
                 name: '',
                 unit: '',
                 type: 1
@@ -109,6 +131,22 @@
                     console.log('товар добавлен в систему')
                     this.$router.push({name: 'home'});
                 });
+            },
+            searchGoods(){
+                if(this.name === '') return;
+                this.searching = true;
+                axios.get(`/api/searchGoods/${this.name}`).then(res => {
+                    this.existing_goods = res.data;
+                    this.searching = false;
+                }).catch(e => {
+                   console.log(e)
+                });
+            },
+            ignoreExistingGoods(){
+                if(this.ignore){
+                    this.existing_goods = []
+                    this.ignore = false;
+                }
             }
         }
     }
