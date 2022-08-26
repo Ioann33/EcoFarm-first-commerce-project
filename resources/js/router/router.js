@@ -161,6 +161,11 @@ const router = createRouter({
             path: '/editGoods',
             name: 'editGoods',
             component: () => import('../views/pageEditGoods')
+        },
+        {
+            path: '/listMovements',
+            name: 'listMovements',
+            component: () => import('../views/pageListMovements')
         }
     ]
 })
