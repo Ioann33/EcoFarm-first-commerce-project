@@ -24,7 +24,8 @@
                           :placeholder="'выбрать продукт'"
                           :map-keydown="handlers"
                           @option:selected="changeGoods"
-                          @search="searchGoods">
+                          @search="searchGoods"
+                >
                 </v-select>
                 <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">
                     <span class="sr-only">Loading...</span>
