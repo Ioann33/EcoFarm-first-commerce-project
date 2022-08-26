@@ -32,6 +32,7 @@
                                    :id="'price'+index"
                                    v-model="item.price"
                                    :disabled="item.totalMode"
+                                   @input="calculateTotal(index)"
                                    @focus="$event.target.select()"
                             >
                             <label :for="'price'+index" class="color-blue-dark">цена за ед.</label>
@@ -77,7 +78,7 @@
             <div class="row mb-0 d-flex justify-content-center align-items-center pt-3">
                 <div class="col-3 text-uppercase">Итого</div>
                 <div class="col-4 p-1">
-                    <div class="input-style input-style-always-active has-borders no-icon">
+                    <div class="input-style input-style-always-active has-borders no-iceron">
                         <input type="number" :disabled="true" class="form-control focus-color focus-blue validate-name "
                                id="total"
                                v-model="total"
@@ -203,14 +204,14 @@
             },
             calculateTotal(index){
                 if(this.buy_goods[index].totalMode){
-                    this.buy_goods[index].price = (this.buy_goods[index].total / this.buy_goods[index].amount).toFixed(2);;
+                    this.buy_goods[index].price = (this.buy_goods[index].total / this.buy_goods[index].amount).toFixed(2)
                 } else {
-                    this.buy_goods[index].total = (this.buy_goods[index].price * this.buy_goods[index].amount).toFixed(2);
+                    this.buy_goods[index].total = (this.buy_goods[index].price * this.buy_goods[index].amount).toFixed(2)
                 }
             },
             inputTotal(index){
               if(this.buy_goods[index].totalMode && this.buy_goods[index].amount != 0){
-                  this.buy_goods[index].price = (this.buy_goods[index].total / this.buy_goods[index].amount).toFixed(2);;
+                  this.buy_goods[index].price = (this.buy_goods[index].total / this.buy_goods[index].amount).toFixed(2)
               }
             },
             async buyProducts(){
