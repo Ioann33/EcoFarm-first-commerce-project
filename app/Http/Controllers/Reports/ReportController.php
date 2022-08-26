@@ -28,10 +28,12 @@ class ReportController extends Controller
 
     public function getListGoodsMovements(Request $request){
 
-        $listGoodsMovement = $this->movementsModel
-            ->where('storage_id_from', '=', $request->storage_id)
-            ->where('date_accepted','>=', $request->date_from)
-            ->where('date_accepted','<=', $request->date_to);
+        $listGoodsMovement = Movements::where('date_accepted','>=', $request->date_from)
+            ->where('date_accepted','<=', $request->date_to)
+            ->where(function($query) use ($request) {
+                $query->where('storage_id_to', '=', $request->storage_id)
+                    ->orWhere('storage_id_from', '=', $request->storage_id);
+            })->orderBy('date_created', 'desc')->get();
         return ListGoodsMovementResource::collection($listGoodsMovement);
 
     }
