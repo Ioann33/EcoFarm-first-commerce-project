@@ -9,17 +9,19 @@
                 <div class=" mb-0">
                     <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
                         <thead>
-                            <tr class="bg-grass-light">
-                                <th></th>
-                                <th></th>
-                                <th scope="col" class="color-black opacity-50" colspan="3">Инфо</th>
-                            </tr>
+<!--                            <tr class="bg-grass-light">-->
+<!--                                <th></th>-->
+<!--                                <th></th>-->
+<!--                                <th scope="col" class="color-black opacity-50" colspan="3">Инфо</th>-->
+<!--                            </tr>-->
                             <tr class="bg-grass-light">
                                 <th scope="col" class="color-black opacity-50">Готовая прод.</th>
-                                <th scope="col" class="color-black opacity-50">К</th>
-                                <th scope="col" class="color-black opacity-50">И</th>
+                                <th scope="col" class="color-black opacity-50">
+                                    <span class="fa-fw select-all fas"></span>
+                                </th>
+                                <th scope="col" class="color-black opacity-50"> <i class="fa fa-dollar-sign rounded-s"></i> <span class="fa-fw select-all fas"></span></th>
                                 <th scope="col" class="color-black opacity-50">СС</th>
-                                <th scope="col" class="color-black opacity-50">S</th>
+                                <th scope="col" class="color-black opacity-50 font-27">Σ</th>
                             </tr>
                         </thead>
                         <tbody>
