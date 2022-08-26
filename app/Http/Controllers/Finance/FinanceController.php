@@ -364,7 +364,7 @@ class FinanceController extends Controller
                 $move_id = HandleGoods::moveGoods(null, $buy['storage_id'], $buy['goods_id'], $buy['amount'],'buy', null,null, $user_id, $dateNow, $buy['price']);
 
                 $trance_id = MoneyTransfer::moneyTransfer(-$costProduct, $dateNow, $buy['storage_id'], 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], 800, $move_id['productID'],$user_id);
-                $service->newLog('doBuy', 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], $trance_id);
+                $service->newLog('doBuy', 'покупка товара '.$buy['goods_id'].', в количестве '.$buy['amount'].', по цене '. $buy['price'], $trance_id);
 
             }
         }catch (NotEnoughGoods $e){
