@@ -6,28 +6,49 @@
         <div class="page-content header-clear-medium m-3">
             <!-- ERROR -->  <error  :message="message"></error>
 
-            <span>Посмотреть остатки продукта на всех складах</span>
-            <v-select :options="available_goods"
-                      :value="'id'"
-                      :label="'name'"
-                      :placeholder="'выбрать продукт'"
-                      :map-keydown="handlers"
-                      @option:selected="changeGoods"
-                      @search="searchGoods"
-            >
-            </v-select>
+            <div class="content" id="tab-group-3">
+                <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-green-dark">
+                    <a href="#" class="no-effect bg-green-dark no-click" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-8" aria-expanded="true">Товар</a>
+                    <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false">Склад</a>
+                </div>
+                <div class="clearfix mb-3"></div>
+                <div data-bs-parent="#tab-group-3" class="collapse show" id="tab-8" style="">
+                    <span>Посмотреть остатки продукта на всех складах</span>
+                    <v-select :options="available_goods"
+                              :value="'id'"
+                              :label="'name'"
+                              :placeholder="'выбрать продукт'"
+                              :map-keydown="handlers"
+                              @option:selected="changeGoods"
+                              @search="searchGoods"
+                    >
+                    </v-select>
+                    <div class="card card-style p-4 pt-3 mt-3" style="margin: 0 0 30px 0;">
+                        <p class="text-center" v-if="selected_goods === 'default'">Выберете продукт</p>
+                        <div class="row m-0" v-for="(goods, index) in goods_in_storages" :key="goods.storage_id">
+                            <div class="col-8">{{goods.storage_name}}</div>
+                            <div class="col-4 align-content-end">{{goods.amount}} <sup class="opacity-50">{{goods.unit}}</sup></div>
+                        </div>
+                    </div>
+                </div>
+                <div data-bs-parent="#tab-group-3" class="collapse" id="tab-9" style="">
+                    <p class="mb-2 text-center">Посмотреть все продукты на выбранном складе</p>
+                    <select-input :data="list_storages" :label="'Склады'" :value="selected_storage" :keyOfValue="'id'" @getSelected="selectStorage"></select-input>
+                    <div class="card card-style p-4 pt-3 mt-1" style="margin: auto 4px 30px 4px;">
+                        <p class="text-center" v-if="selected_storage === 'default'">Нужно выбрать склад</p>
+                        <ul>
+                            <li v-for="(goods, i) in storage_goods" :key="i">{{ goods.name }} - {{ goods.amount }} {{ goods.unit }} </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
 <!--            <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">-->
 <!--                <span class="sr-only">Loading...</span>-->
 <!--            </div>-->
 <!--            <div class="row " v-for="(goods, index) in goods_in_storages" :key="goods.storage_id">-->
-                <div class="card card-style p-4 pt-3 mt-3">
-                    <div class="row m-0" v-for="(goods, index) in goods_in_storages" :key="goods.storage_id">
-                        <div class="col-8">{{goods.storage_name}}</div>
-                        <div class="col-4 align-content-end">{{goods.amount}} <sup class="opacity-50">{{goods.unit}}</sup></div>
 
-
-                    </div>
-            </div>
 
         </div>
 
@@ -60,7 +81,10 @@
                 available_goods: [],
                 selected_goods: 'default',
                 loading_goods: false,
-                goods_in_storages: []
+                goods_in_storages: [],
+                list_storages: [],
+                selected_storage: 'default',
+                storage_goods: []
             }
         },
         computed: {},
@@ -71,10 +95,31 @@
 
         mounted() {
             //this.getStorageGoods()
+            this.getListStorages();
         },
         updated() {
         },
         methods: {
+            getListStorages(){
+              axios.get('/api/getListStorages/').then(res => {
+                  this.list_storages = res.data.data;
+                  console.log(res.data)
+              }).catch(e => {
+                  console.log(e)
+              });
+            },
+            getStorageGoods(){
+              axios.get(`/api/getStorageGoods/available/${this.selected_storage}/all`).then(res => {
+                  this.storage_goods = res.data.data;
+              }).catch(e => {
+                  console.log(e)
+              });
+            },
+            selectStorage(value){
+                this.selected_storage = value;
+                if(value === 'default') return;
+                this.getStorageGoods();
+            },
             // async getStorageGoods(){
             //     this.loading_goods = true;
             //     const res = await axios.get(`/api/getListGoods`);
