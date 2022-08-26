@@ -17,7 +17,7 @@
                             <tr class="bg-grass-light">
                                 <th scope="col" class="color-black opacity-50">Готовая прод.</th>
                                 <th scope="col" class="color-black opacity-50">
-                                    <span class="fa-fw select-all fas"></span>
+                                    <span class="fas fa-boxes-alt font-20"></span>
                                 </th>
                                 <th scope="col" class="color-black opacity-50"> <i class="fa fa-dollar-sign rounded-s"></i> <span class="fa-fw select-all fas"></span></th>
                                 <th scope="col" class="color-black opacity-50">СС</th>

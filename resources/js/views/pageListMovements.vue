@@ -32,6 +32,11 @@
             }
         },
         computed: {},
+        beforeMount() {
+            this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.my_storage_name = localStorage.getItem('my_storage_name')
+            //this.storage_name = localStorage.getItem('my_storage_name');
+        },
         mounted() {
             this.my_storage = localStorage.getItem('my_storage_id');
         },
