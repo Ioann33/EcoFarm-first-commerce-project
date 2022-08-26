@@ -1,0 +1,78 @@
+<template>
+    <div id="page">
+        <head-bar></head-bar>
+        <nav-bar></nav-bar>
+
+        <div class="page-content header-clear-medium">
+            <div class="card card-style p-4 pt-3 mt-3">
+
+                <div class="row" v-for="(item, index) in movements" :key="index">
+                    <div class="col-9">
+                        <div class="row mb-0">
+                            <div class="col-12 pt-2 pb-2" style="border-bottom: solid 1px #f2f2f7;">
+                                <span style="color: rgba(0,0,0,.2);">От </span>
+                                {{ item.storage_name_from }}, {{ item.user_name_created }}
+                            </div>
+                            <div class="col-12 pt-2 pb-2" style="border-bottom: solid 1px #f2f2f7;">{{ item.goods_name }} {{ item.amount }} {{ item.goods_unit }}</div>
+                            <div class="col-12 pt-2 pb-2">
+                                <span style="color: rgba(0,0,0,.2);">для </span>
+                                {{ item.storage_name_to }}, {{ item.user_name_accepted }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3 d-flex align-items-center justify-content-center">
+                        <div class="icon icon-m rounded-md shadow-l me-1 bg-twitter"><i class="fa-solid fa-dolly"></i></div>
+                    </div>
+                    <div style="width: 100%; height: 2px; background-image: linear-gradient(to right, #A0D468, #8CC152)"></div>
+                    <div style="text-align: right;">{{ item.date_accepted }}</div>
+                </div>
+
+            </div>
+        </div>
+
+        <nav-bar-menu></nav-bar-menu>
+    </div>
+</template>
+
+<script>
+    import headBar from "../Components/HeadBar";
+    import NavBar from "../Components/NavBar";
+    import NavBarMenu from "../Components/NavBarMenu";
+    import error from "../Components/Error";
+    import TitlePage from "../Components/Title";
+
+    export default {
+        name: "pagePreSale",
+        components: {
+            error,
+            TitlePage,
+            headBar, NavBar, NavBarMenu,
+        },
+        data(){
+            return {
+                movements: []
+            }
+        },
+        computed: {},
+        mounted() {
+            this.getListGoodsMovements();
+        },
+        updated() {
+
+        },
+        methods: {
+            getListGoodsMovements(){
+                axios.get(`/api/getListGoodsMovements/1/2022-08-01/2022-09-01`).then(res => {
+                    this.movements = res.data.data;
+                    console.log(res.data)
+                }).catch(e => {
+                    console.log(e)
+                });
+            }
+        }
+    }
+</script>
+
+<style scoped>
+
+</style>
