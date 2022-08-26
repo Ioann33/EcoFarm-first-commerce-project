@@ -43,9 +43,12 @@
                         <div v-if="loading_list_goods" class="spinner-border text-light" role="status" style="margin: 0 auto;">
                             <span class="sr-only">Loading...</span>
                         </div>
-                        <ul v-if="storage_goods.length !== 0" class="mb-0">
-                            <li v-for="(goods, i) in storage_goods" :key="i">{{ goods.name }} - {{ goods.amount }} {{ goods.unit }} </li>
-                        </ul>
+
+
+                        <div class="row m-0" v-for="(goods, index) in storage_goods" :key="goods.storage_id">
+                            <div class="col-8">{{goods.name}}</div>
+                            <div class="col-4 align-content-end">{{goods.amount}} <sup class="opacity-50">{{goods.unit}}</sup></div>
+                        </div>
                     </div>
                 </div>
             </div>

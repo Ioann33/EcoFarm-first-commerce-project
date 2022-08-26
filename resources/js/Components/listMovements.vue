@@ -21,11 +21,14 @@
             <div class="col-3 d-flex align-items-center justify-content-center">
                 <div class="icon icon-m rounded-s shadow-l me-1 bg-twitter">
 <!--                    <i class="fa-solid fa-dolly font-20" v-if="item.category==='move'"></i>-->
-                    <i class="fa-solid fa-right-from-bracket font-20" v-if="item.category==='move' && item.storage_from === this.my_storage_id"></i>
-                    <i class="fa-solid fa-right-to-bracket font-20" v-if="item.category==='move' && item.storage_to === this.my_storage_id"></i>
-                    <i class="fas fa-box-archive font-20 bg-green-dark rounded-s " v-if="item.category==='ready'"></i>
+
+                    <i class="fa-solid fa-right-from-bracket font-25 bg-orange-dark rounded-s" v-if="item.category==='move' && item.storage_id_from == my_storage_id"></i>
+                    <i class="fa-solid fa-right-to-bracket font-25" v-if="item.category==='move' && item.storage_id_to == my_storage_id"></i>
+                    <i class="fas fa-check-to-slot font-25 bg-green-dark rounded-s " v-if="item.category==='ready'"></i>
                     <i class="fa-solid fa-recycle" v-if="item.category==='correct'"></i>
-                    <i class="fas fa-boxes-alt font-20 bg-gray-dark rounded-s" v-if="item.category==='ingredients'"></i>
+                    <i class="fa-solid fa-seedling font-25 bg-green-dark rounded-s" v-if="item.category==='grow'"></i>
+                    <i class="fa-solid fa-dollar font-25 bg-green-dark rounded-s" v-if="item.category==='buy'"></i>
+                    <i class="fas fa-boxes-alt font-25 bg-gray-dark rounded-s" v-if="item.category==='ingredients'"></i>
 
 
 
@@ -51,7 +54,9 @@
         },
         data() {
             return {
-                movements: []
+                movements: [],
+                my_storage_id : '',
+
             }
         },
         beforeMount() {
