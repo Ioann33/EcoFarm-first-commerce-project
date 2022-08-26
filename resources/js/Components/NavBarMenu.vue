@@ -18,35 +18,36 @@
             </div>
             <div class="list-group list-custom-small" v-if="isMain">
                 <router-link :to="{name: 'PermitGoods'}">
-                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <i class="fa bg-blue-dark rounded-s"><span class="fa-fw select-all fas"></span></i>
                     <span>Разрешить товар</span>
                     <i class="fa fa-angle-right"></i>
                 </router-link>
             </div>
             <div class="list-group list-custom-small" v-if="isMain">
                 <router-link :to="{name: 'CreateGoods'}">
-                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <i class="fa bg-blue-dark rounded-s"><span class="fa-fw select-all fas"></span></i>
                     <span>Создать товар</span>
                     <i class="fa fa-angle-right"></i>
                 </router-link>
             </div>
             <div class="list-group list-custom-small" v-if="isMain">
                 <router-link :to="{name: 'permitUsers'}">
-                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <i class="fa bg-blue-dark  rounded-s"><span class="fa-fw select-all fas"></span></i>
                     <span>Привилегии пользователей</span>
                     <i class="fa fa-angle-right"></i>
                 </router-link>
             </div>
             <div class="list-group list-custom-small" v-if="isMain">
                 <router-link :to="{name: 'addUser'}">
-                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <i class="fa bg-blue-dark rounded-s"><span class="fa-fw select-all fas"></span></i>
+
                     <span>Добавить пользователя</span>
                     <i class="fa fa-angle-right"></i>
                 </router-link>
             </div>
             <div class="list-group list-custom-small" v-if="isMain">
                 <router-link :to="{name: 'addStorage'}">
-                    <i class="fa bg-blue-dark fa-dollar-sign rounded-s"></i>
+                    <i class="fa bg-blue-dark rounded-s"></i>
                     <span>Добавить склад</span>
                     <i class="fa fa-angle-right"></i>
                 </router-link>

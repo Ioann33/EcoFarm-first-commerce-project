@@ -39,15 +39,17 @@ class StorageGoodsResource extends JsonResource
 
 
         return [
-          'goods_id' => $this->goods_id,
-          'name' => $this->goods->name,
-          'unit' => $this->goods->unit,
-          'type' => $this->goods->type,
-          'amount' => $stockBalance
+            'storage_name' => $this->storage->name,
+            'storage_id'=> $this->storage_id,
+            'goods_id' => $this->goods_id,
+            'name' => $this->goods->name,
+            'unit' => $this->goods->unit,
+            'type' => $this->goods->type,
+            'amount' => $stockBalance
               ->where('storage_id', '=', $this->storage_id)
               ->where('goods_id','=', $this->goods_id)
               ->sum('amount'),
-          'price' => $averagePrice,
+            'price' => $averagePrice,
             'goods' => $stockBalance
                 ->where('storage_id', '=', $this->storage_id)
                 ->where('goods_id','=', $this->goods_id),

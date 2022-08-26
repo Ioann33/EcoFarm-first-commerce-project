@@ -133,11 +133,53 @@ class GoodsController extends Controller
      */
     public function getStorageGoods(Request $request){
 
-        if ($request->storage_id === 'all'){
+        if ($request->storage_id === 'all') {
+            if($request->goods_id === 'all') {
+                return response()->json([
+                    'message'=>'нужно выбрать продукт. all - еще не реализовано',
+                    'status'=> 'error'
+                ]);
+            }
 
-            //return dd($request->input());
-            return $storages = StorageGoods::where('goods_id', $request->goods_id);
-            //return getAllowedStoragesResource::collection($storages);
+// вывод количества выбранного продукта на складах
+//            return dd($request->input());
+              $goods = StorageGoods::where('goods_id', $request->goods_id)->get();
+/*
+    [
+        {
+            "storage_id": 1,
+            "goods_id": 1,
+        },
+        {
+            "storage_id": 2,
+            "goods_id": 1,
+        },
+   */
+            return StorageGoodsResource::collection($goods);
+/*
+    {
+    "data": [
+        {
+            "storage_name": "Главный склад",
+            "storage_id": 1,
+            "goods_id": 1,
+            "name": "помидор",
+            "unit": "кг",
+            "type": 1,
+            "amount": 83,
+            "price": "25.00",
+            "goods": {
+                "32": {
+                    "id": 520,
+                    "goods_id": 1,
+                    "price": "25",
+                    "amount": "83",
+                    "date_accepted": "2022-08-26 15:58:09",
+                    "storage_id": 1
+                }
+            }
+        },
+*/
         }
 
         if ($request->goods_id === 'all'){
@@ -192,6 +234,31 @@ class GoodsController extends Controller
         return response()->json([
             'status'=>'ok',
             'message' => 'push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount.' price: '.$price->price
+
+        ]);
+    }
+    public function GrowAndMove(Request $request, LogService $service){
+        DB::beginTransaction();
+
+        try {
+
+            HandleGoods::moveGoods(null, $request->storage_id_from, $request->goods_id, $request->amount,'grow');
+
+            $push = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
+
+
+            $service->newLog('GrowAndMove', 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price, $push['productID']);
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json([
+                'message'=>$e->resMess(),
+                'status'=> 'error'
+            ]);
+        }
+        DB::commit();
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price
 
         ]);
     }
@@ -415,7 +482,7 @@ class GoodsController extends Controller
 
     public function searchGoods(Request $request){
 //        $goods = Goods::where('name', 'like', "$request->name%")->get();
-        $goods = Goods::whereRaw('LOWER(name) like \''.$request->name.'%\'')->get();
+        $goods = Goods::whereRaw('LOWER(name) like \'%'.$request->name.'%\'')->get();
         return response()->json($goods);
     }
 

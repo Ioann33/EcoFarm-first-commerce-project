@@ -264,6 +264,13 @@
                         <i class="fa fa-angle-right"></i>
                     </router-link>
 
+                    <router-link :to="{name: 'listMovements'}">
+                        <i class="fa fa-inbox  bg-green-dark rounded-s"></i>
+                        <span>List Movements</span>
+                        <strong>List Movements</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </router-link>
+
                 </div>
             </div>
         </div>

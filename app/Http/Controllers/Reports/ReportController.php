@@ -33,7 +33,7 @@ class ReportController extends Controller
             ->where(function($query) use ($request) {
                 $query->where('storage_id_to', '=', $request->storage_id)
                     ->orWhere('storage_id_from', '=', $request->storage_id);
-            })->orderBy('date_created', 'desc')->get();
+            })->orderBy('date_accepted', 'desc')->limit(30)->get();
         return ListGoodsMovementResource::collection($listGoodsMovement);
 
     }
@@ -146,7 +146,7 @@ class ReportController extends Controller
                     $updateStock->price = $price;
                     $updateStock->amount = $amount;
                     if ($updateStock->save()) {
-                        if ($amount == $updateStock->amount){
+                        if ($amount == $updateStock->amount && $amount == 0 && $updateStock->amount == 0){
                             $updateStock->delete();
                         }
                         $compare = 'fixed';
