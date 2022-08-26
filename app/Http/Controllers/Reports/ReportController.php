@@ -150,7 +150,7 @@ class ReportController extends Controller
                             $updateStock->delete();
                         }
                         $compare = 'fixed';
-                        $service->newLog('fixStockBalance', 'with amount: '.$stock_balance[0]['amount'].' fixed to '.$amount.', with price '.$stock_balance[0]['price'].' fixed to '.$price.' on storage '.$request->sorage_id.' , goods_id '.$request->goods_id, null);
+                        $service->newLog('fixStockBalance', 'with amount: '.$stock_balance[0]['amount'].' fixed to '.$amount.', with price '.$stock_balance[0]['price'].' fixed to '.$price.' on storage '.$request->storage_id.' , goods_id '.$request->goods_id, null);
                     }
                 }
 
