@@ -75,17 +75,17 @@
         updated() {
         },
         methods: {
-            async getStorageGoods(){
-                this.loading_goods = true;
-                const res = await axios.get(`/api/getListGoods`);
-                this.loading_goods = false;
-                if(!res.data){
-                    console.error('Error get search')
-                    return ;
-                }
-                this.available_goods = res.data.data;
-                console.log(res.data)
-            },
+            // async getStorageGoods(){
+            //     this.loading_goods = true;
+            //     const res = await axios.get(`/api/getListGoods`);
+            //     this.loading_goods = false;
+            //     if(!res.data){
+            //         console.error('Error get search')
+            //         return ;
+            //     }
+            //     this.available_goods = res.data.data;
+            //     console.log(res.data)
+            // },
             changeGoods(value){
                 this.selected_goods = value.id;
                 console.log('selected goods: '+this.selected_goods)

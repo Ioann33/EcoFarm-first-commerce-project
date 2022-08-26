@@ -38,6 +38,7 @@
                             <input type="number" class="form-control focus-color focus-blue validate-name "
                                    id="amount"
                                    v-model="amount"
+                                   @focus="$event.target.select()"
                             >
                             <label for="amount" class="color-blue-dark">Кол-во</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>

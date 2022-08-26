@@ -1,7 +1,7 @@
 <template>
     <div class="card card-style p-4 pt-0 mt-0" v-for="(item, index) in movements" :key="index">
 
-        <div class="row" >
+        <div class="row m-0" >
             <div class="col-9">
                 <div class="row mb-0">
                     <div class="col-12 pt-2 pb-2" style="border-bottom: solid 1px #f2f2f7;">
@@ -20,9 +20,11 @@
             </div>
             <div class="col-3 d-flex align-items-center justify-content-center">
                 <div class="icon icon-m rounded-md shadow-l me-1 bg-twitter"><i class="fa-solid fa-dolly"></i></div>
+
             </div>
             <div style="width: 100%; height: 2px; background-image: linear-gradient(to right, #A0D468, #8CC152)"></div>
             <div style="text-align: right;">{{ item.date_accepted }}</div>
+            {{ item.category}}
         </div>
 
     </div>
@@ -47,7 +49,7 @@
         methods: {
             getListGoodsMovements(){
                 axios.get(`/api/getListGoodsMovements/${this.storage_id}/2022-08-01/2022-09-01`).then(res => {
-                    this.movements = res.data.data;
+                    this.movements = res.data.data.splice(0,30);
                     console.log(res.data)
                 }).catch(e => {
                     console.log(e)
