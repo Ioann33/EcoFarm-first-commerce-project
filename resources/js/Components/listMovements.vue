@@ -1,5 +1,5 @@
 <template>
-    <div class="card card-style p-4 pt-0 mt-0" v-for="(item, index) in movements" :key="index">
+    <div class="card card-style p-0 pt-0 mt-0" v-for="(item, index) in movements" :key="index">
 
         <div class="row m-0" >
             <div class="col-9">
@@ -11,9 +11,12 @@
                         <!--                                <span class="opacity-20">для </span>-->
                         <!--                                {{ item.storage_name_to }} <span class="opacity-20">{{ item.user_name_accepted }}</span>-->
                     </div>
-                    <div class="col-12 pt-2 pb-2" style="border-bottom: solid 1px #f2f2f7;"><b>{{ item.goods_name }}</b> {{ item.amount }} <sup class="opacity-50">{{ item.goods_unit }}</sup></div>
+                    <div class="col-12 pt-2 pb-2" style="border-bottom: solid 1px #f2f2f7;">
+                        <b class="p-3">{{ item.goods_name }}</b> {{ item.amount }} <sup class="opacity-50">{{ item.goods_unit }}</sup>
+                        <span v-if="item.price" class="p-3">{{item.price}} <sup class="opacity-50">₴</sup></span>
+                    </div>
                     <div class="col-12 pt-2 pb-2" v-if="item.storage_name_to">
-                        ➠ <span class="opacity-20">для </span>
+                        ➠
                         {{ item.storage_name_to }} <span class="opacity-30">{{ item.user_name_accepted }}</span>
                     </div>
                 </div>
@@ -37,7 +40,7 @@
             </div>
             <div style="width: 100%; height: 1px; background-image: linear-gradient(to right, #A0D468, #8CC152)"></div>
             <div style="text-align: right;">{{ item.date_accepted }}</div>
-            <span class="opacity-40"> {{ item.category}} </span>
+<!--            <span class="opacity-40"> {{ item.category}} </span>-->
         </div>
 
     </div>
