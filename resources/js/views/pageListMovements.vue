@@ -4,19 +4,22 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
-            <div class="card card-style p-4 pt-3 mt-3">
+            <div class="card card-style p-4 pt-0 mt-0" v-for="(item, index) in movements" :key="index">
 
-                <div class="row" v-for="(item, index) in movements" :key="index">
+                <div class="row" >
                     <div class="col-9">
                         <div class="row mb-0">
                             <div class="col-12 pt-2 pb-2" style="border-bottom: solid 1px #f2f2f7;">
-                                <span style="color: rgba(0,0,0,.2);">От </span>
-                                {{ item.storage_name_from }}, {{ item.user_name_created }}
+                                <span class="opacity-20">От </span>
+                                {{ item.storage_name_from }} <span class="opacity-30"> {{ item.user_name_created }}</span>
+
+<!--                                <span class="opacity-20">для </span>-->
+<!--                                {{ item.storage_name_to }} <span class="opacity-20">{{ item.user_name_accepted }}</span>-->
                             </div>
                             <div class="col-12 pt-2 pb-2" style="border-bottom: solid 1px #f2f2f7;">{{ item.goods_name }} {{ item.amount }} {{ item.goods_unit }}</div>
                             <div class="col-12 pt-2 pb-2">
-                                <span style="color: rgba(0,0,0,.2);">для </span>
-                                {{ item.storage_name_to }}, {{ item.user_name_accepted }}
+                                ➠ <span class="opacity-20">для </span>
+                                {{ item.storage_name_to }} <span class="opacity-30">{{ item.user_name_accepted }}</span>
                             </div>
                         </div>
                     </div>
@@ -62,8 +65,8 @@
         },
         methods: {
             getListGoodsMovements(){
-                axios.get(`/api/getListGoodsMovements/1/2022-08-01/2022-09-01`).then(res => {
-                    this.movements = res.data.data;
+                axios.get(`/api/getListGoodsMovements/3/2022-08-01/2022-09-01`).then(res => {
+                    this.movements = res.data.data.slice(0,3);
                     console.log(res.data)
                 }).catch(e => {
                     console.log(e)

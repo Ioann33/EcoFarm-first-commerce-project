@@ -33,7 +33,7 @@
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Себестоимость</h6>
-                            <h3 class="color-blue-dark font-20 mb-0">{{  this.sumCostPrice.toFixed(2) }}</h3>
+                            <h3 class="color-blue-dark font-20 mb-0">{{  this.sumCostPrice }}</h3>
                         </div>
                         </router-link>
                     </div>
@@ -47,7 +47,7 @@
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Изготовление</h6>
-                            <h3 class="color-green-dark font-20 mb-0">{{  this.sumCostProduce.toFixed(2) }}</h3>
+                            <h3 class="color-green-dark font-20 mb-0">{{  this.sumCostProduce }}</h3>
                         </div>
                         </router-link>
                     </div>
