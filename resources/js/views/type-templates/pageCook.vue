@@ -246,7 +246,7 @@
                 })
 
             // api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
-            this.otherSpending = ''
+            this.otherSpending = 0
             // await axios.get('api/getSumMoneyMovementGoods/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
             //     .then(res => {
             //         this.sumProduce = res.data.sum
