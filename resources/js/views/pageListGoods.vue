@@ -12,7 +12,7 @@
                     Товары на складе
                 </h4>
                 <p class="color-white">
-                   <i class="fa-fw select-all fas "></i> {{ storage_name }}
+                   <i class="fa-fw select-all fas "></i> {{ my_storage_name }}
                 </p>
             </div>
 
@@ -173,8 +173,8 @@ export default {
             listGoods: [],
             type: null,         // { available | allowed }
             message: null,      // for error reporting
-            storage_id: null,
-            storage_name: null, // имя текущего склада
+            my_storage_id: null,
+            my_storage_name: null, // имя текущего склада
         }
     },
     computed: {
@@ -203,14 +203,17 @@ export default {
     updated() {
         update_template()
     },
+    beforeMount() {
+        this.my_storage_id = localStorage.getItem('my_storage_id')
+        this.my_storage_name = localStorage.getItem('my_storage_name')
+    },
     mounted() {
 
         this.type = this.$route.params.type
-        this.storage_id = localStorage.getItem('my_storage_id')
-        this.storage_name = localStorage.getItem('my_storage_name')
 
         // Получить список продукции на складе
-        axios.get('/api/getStorageGoods/'+ this.type + '/' + this.storage_id+'/all').then(res => {
+        // api/getStorageGoods/ {available | allowed} / {storage_id | all} / {goods_id | all}
+        axios.get('/api/getStorageGoods/'+ this.type + '/' + this.my_storage_id+'/all').then(res => {
             this.listGoods = res.data.data.filter(el => el.amount >0)
             console.log('listGoods:')
             console.log(this.listGoods)
