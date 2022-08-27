@@ -3,13 +3,14 @@
         <head-bar></head-bar>
         <nav-bar></nav-bar>
 
-        <div class="page-content header-clear-medium m-3">
+        <div class="page-content header-clear-medium m-0">
             <!-- ERROR -->  <error  :message="message"></error>
 
             <div class="content" id="tab-group-3">
                 <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-green-dark">
                     <a href="#" class="no-effect bg-green-dark no-click" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-8" aria-expanded="true">Товар</a>
                     <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false">Склад</a>
+                    <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-10" aria-expanded="false">движение</a>
                 </div>
                 <div class="clearfix mb-3"></div>
                 <div data-bs-parent="#tab-group-3" class="collapse show" id="tab-8" style="">
@@ -51,6 +52,7 @@
                         </div>
                     </div>
                 </div>
+                <div data-bs-parent="#tab-group-3" class="collapse" id="tab-10" style="">dfgdf</div>
             </div>
 
 
