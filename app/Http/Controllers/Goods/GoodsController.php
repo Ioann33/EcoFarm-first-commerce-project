@@ -6,6 +6,7 @@ use App\Exceptions\NotEnoughGoods;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Storage\StorageController;
 use App\Http\Resources\CostGoodsOnStockResource;
+use App\Http\Resources\getIngredientsReasource;
 use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\GetMovementInfoResource;
 use App\Http\Resources\getMovementResource;
@@ -465,5 +466,11 @@ class GoodsController extends Controller
 
             return response()->json(['status'=> 'ok', 'message'=>'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', added amount: '.$actualAmount. ' with price: '.$request->price]);
         }
+    }
+
+
+    public function getIngredients(Request $request){
+        $ready = Movements::findOrFail($request->goods_id);
+        return getIngredientsReasource::make($ready);
     }
 }
