@@ -18,6 +18,7 @@ class getIngredientsReasource extends JsonResource
 
 
         return [
+            "status"=>"ok",
             "id" => $this->id,
             "user_id_created" => $this->user_id_created,
             "date_created" => $this->date_created,
@@ -31,7 +32,7 @@ class getIngredientsReasource extends JsonResource
             "date_accepted" => $this->date_accepted,
             "link_id" => $this->link_id,
             "category" => $this->category,
-            'ingredients' => Movements::where('link_id', '=', $request->goods_id)->get()
+            "ingredients" => Movements::where('link_id', '=', $request->goods_id)->get()
         ];
     }
 }

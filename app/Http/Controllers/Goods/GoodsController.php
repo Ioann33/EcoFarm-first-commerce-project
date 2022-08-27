@@ -471,8 +471,15 @@ class GoodsController extends Controller
 
 
     public function getIngredients(Request $request){
-        $ready = Movements::findOrFail($request->goods_id);
-        return getIngredientsReasource::make($ready);
+
+
+        $ready = Movements::find((int)$request->goods_id);
+        if ($ready){
+            return getIngredientsReasource::make($ready);
+        }else{
+            return response()->json(['status'=>'error', 'message' => 'такого товара нет']);
+        }
+
     }
 
     public function getListGoodsMovementsOnStorages(Request $request){
