@@ -125,7 +125,8 @@ class GoodsController extends Controller
     }
 
     /**
-     * api/getStorageGoods/{key}/{storage_id}/{goods_id?}
+     * getStorageGoods/ {available | allowed} / {storage_id | all} / {goods_id | all}
+     * getStorageGoods/{key}/{storage_id}/{goods_id?}
      *
      *
      * @param Request $request
