@@ -22,6 +22,12 @@ class getMovementResource extends JsonResource
             $storageName = $this->storageTo;
         }
 
+        if ($this->user_id_accepted != null){
+            $userAcceptedName = $this->userAccepted->name;
+        }else{
+            $userAcceptedName = null;
+        }
+
         return [
             'id'=>$this->id,
             'user_id_created' => $this->user_id_created,
@@ -35,7 +41,7 @@ class getMovementResource extends JsonResource
             'unit' => $this->goods->unit,
             'amount' => $this->amount,
             'user_id_accepted' => $this->user_id_accepted,
-            //'user_name_accepted' => $this->userAccepted->name,
+            'user_name_accepted' => $userAcceptedName,
             'price' => $this->price,
             'order_main'=>$this->order_main,
             'date_accepted' => $this->date_accepted,
