@@ -506,4 +506,9 @@ class GoodsController extends Controller
 
         return response()->json(['status' => 'ok', 'message' => 'recipe create successful']);
     }
+
+    public function getRecipe(Request $request){
+        $recipe = Recipe::where('readygoods_id', '=', $request->goods_id)->get();
+        return response()->json(['data'=>$recipe]);
+    }
 }
