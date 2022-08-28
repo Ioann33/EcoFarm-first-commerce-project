@@ -21,6 +21,7 @@ use App\Models\MainStore;
 use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\Orders;
+use App\Models\Recipe;
 use App\Models\StockBalance;
 use App\Models\StorageGoods;
 use App\Models\Storages;
@@ -487,5 +488,22 @@ class GoodsController extends Controller
             ->where('date_created','>=', $request->date_from)
             ->where('date_created','<=', $request->date_to)->orderBy('date_created', 'desc')->get();
        return getListGoodsMovementsOnStoragesReasource::collection($movements);
+    }
+
+    public function saveRecipe(Request $request, LogService $service){
+        $request = json_decode($request->getContent());
+
+        $checkExistRecipe = Recipe::where('readygoods_id', '=', $request->goods_id)->get();
+        if (count($checkExistRecipe) !== 0){
+            return response()->json(['status' => 'error', 'message' => 'current recipe already exist']);
+        }
+        foreach ($request->ingredients as $ingredient){
+            $newRecipe = new Recipe();
+            $newRecipe->readygoods_id = $request->goods_id;
+            $newRecipe->ingredients_id = $ingredient->goods_id;
+            $newRecipe->save();
+        }
+
+        return response()->json(['status' => 'ok', 'message' => 'recipe create successful']);
     }
 }
