@@ -511,4 +511,24 @@ class GoodsController extends Controller
         $recipe = Recipe::where('readygoods_id', '=', $request->goods_id)->get();
         return response()->json(['data'=>$recipe]);
     }
+
+    public function updateRecipe(Request $request){
+        DB::beginTransaction();
+        $recipe = Recipe::where('readygoods_id', '=', $request->goods_id)->delete();
+
+        foreach ($request->ingredients as $ingredient){
+
+            $newRecipe = new Recipe();
+            $newRecipe->readygoods_id = $request->goods_id;
+            $newRecipe->ingredients_id = $ingredient['goods_id'];
+            $newRecipe->save();
+        }
+
+        DB::commit();
+
+        return response()->json(['status' => 'ok', 'message' => 'recipe updated successful']);
+
+
+    }
+
 }
