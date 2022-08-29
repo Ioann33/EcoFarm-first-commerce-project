@@ -531,7 +531,10 @@ class GoodsController extends Controller
     public function getListGoodsMovementsOnStorages(Request $request){
        $movements = Movements::where('goods_id', '=', $request->goods_id)
             ->where('date_created','>=', $request->date_from)
-            ->where('date_created','<=', $request->date_to)->orderBy('date_created', 'desc')->get();
+            ->where('date_created','<=', $request->date_to)
+           ->orderBy('date_created', 'desc')
+           ->orderBy('id', 'desc')
+           ->get();
        return getListGoodsMovementsOnStoragesReasource::collection($movements);
     }
 
