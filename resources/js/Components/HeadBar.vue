@@ -28,12 +28,12 @@
             <router-link :to="{name: 'home'}" class="header-title color-white text-nowrap">{{ title }}</router-link>
             <router-link :to="{name: 'home'}" class="header-icon color-white header-icon-1"><i class="fas fa-arrow-left"></i></router-link>
 
-                        <a href="#" class="header-icon header-icon-2">
-                            <i class="fas fa-envelope"></i>
-                            <span class="badge bg-red-dark">2</span>
-                        </a>
-            <a href="#" class="header-icon color-white header-icon-3"><i class="fas fa-heart"></i></a>
-            <a href="#" class="header-icon color-white header-icon-4"><i class="fas fa-share-alt"></i></a>
+<!--                        <a href="#" class="header-icon header-icon-2">-->
+<!--                            <i class="fas fa-envelope"></i>-->
+<!--                            <span class="badge bg-red-dark">2</span>-->
+<!--                        </a>-->
+<!--            <a href="#" class="header-icon color-white header-icon-3"><i class="fas fa-heart"></i></a>-->
+<!--            <a href="#" class="header-icon color-white header-icon-4"><i class="fas fa-share-alt"></i></a>-->
         </div>
     </div>
 </template>
