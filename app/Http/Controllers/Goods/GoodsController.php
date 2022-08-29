@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Storage\StorageController;
 use App\Http\Resources\CostGoodsOnStockResource;
 use App\Http\Resources\getIngredientsReasource;
+use App\Http\Resources\getListGoodsMovementsOnStoragesReasource;
 use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\GetMovementInfoResource;
 use App\Http\Resources\getMovementResource;
@@ -20,6 +21,7 @@ use App\Models\MainStore;
 use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\Orders;
+use App\Models\Recipe;
 use App\Models\StockBalance;
 use App\Models\StorageGoods;
 use App\Models\Storages;
@@ -515,7 +517,63 @@ class GoodsController extends Controller
 
 
     public function getIngredients(Request $request){
-        $ready = Movements::findOrFail($request->goods_id);
-        return getIngredientsReasource::make($ready);
+
+
+        $ready = Movements::find((int)$request->goods_id);
+        if ($ready){
+            return getIngredientsReasource::make($ready);
+        }else{
+            return response()->json(['status'=>'error', 'message' => 'такого товара нет']);
+        }
+
     }
+
+    public function getListGoodsMovementsOnStorages(Request $request){
+       $movements = Movements::where('goods_id', '=', $request->goods_id)
+            ->where('date_created','>=', $request->date_from)
+            ->where('date_created','<=', $request->date_to)->orderBy('date_created', 'desc')->get();
+       return getListGoodsMovementsOnStoragesReasource::collection($movements);
+    }
+
+    public function saveRecipe(Request $request, LogService $service){
+        $request = json_decode($request->getContent());
+
+        $checkExistRecipe = Recipe::where('readygoods_id', '=', $request->goods_id)->get();
+        if (count($checkExistRecipe) !== 0){
+            return response()->json(['status' => 'error', 'message' => 'current recipe already exist']);
+        }
+        foreach ($request->ingredients as $ingredient){
+            $newRecipe = new Recipe();
+            $newRecipe->readygoods_id = $request->goods_id;
+            $newRecipe->ingredients_id = $ingredient->goods_id;
+            $newRecipe->save();
+        }
+
+        return response()->json(['status' => 'ok', 'message' => 'recipe create successful']);
+    }
+
+    public function getRecipe(Request $request){
+        $recipe = Recipe::where('readygoods_id', '=', $request->goods_id)->get();
+        return response()->json(['data'=>$recipe]);
+    }
+
+    public function updateRecipe(Request $request){
+        DB::beginTransaction();
+        $recipe = Recipe::where('readygoods_id', '=', $request->goods_id)->delete();
+
+        foreach ($request->ingredients as $ingredient){
+
+            $newRecipe = new Recipe();
+            $newRecipe->readygoods_id = $request->goods_id;
+            $newRecipe->ingredients_id = $ingredient['goods_id'];
+            $newRecipe->save();
+        }
+
+        DB::commit();
+
+        return response()->json(['status' => 'ok', 'message' => 'recipe updated successful']);
+
+
+    }
+
 }
