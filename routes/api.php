@@ -48,7 +48,9 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getFinance/{storage_id}/{type?}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
     Route::get('/costGoodsOnStock/{storage_id}/{type}', [\App\Http\Controllers\Goods\GoodsController::class, 'costGoods']);
     Route::get('/getMovementInfo/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovementInfo']);
+    Route::get('/getListGoodsMovementsOnStorages/{goods_id}/{date_from}/{date_to}', [\App\Http\Controllers\Goods\GoodsController::class, 'getListGoodsMovementsOnStorages']);
     Route::get('/getListGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'getListGoods']);
+    Route::get('/getIngredients/{goods_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getIngredients']);
     Route::get('/searchGoods/{name}', [\App\Http\Controllers\Goods\GoodsController::class, 'searchGoods']);
     Route::post('/GrowAndMoveOnMainStorage', [\App\Http\Controllers\Goods\GoodsController::class, 'GrowAndMoveOnMainStorage']);
     Route::post('/GrowAndMove', [\App\Http\Controllers\Goods\GoodsController::class, 'GrowAndMove']);
@@ -66,6 +68,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/setGoodsPermit', [\App\Http\Controllers\Goods\GoodsController::class, 'setGoodsPermit']);
     Route::post('/doTrash', [\App\Http\Controllers\Goods\GoodsController::class, 'doTrash']);
     Route::post('/deleteMovement', [\App\Http\Controllers\Goods\GoodsController::class, 'deleteMovement']);
+    Route::post('/saveRecipe', [\App\Http\Controllers\Goods\GoodsController::class, 'saveRecipe']);
+    Route::post('/saveRecipe', [\App\Http\Controllers\Goods\GoodsController::class, 'saveRecipe']);
+    Route::post('/updateRecipe', [\App\Http\Controllers\Goods\GoodsController::class, 'updateRecipe']);
+    Route::get('/getRecipe/{goods_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getRecipe']);
 
     Route::post('/addUser', [\App\Http\Controllers\User\UserController::class, 'addUser']);
     Route::post('/updateUser', [\App\Http\Controllers\User\UserController::class, 'updateUser']);

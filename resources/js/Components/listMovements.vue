@@ -47,12 +47,18 @@
 </template>
 
 <script>
+//    import St from "../../../public/build/assets/Home.783acc47";
+
     export default {
         name: "listMovements",
         props: {
             storage_id: {
                 type: [String, Number],
-                required: true
+                 required: false
+            },
+            goods_id: {
+                type: [String, Number],
+                required: false
             }
         },
         data() {
@@ -65,15 +71,33 @@
         beforeMount() {
             this.my_storage_id = localStorage.getItem('my_storage_id')
             this.my_storage_name = localStorage.getItem('my_storage_name')
-            //this.storage_name = localStorage.getItem('my_storage_name');
+            // this.storage_name = localStorage.getItem('my_storage_name');
         },
         mounted() {
+            if(this.storage_id !== undefined && this.storage_id !== '') {
+                // console.log('storage=' + this.storage_id)
+                this.getListGoodsMovements()
+            }
+            if(this.goods_id !== undefined && this.goods_id !== 'default') {
+                // console.log('goods=' + this.goods_id)
+                this.getListGoodsMovementsOnStorages()
+            }
         },
         methods: {
             getListGoodsMovements(){
                 axios.get(`/api/getListGoodsMovements/${this.storage_id}/2022-08-01/2022-09-01`).then(res => {
                     this.movements = res.data.data.splice(0,30);
-                    console.log(res.data)
+                    console.log('storage: '+this.storage_id)
+                    console.log(this.movements)
+                }).catch(e => {
+                    console.log(e)
+                });
+            },
+            getListGoodsMovementsOnStorages(){
+                axios.get(`/api/getListGoodsMovementsOnStorages/${this.goods_id}/2022-08-01/2022-09-01`).then(res => {
+                    this.movements = res.data.data.splice(0,30);
+                    console.log('goods: '+this.goods_id)
+                    console.log(this.movements)
                 }).catch(e => {
                     console.log(e)
                 });
@@ -83,7 +107,11 @@
             storage_id(newVal){
                 this.getListGoodsMovements();
                 return newVal;
-            }
+            },
+            goods_id(newVal){
+                this.getListGoodsMovementsOnStorages();
+                return newVal;
+            },
         }
     }
 </script>

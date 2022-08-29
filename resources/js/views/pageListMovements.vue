@@ -4,7 +4,9 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
-            <list-movements :storage_id="my_storage"></list-movements>
+            <list-movements
+                :storage_id="my_storage"
+            ></list-movements>
         </div>
 
         <nav-bar-menu></nav-bar-menu>
@@ -45,14 +47,14 @@
 
         },
         methods: {
-            getListGoodsMovements(){
-                axios.get(`/api/getListGoodsMovements/3/2022-08-01/2022-09-01`).then(res => {
-                    this.movements = res.data.data.slice(0,30);
-                    console.log(res.data)
-                }).catch(e => {
-                    console.log(e)
-                });
-            }
+            // getListGoodsMovements(){
+            //     axios.get(`/api/getListGoodsMovements/3/2022-08-01/2022-09-01`).then(res => {
+            //         this.movements = res.data.data.slice(0,30);
+            //         console.log(res.data)
+            //     }).catch(e => {
+            //         console.log(e)
+            //     });
+            // }
         }
     }
 </script>
