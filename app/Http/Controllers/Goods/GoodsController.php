@@ -493,25 +493,36 @@ class GoodsController extends Controller
         $user_id = Auth::id();
         $dateNow = date('Y-m-d H:i:s');
 
-        if ($request->old_amount > $request->new_amount){
+        DB::beginTransaction();
 
-            $actualAmount = $request->old_amount - $request->new_amount ;
-
-            $move = HandleGoods::moveGoods($request->storage_id, null, $request->goods_id, $actualAmount, 'stock_correct', null, null,$user_id, $dateNow, $request->price, null);
-
-            $service->newLog('correctGoods', 'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', written off amount: '.$actualAmount. ' with price: '.$request->price, $move['productID']);
-            return response()->json(['status'=> 'ok', 'message'=>'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', written off amount: '.$actualAmount. ' with price: '.$request->price]);
+        $goods = StockBalance::where('storage_id', '=', $request->storage_id)->where('goods_id','=',$request->goods_id);
+        $move = $goods->get();
+        if (count($move)==0){
+            HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $request->new_amount,$dateNow, $request->price);
+            $oldAmount = 0;
+            $oldPrice = 0;
+            $move_in = HandleGoods::movements(null, $request->storage_id , $request->goods_id, 'stock_correct', null, $request->new_amount, null, $request->price, $user_id, $dateNow);
         }else{
-            $actualAmount = $request->new_amount - $request->old_amount;
+            if (isset($request->price)){
+                $price = $request->price;
+            }else{
+                $price = $move[0]['price'];
+            }
+            $oldAmount = $move[0]['amount'];
+            $oldPrice = $move[0]['price'];
+            $move_out = HandleGoods::movements($request->storage_id, null, $move[0]['goods_id'], 'stock_correct', null, $move[0]['amount'], null, $price, $user_id, $dateNow);
+            $goods->delete();
 
-            $move = HandleGoods::movements(null, $request->storage_id, $request->goods_id, 'stock_correct', null, $actualAmount, null, $request->price, $user_id, $dateNow);
+            if ($request->new_amount!= 0){
+                $move_in = HandleGoods::movements(null, $request->storage_id , $request->goods_id, 'stock_correct', null, $request->new_amount, null, $price, $user_id, $dateNow);
 
+                HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $request->new_amount,$dateNow, $price);
+            }
 
-             HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $actualAmount, $dateNow, $request->price);
-            $service->newLog('correctGoods', 'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', added amount: '.$actualAmount. ' with price: '.$request->price, $move['productID']);
-
-            return response()->json(['status'=> 'ok', 'message'=>'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', added amount: '.$actualAmount. ' with price: '.$request->price]);
         }
+        $service->newLog('correctGoods', 'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', old amount: '.$oldAmount.' -> new amount'.$request->new_amount. ' with old price: '.$oldPrice.' -> new price '.$request->price, null);
+        DB::commit();
+        return response()->json(['status'=> 'ok', 'message'=>'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', old amount: '.$oldAmount.' -> new amount'.$request->new_amount. ' with old price: '.$oldPrice.' -> new price '.$request->price]);
     }
 
 
