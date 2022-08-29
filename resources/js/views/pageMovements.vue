@@ -109,13 +109,14 @@ export default {
         this.editPrice = this.storage_id == this.main_storage_id;
         console.log('editPrice: ' + this.editPrice)
 
-            // получить все заказы на перемещение входящие/исходящие открытые/выполненные
+        // получить все заказы на перемещение входящие/исходящие открытые/выполненные
         axios.get('/api/getMovement/' + this.dir + '/opened/'+ this.storage_id).then(res => {
             console.log('listGoods:')
             console.log(res.data)
             this.listMovements = res.data.data
         }).catch(err => {
             this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            console.error (' [serv] '+this.message)
         })
     },
     updated() {

@@ -179,7 +179,15 @@
                 </div>
             </div>
         </div>
+
         <!--ПЕРЕДАТЬ ТОВАР    -->
+
+
+
+        <router-link :to="{name: 'listMovements'}">
+            <a href="">список операций</a>
+        </router-link>
+
 
 
     </div>

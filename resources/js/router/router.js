@@ -42,6 +42,11 @@ const router = createRouter({
             component: () => import('../views/pageListGoods')
         },
         {
+            path: '/pageListGoodsOnStorages',
+            name: 'pageListGoodsOnStorages',
+            component: () => import('../views/pageListGoodsOnStorages')
+        },
+        {
             path: '/makeOrder',
             name: 'makeOrder',
             component: () => import('../views/pageMakeOrder')
@@ -151,6 +156,16 @@ const router = createRouter({
             path: '/correctGoods',
             name: 'correctGoods',
             component: () => import('../views/pageCorrectGoods')
+        },
+        {
+            path: '/editGoods',
+            name: 'editGoods',
+            component: () => import('../views/pageEditGoods')
+        },
+        {
+            path: '/listMovements',
+            name: 'listMovements',
+            component: () => import('../views/pageListMovements')
         }
     ]
 })

@@ -86,6 +86,7 @@ class GoodsController extends Controller
     }
 
     public function getMovement(Request $request){
+        // @todo будем переходить на этот API: api/getListGoodsMovements/
 
         if($request->status === 'opened'){
             $operator = '=';
@@ -135,11 +136,53 @@ class GoodsController extends Controller
      */
     public function getStorageGoods(Request $request){
 
-        if ($request->storage_id === 'all'){
+        if ($request->storage_id === 'all') {
+            if($request->goods_id === 'all') {
+                return response()->json([
+                    'message'=>'нужно выбрать продукт. all - еще не реализовано',
+                    'status'=> 'error'
+                ]);
+            }
 
-            //return dd($request->input());
-            return $storages = StorageGoods::where('goods_id', $request->goods_id);
-            //return getAllowedStoragesResource::collection($storages);
+// вывод количества выбранного продукта на складах
+//            return dd($request->input());
+              $goods = StorageGoods::where('goods_id', $request->goods_id)->get();
+/*
+    [
+        {
+            "storage_id": 1,
+            "goods_id": 1,
+        },
+        {
+            "storage_id": 2,
+            "goods_id": 1,
+        },
+   */
+            return StorageGoodsResource::collection($goods);
+/*
+    {
+    "data": [
+        {
+            "storage_name": "Главный склад",
+            "storage_id": 1,
+            "goods_id": 1,
+            "name": "помидор",
+            "unit": "кг",
+            "type": 1,
+            "amount": 83,
+            "price": "25.00",
+            "goods": {
+                "32": {
+                    "id": 520,
+                    "goods_id": 1,
+                    "price": "25",
+                    "amount": "83",
+                    "date_accepted": "2022-08-26 15:58:09",
+                    "storage_id": 1
+                }
+            }
+        },
+*/
         }
 
         if ($request->goods_id === 'all'){
@@ -289,11 +332,11 @@ class GoodsController extends Controller
             });
 
             $setSelfCostProduct = StockBalance::findOrFail($readyProductID['stockBalanceID']);
-            $setSelfCostProduct->price = number_format($getSelfCostProduct/$request->amount,2);
+            $setSelfCostProduct->price = number_format($getSelfCostProduct/$request->amount,2,'.','');
             $setSelfCostProduct->save();
 
             $updateMovements = Movements::findOrFail($readyProductID['productID']);
-            $updateMovements->price = number_format($getSelfCostProduct/$request->amount,2);
+            $updateMovements->price = number_format($getSelfCostProduct/$request->amount,2,'.','');
             $updateMovements->save();
 
             $mainStore = MainStore::all()
@@ -395,7 +438,7 @@ class GoodsController extends Controller
             $param = 0;
         }
         if ($res){
-            $service->newLog('setGoodsPermit', 'set permit goods_id '.$request->goods_id.' to storage '. $request->storage_id, $param);
+            $service->newLog('setGoodsPermit', ($param ? 'set' : 'remove').' permit goods_id '.$request->goods_id.' to storage '. $request->storage_id, $param);
             return response()->json(['status'=>'ok']);
         }else{
             return response()->json(['status'=>'error']);
@@ -441,7 +484,8 @@ class GoodsController extends Controller
     }
 
     public function searchGoods(Request $request){
-        $goods = Goods::where('name', 'like', "$request->name%")->get();
+//        $goods = Goods::where('name', 'like', "$request->name%")->get();
+        $goods = Goods::whereRaw('LOWER(name) like \'%'.$request->name.'%\'')->get();
         return response()->json($goods);
     }
 

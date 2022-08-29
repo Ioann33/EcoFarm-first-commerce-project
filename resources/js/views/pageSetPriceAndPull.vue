@@ -198,10 +198,11 @@
                 this.movement = res.data.data
                 console.log(this.movement)
                 this.price = Number.parseFloat(this.movement.price)
+                this.total_price_one = this.price
                 this.amount = Number.parseFloat(this.movement.amount)
-                this.total = this.movement.price * this.movement.amount
+                this.total = (this.movement.price * this.movement.amount).toFixed(2)
 
-                this.total_with_produce = this.amount * (this.price + Number.parseFloat(this.cost_produce_one))
+                this.total_with_produce = (this.amount * (this.price + Number.parseFloat(this.cost_produce_one))).toFixed(2)
 
 
 
@@ -224,10 +225,10 @@
                 this.total_price_one = Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one)
             },
             checkCostProduceOne(){
-                this.total = this.amount * this.price
-                this.total_with_produce = this.amount * (Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one))
-                this.total_produce = this.amount * Number.parseFloat(this.cost_produce_one)
-                this.total_price_one = Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one)
+                this.total = (this.amount * Number.parseFloat(this.price)).toFixed(2)
+                this.total_with_produce = (this.amount * (Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one))).toFixed(2)
+                this.total_produce = (this.amount * Number.parseFloat(this.cost_produce_one)).toFixed(2)
+                this.total_price_one = (Number.parseFloat(this.price) + Number.parseFloat(this.cost_produce_one)).toFixed(2)
             },
             doSetPriceAndPull(){
                 console.log('установить цену и оприходовать')
@@ -255,7 +256,7 @@
 
                 }).catch(err => {
                     this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                    console.error(this.message)
+                    console.error(' [serv] '+this.message)
                 })
             }
         },

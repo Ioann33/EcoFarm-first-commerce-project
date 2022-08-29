@@ -1,0 +1,159 @@
+<template>
+    <div id="page">
+        <head-bar></head-bar>
+        <nav-bar></nav-bar>
+
+        <div class="page-content header-clear-medium">
+
+            <title-page title_main="Редактировать товар"></title-page>
+
+            <div class="card card-style p-4 pt-3 mt-3">
+                <select-input :data="goods"
+                              :keyOfValue="'goods_id'"
+                              :value="selected_goods"
+                              :label="'Продукт'"
+                              :defaultOption="'выбрать продукт'"
+                              :loading="loadingGoods" @getSelected="selectGoods">
+
+                </select-input>
+
+                <select-input :data="types"
+                              :keyOfValue="'id'"
+                              :value="selected_type"
+                              :label="'Тип'"
+                              :defaultOption="'выбрать тип'">
+
+                </select-input>
+
+                <div class="d-flex">
+                    <div class="col-8 p-1">
+                        <div class="input-style input-style-always-active has-borders no-icon">
+                            <input type="text" class="form-control focus-color focus-blue validate-name "
+                                   id="name"
+                                   v-model="name"
+                            >
+                            <label for="name" class="color-blue-dark">Название</label>
+                            <i class="fa fa-times disabled invalid color-red-dark"></i>
+                            <i class="fa fa-check disabled valid color-green-dark"></i>
+                            <em></em>
+                        </div>
+                    </div>
+                    <div class="col-4 p-1">
+                        <div class="input-style input-style-always-active has-borders no-icon">
+                            <input type="text" class="form-control focus-color focus-blue validate-name "
+                                   id="unit"
+                                   v-model="unit"
+                            >
+                            <label for="unit" class="color-blue-dark">Ед. изм.</label>
+                            <i class="fa fa-times disabled invalid color-red-dark"></i>
+                            <i class="fa fa-check disabled valid color-green-dark"></i>
+                            <em></em>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-lg btn-default" :disabled="disabled_btn" @click="editGoods">Редактировать</button>
+            </div>
+        </div>
+
+        <success v-if="success" :success="success"></success>
+
+        <nav-bar-menu></nav-bar-menu>
+    </div>
+</template>
+
+<script>
+    import headBar from "../Components/HeadBar";
+    import NavBar from "../Components/NavBar";
+    import NavBarMenu from "../Components/NavBarMenu";
+    import error from "../Components/Error";
+    import TitlePage from "../Components/Title";
+    import SelectInput from "../Components/SelectInput";
+    import Success from "../Components/Success";
+
+    export default {
+        name: "pagePreSale",
+        components: {
+            error,
+            TitlePage,
+            headBar, NavBar, NavBarMenu, SelectInput, Success
+        },
+        data(){
+            return {
+                loadingGoods: false,
+                goods: [],
+                selected_goods: 'default',
+                types: [
+                    {id: 1, name: 'Ингредиент'},
+                    {id: 2, name: 'Продукт'},
+                ],
+                selected_type: 'default',
+                name: '',
+                unit: '',
+                success: ''
+            }
+        },
+        computed: {
+            disabled_btn(){
+                if(this.selected_type === 'default' ||
+                    this.selected_goods === 'default' ||
+                    !this.name ||
+                    !this.unit){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        },
+        mounted() {
+            this.getListGoods();
+        },
+        updated() {
+        },
+        methods: {
+            getListGoods(){
+                this.loadingGoods = true;
+                axios.get('/api/getListGoods').then(res => {
+                    this.goods = res.data.data;
+                    this.loadingGoods = false;
+                }).catch(e => {
+                    console.log(e)
+                })
+            },
+            editGoods(){
+                axios.post('/api/addGoods', {
+                    name: this.name,
+                    unit: this.unit,
+                    type: this.selected_type
+                }).then(res => {
+                    this.success = 'Изменения сохранены'
+                    setTimeout(() => this.success = '', 1500)
+                }).catch(e => {
+                    console.log(e)
+                });
+            },
+            selectGoods(value){
+                this.selected_goods = value;
+                if(value !== 'default'){
+                    const current = this.goods.find(el => el.goods_id === value);
+                    this.name = current.name;
+                    this.unit = current.unit;
+                    this.selected_type = current.type;
+                } else {
+                    this.name = this.unit = '';
+                    this.selected_type = 'default';
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .btn-default {
+        background-color: #A0D468;
+        border-radius: 10px;
+        color: #fff;
+    }
+    .btn-default:hover {
+        color: #fff;
+    }
+</style>

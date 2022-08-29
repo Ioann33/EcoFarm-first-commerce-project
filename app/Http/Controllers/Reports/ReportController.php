@@ -33,7 +33,7 @@ class ReportController extends Controller
             ->where(function($query) use ($request) {
                 $query->where('storage_id_to', '=', $request->storage_id)
                     ->orWhere('storage_id_from', '=', $request->storage_id);
-            })->orderBy('date_created', 'desc')->get();
+            })->orderBy('date_accepted', 'desc')->limit(30)->get();
         return ListGoodsMovementResource::collection($listGoodsMovement);
 
     }
@@ -122,7 +122,7 @@ class ReportController extends Controller
         }
 
 
-        $price = number_format($price,2);
+        $price = number_format($price,2,'.','');
 
 
 
@@ -150,7 +150,7 @@ class ReportController extends Controller
                             $updateStock->delete();
                         }
                         $compare = 'fixed';
-                        $service->newLog('fixStockBalance', 'with amount: '.$stock_balance[0]['amount'].' fixed to '.$amount.', with price '.$stock_balance[0]['price'].' fixed to '.$price.' on storage '.$request->sorage_id.' , goods_id '.$request->goods_id, null);
+                        $service->newLog('fixStockBalance', 'with amount: '.$stock_balance[0]['amount'].' fixed to '.$amount.', with price '.$stock_balance[0]['price'].' fixed to '.$price.' on storage '.$request->storage_id.' , goods_id '.$request->goods_id, null);
                     }
                 }
 
@@ -207,7 +207,10 @@ class ReportController extends Controller
 
      }
 
-     public function getLog(Request $request){
-         return$logs = Log::where('event', '=', $request->event)->limit(5)->get();
+     public function getLogs(Request $request){
+         if($request->event == 'all')
+             return $logs = Log::orderBy('date', 'desc')->limit(25)->get();
+             else
+         return $logs = Log::where('event', '=', $request->event)->limit(25)->get();
      }
 }

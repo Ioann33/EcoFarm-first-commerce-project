@@ -38,6 +38,7 @@
                             <input type="number" class="form-control focus-color focus-blue validate-name "
                                    id="amount"
                                    v-model="amount"
+                                   @focus="$event.target.select()"
                             >
                             <label for="amount" class="color-blue-dark">Кол-во</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -46,7 +47,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-lg btn-default" :disabled="selected_storage === 'default' || selected_goods === 'default'" @click="correctGoods">Корректировать</button>
+                <button type="button" class="btn btn-lg btn-default" :disabled="selected_storage === 'default' || selected_goods === 'default' || old_amount==amount" @click="correctGoods">Корректировать</button>
             </div>
         </div>
 
@@ -77,6 +78,7 @@
                 loadingGoods: false,
                 selected_goods: 'default',
                 price: 0,
+                old_amount: 0,
                 amount: 0,
                 unit: 'кг'
             }
@@ -117,6 +119,7 @@
                 this.selected_goods = value;
                 const current_goods = this.goods.find(el => el.goods_id === value);
                 this.price = current_goods.price;
+                this.old_amount = current_goods.amount;
                 this.amount = current_goods.amount;
                 this.unit = current_goods.unit;
             },
