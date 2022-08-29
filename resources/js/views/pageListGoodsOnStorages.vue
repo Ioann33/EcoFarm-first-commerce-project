@@ -73,7 +73,7 @@
                     >
                     </v-select>
 
-                    <div class="content" id="tab-group-20">
+                    <div class="content m-0 mt-3" id="tab-group-20">
                         <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-green-dark">
                             <a href="#" class="no-effect bg-green-dark no-click" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-20" aria-expanded="true"><i class="fa fa-heart"></i></a>
                             <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-21" aria-expanded="false"><i class="fa fa-star"></i></a>
@@ -81,20 +81,20 @@
                         <div class="clearfix mb-3"></div>
 
                         <div data-bs-parent="#tab-group-20" class="collapse show" id="tab-20" style="">
-                            <div class="card card-style p-0 pt-3 mt-3" style="margin: 0 0 30px 0;">
+                            <div class="card card-style p-0 m-0 pt-2">
                                 <p class="text-center" v-if="selected_goods === 'default'">Выберете продукт</p>
                                 <div v-if="loading_goods" class="spinner-border text-light" role="status" style="margin: 0 auto;">
                                     <span class="sr-only">Loading...</span>
                                 </div>
 
                                 <div class="row m-0" v-for="(movement, index) in movements_goods" :key="movement.storage_id">
-                                    <div class="col-8">{{movement.storage_name_from}} ➠<sup>{{movement.category}}</sup>➠ {{movement.storage_name_to}} <br> <span class="opacity-40 font-10">{{movement.date_created}} {{movement.user_name_created}}</span></div>
-                                    <div class="col-2 align-content-end">
+                                    <div class="col-8"><span v-if="movement.storage_name_from !== null">{{movement.storage_name_from}} ➠</span><sup>{{movement.category}}</sup>➠ {{movement.storage_name_to}} <br> <span class="opacity-40 font-10">{{movement.date_created}} {{movement.user_name_created}}</span></div>
+                                    <div class="col-2 align-content-end p-0">
                                         <span class="font-600">{{movement.amount}} <sup class="opacity-50">{{movement.goods_unit}}</sup></span> <br>
-                                        <span class="font-10">{{movement.price}}   <sup class="opacity-50">₴</sup> </span>
+                                        <span class="font-10" v-if="movement.price">{{movement.price}}   <sup class="opacity-50">₴</sup> </span>
                                     </div>
-                                    <div class="col-2 align-content-end ">
-                                        <div class="icon icon-m rounded-s shadow-l me-1 bg-twitter">
+                                    <div class="col-2 align-content-end p-0">
+                                        <div class="icon icon-m rounded-s shadow-l me-1 p-0 bg-twitter">
                                             <i class="fa-solid fa-right-from-bracket font-25 bg-blue-dark rounded-s" v-if="movement.category==='move'"></i>
                                             <i class="fas fa-check-to-slot font-25 bg-green-dark  rounded-s" v-if="movement.category==='ready'"></i>
                                             <i class="fa-solid fa-recycle" v-if="movement.category==='correct'"></i>
@@ -103,7 +103,9 @@
                                             <i class="fas fa-boxes-alt font-25 bg-gray-dark rounded-s" v-if="movement.category==='ingredients'"></i>
                                         </div>
                                     </div>
+                                    <hr class="opacity-10">
                                 </div>
+
                             </div>
                         </div>
                         <div data-bs-parent="#tab-group-20" class="collapse" id="tab-21" style="">
