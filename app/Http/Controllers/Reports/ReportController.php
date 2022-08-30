@@ -132,7 +132,16 @@ class ReportController extends Controller
                 $b .= " = ".$amount." [".$value['storage_id_from']." -> ".$value['storage_id_to']."] total_amount: $amount \n";
         }
         if ($request->action == 'list'){
-            return $b;
+            if (isset($request->latest)){
+                $latest = $request->latest;
+            }else{
+                $latest = 10;
+            }
+            $resArr = preg_split("/(\r\n|\n|\r)/",$b);
+            $result = array_slice($resArr, -($latest+1), $latest);
+
+
+            return response()->json($result);
         }
 
 
