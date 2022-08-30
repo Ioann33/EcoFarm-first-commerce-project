@@ -590,4 +590,32 @@ class GoodsController extends Controller
 
     }
 
+    public function pushPackageGoods(Request $request){
+        $request = json_decode($request->getContent());
+        $user = Auth::id();
+        $data = date('Y-m-d H:i:s');
+        DB::beginTransaction();
+
+        try {
+            foreach ($request as $value){
+                if (isset($value->storage_id_from)){
+                    $category = 'move';
+                }else{
+                    $category = 'grow';
+                }
+
+                HandleGoods::moveGoods($value->storage_id_from, $value->storage_id_to, $value->goods_id, $value->amount, $category);
+            }
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json([
+                'message'=>$e->resMess(),
+                'status'=> 'error'
+            ]);
+        }
+        DB::commit();
+
+        return response()->json(['status' => 'ok', 'message' => 'goods successful pushed']);
+    }
+
 }
