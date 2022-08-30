@@ -128,7 +128,8 @@ class GoodsController extends Controller
     }
 
     /**
-     * api/getStorageGoods/{key}/{storage_id}/{goods_id?}
+     * getStorageGoods/ {available | allowed} / {storage_id | all} / {goods_id | all}
+     * getStorageGoods/{key}/{storage_id}/{goods_id?}
      *
      *
      * @param Request $request
@@ -541,7 +542,10 @@ class GoodsController extends Controller
     public function getListGoodsMovementsOnStorages(Request $request){
        $movements = Movements::where('goods_id', '=', $request->goods_id)
             ->where('date_created','>=', $request->date_from)
-            ->where('date_created','<=', $request->date_to)->orderBy('date_created', 'desc')->get();
+            ->where('date_created','<=', $request->date_to)
+           ->orderBy('date_created', 'desc')
+           ->orderBy('id', 'desc')
+           ->get();
        return getListGoodsMovementsOnStoragesReasource::collection($movements);
     }
 

@@ -11,6 +11,7 @@ use App\Models\Movements;
 use App\Models\StockBalance;
 use App\Services\LogService;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Utils;
 
 class ReportController extends Controller
 {
@@ -94,8 +95,9 @@ class ReportController extends Controller
      * @return mixed
      */
      public function checkStockBalance(Request $request, LogService $service){
-         $price = 0;
-         $amount = 0;
+        $price = 0;
+        $amount =  0.0;
+        //$b = '';
         $goods = Movements::where('date_accepted', '!=', null)
             ->where('goods_id', '=', $request->goods_id)
             ->where(function($query) use ($request) {
@@ -104,7 +106,7 @@ class ReportController extends Controller
             })->get();
 
         foreach ($goods as $value){
-             if($value['storage_id_to'] == $request->storage_id){
+            if($value['storage_id_to'] == $request->storage_id){
                 if ($price == 0){
                     $price = $value['price'];
                 }else{
@@ -113,14 +115,24 @@ class ReportController extends Controller
                     $totalAmount = $amount + $value['amount'];
                     $price = ($existValue + $inputValue)/$totalAmount;
                 }
-                 $amount+= $value['amount'];
-             }
+
+                //$b .= " $amount +  ".$value['amount'];
+                //  $amount +=  (float)$value['amount'];
+                $amount = bcadd($amount, $value['amount']);
+                // $b.= "=".$amount." ";
+
+            }
 
             if($value['storage_id_from'] == $request->storage_id){
-                $amount-= $value['amount'];
-            }
-        }
+                //$b .= " $amount -  ".$value['amount'];
+                // $amount -=  (float)$value['amount'];
+                $amount = bcsub($amount, $value['amount']);
+                //$b.= "=".$amount." ";
 
+            }
+            //$b .= "storage_id_to:".$value['storage_id_to'].", storage_id_from:".$value['storage_id_from']." amount: $amount, (".$value['amount'].") \n";
+        }
+//return $b;
 
         $price = number_format($price,2,'.','');
 

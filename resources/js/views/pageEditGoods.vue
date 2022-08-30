@@ -13,16 +13,18 @@
                               :value="selected_goods"
                               :label="'Продукт'"
                               :defaultOption="'выбрать продукт'"
-                              :loading="loadingGoods" @getSelected="selectGoods">
-
+                              :loading="loadingGoods"
+                              @getSelected="selectGoods"
+                >
                 </select-input>
 
                 <select-input :data="types"
                               :keyOfValue="'id'"
                               :value="selected_type"
                               :label="'Тип'"
-                              :defaultOption="'выбрать тип'">
-
+                              :defaultOption="'выбрать тип'"
+                              @getSelected="selectType"
+                >
                 </select-input>
 
                 <div class="d-flex">
@@ -38,7 +40,7 @@
                             <em></em>
                         </div>
                     </div>
-                    <div class="col-4 p-1">
+                    <div class="col-3 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="text" class="form-control focus-color focus-blue validate-name "
                                    id="unit"
@@ -50,6 +52,10 @@
                             <em></em>
                         </div>
                     </div>
+                    <div class="col-1">
+                       <sup class="opacity-20">  {{goods_id}} </sup>
+                    </div>
+
                 </div>
                 <button type="button" class="btn btn-lg btn-default" :disabled="disabled_btn" @click="editGoods">Редактировать</button>
             </div>
@@ -89,6 +95,7 @@
                 selected_type: 'default',
                 name: '',
                 unit: '',
+                goods_id: '',
                 success: ''
             }
         },
@@ -120,12 +127,16 @@
                 })
             },
             editGoods(){
-                axios.post('/api/addGoods', {
+                axios.post('/api/updateGoods', {
                     name: this.name,
                     unit: this.unit,
-                    type: this.selected_type
+                    type: this.selected_type,
+                    goods_id: this.goods_id,
+                    group_id: 2,
+                    image: ''
                 }).then(res => {
                     this.success = 'Изменения сохранены'
+                    this.getListGoods()
                     setTimeout(() => this.success = '', 1500)
                 }).catch(e => {
                     console.log(e)
@@ -137,11 +148,15 @@
                     const current = this.goods.find(el => el.goods_id === value);
                     this.name = current.name;
                     this.unit = current.unit;
+                    this.goods_id = current.goods_id
                     this.selected_type = current.type;
                 } else {
                     this.name = this.unit = '';
                     this.selected_type = 'default';
                 }
+            },
+            selectType(value){
+                this.selected_type = value
             }
         }
     }
