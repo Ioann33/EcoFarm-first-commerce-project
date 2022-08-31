@@ -197,13 +197,61 @@ class GoodsController extends Controller
         }
 
         if ($request->key === 'allowed'){
-
+            $goods = StorageGoods::all()
+                ->where('storage_id','=', $request->storage_id);
             return StorageAllowedGoodsResource::collection($goods);
         }
 
         return StorageGoodsResource::collection($goods);
 
     }
+
+
+
+
+    public function searchStorageGoods(Request $request){
+
+
+        if ($request->key === 'available'){
+            if ($request->storage_id === 'all') {
+                $goods = DB::table('stock_balance')
+                    ->join('goods', 'stock_balance.goods_id', '=','goods.id')
+                    ->where('goods.name', 'like',"%$request->name%" )
+                    ->join('storages', 'stock_balance.storage_id', '=','storages.id')
+                    ->select(DB::raw("stock_balance.storage_id as storage_id, storages.name as storage_name, stock_balance.goods_id as goods_id, goods.name as goods_name, goods.unit, goods.type, stock_balance.price, stock_balance.amount"))
+                    ->get();
+
+            }else{
+                $goods = DB::table('stock_balance')
+                    ->where('storage_id', '=', $request->storage_id)
+                    ->join('goods', 'stock_balance.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )
+                    ->select(DB::raw("stock_balance.goods_id as goods_id, goods.name as goods_name, goods.unit, goods.type, stock_balance.price, stock_balance.amount"))
+                    ->get();
+            }
+            return response()->json(['data' => $goods]);
+        }
+
+
+        if ($request->key === 'allowed'){
+            if ($request->storage_id === 'all') {
+                $goods = DB::table('storage_goods')
+                    ->join('goods', 'storage_goods.goods_id', '=','goods.id')
+                    ->where('goods.name', 'like',"%$request->name%" )
+                    ->join('storages', 'storage_goods.storage_id', '=','storages.id')
+                    ->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type, storages.id as storage_id, storages.name as storage_name, storages.type as storage_type"))
+                    ->get();
+            }else{
+                $goods = DB::table('storage_goods')
+                    ->where('storage_id', '=', $request->storage_id)
+                    ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
+                    ->get();
+            }
+
+            return response()->json(['data' => $goods]);
+        }
+
+    }
+
 
     /**
      * api/getGoodsStockBalance/{goods_id}
