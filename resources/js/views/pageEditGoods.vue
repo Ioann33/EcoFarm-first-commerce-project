@@ -41,7 +41,7 @@
                 </select-input>
 
                 <div class="d-flex">
-                    <div class="col-8 p-1">
+                    <div class="col-7 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="text" class="form-control focus-color focus-blue validate-name "
                                    id="name"
@@ -132,9 +132,6 @@
         updated() {
         },
         methods: {
-            test(value){
-              console.log(value)
-            },
             searchGoods(value){
                 if(!value) return;
                 axios.get('/api/searchStorageGoods/available/all/'+value.toLowerCase()).then(res => {
@@ -198,10 +195,6 @@
 </script>
 
 <style>
-    .vs__selected-options > input, .vs__selected-options > input:focus {
-        padding: 12px 6px;
-        border: none;
-    }
     .btn-default {
         background-color: #A0D468;
         border-radius: 10px;

@@ -13,13 +13,25 @@
 
                 </select-input>
 
-                <select-input :data="goods"
-                              :value="selected_goods"
-                              :label="'Товары'"
-                              @getSelected="selectGoods"
-                              :keyOfValue="'goods_id'" :loading="loadingGoods">
+                <div class="position-relative pb-3">
+                    <label class="color-blue-dark position-absolute" style="z-index: 10; left: 9px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт</label>
+                    <v-select :options="goods"
+                              :value="'goods_id'"
+                              :label="'goods_name'"
+                              :placeholder="'выбрать продукт'"
+                              @option:selected="changeGoods"
+                              @search="searchGoods"
+                    >
+                    </v-select>
+                </div>
 
-                </select-input>
+<!--                <select-input :data="goods"-->
+<!--                              :value="selected_goods"-->
+<!--                              :label="'Товары'"-->
+<!--                              @getSelected="selectGoods"-->
+<!--                              :keyOfValue="'goods_id'" :loading="loadingGoods">-->
+
+<!--                </select-input>-->
 
                 <div class="d-flex">
                     <div class="col-6 p-1">
@@ -62,13 +74,14 @@
     import error from "../Components/Error";
     import TitlePage from "../Components/Title";
     import SelectInput from "../Components/SelectInput";
+    import vSelect from "vue-select"
 
     export default {
         name: "pagePreSale",
         components: {
             error,
             TitlePage,
-            headBar, NavBar, NavBarMenu, SelectInput
+            headBar, NavBar, NavBarMenu, SelectInput, vSelect
         },
         data(){
             return {
@@ -76,13 +89,14 @@
                 selected_storage: 'default',
                 goods: [],
                 loadingGoods: false,
-                selected_goods: 'default',
+                selected_goods: null,
                 price: 0,
                 old_amount: 0,
                 amount: 0,
                 unit: 'кг'
             }
         },
+        watch: {},
         computed: {},
         mounted() {
             this.getStorages();
@@ -90,6 +104,23 @@
         updated() {
         },
         methods: {
+            searchGoods(value){
+                if(!value || this.selected_storage === 'default') return;
+                axios.get('/api/searchStorageGoods/available/all/'+value.toLowerCase()).then(res => {
+                    this.goods = res.data.data;
+                }).catch(e => {
+                    this.message = e.response.data.message
+                    console.log(e)
+                });
+            },
+            changeGoods(value){
+                if(!value) return;
+                this.selected_goods = value.goods_id;
+                this.price = value.price;
+                this.old_amount = value.amount;
+                this.amount = value.amount;
+                this.unit = value.unit;
+            },
             getStorages(){
                 axios.get('/api/getListStorages/').then(res => {
                     this.storages = res.data.data;
