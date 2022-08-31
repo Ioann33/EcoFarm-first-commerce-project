@@ -195,7 +195,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         //App\Providers\TelescopeServiceProvider::class,
-        \App\Providers\LogServiceProvider::class,
+        App\Providers\LogServiceProvider::class,
+        App\Providers\GetNameProvider::class
 
     ],
 
@@ -212,6 +213,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+        'GetName' => \App\Facades\GetName::class
     ])->toArray(),
 
 ];
