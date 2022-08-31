@@ -281,9 +281,8 @@ export default {
             }
 
             // после смены товара - отобразить на каких складах он доступен
-
             axios.get('/api/getListStoragesGoodsPermit/' + this.selected_goods_id).then(res => {
-                this.listStorage = res.data.data.filter(el => el.allowed === true)
+                this.listStorage = res.data.data.filter(el => el.allowed === true && el.storage_id !== +this.my_storage_id)
             }).catch(err => {
                 this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
                 console.error(this.message)
@@ -300,46 +299,27 @@ export default {
             this.type=localStorage.getItem('my_storage_type')
             if(this.type === 'grow')
             {
-                console.log(this.type)
-// шаг 1/2. создать продукт на теплице
-                axios.post('/api/goodsMovementPush',{
-                    storage_id_from: null,
-                    storage_id_to: this.my_storage_id,
+                axios.post('/api/GrowAndMove',{
+                    storage_id_from: this.my_storage_id,
+                    storage_id_to: this.selected_storage_id,    // в данном случае this.selected_storage_id = localStorage.getItem('main_storage_id')
                     goods_id: this.selected_goods_id,
                     amount: this.goods_amount
                 }).then(res => {
                     if(res.data.status === 'ok') {
                         console.log('[server]: ' + res.data.message)
-                        // шаг 2/2.  переместить продукт с теплицы на склад
-                        axios.post('/api/goodsMovementPush',{
-                            storage_id_from: this.my_storage_id,
-                            storage_id_to: this.selected_storage_id,
-                            goods_id: this.selected_goods_id,
-                            amount: this.goods_amount
-                        }).then(res => {
-                            if(res.data.status === 'ok') {
-                                console.log('[server]: '+res.data.message)
-                                this.$router.push({name: 'home'});
-                            }else {
-                                console.log(res.data.message)
-                                this.message = res.data.message
-                            }
-                        }).catch(err => {
-                            this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                            console.error(this.message)
-                        })
-
+                        this.$router.push({name: 'home'});
                     }else {
-                        console.log(res.data.message)
+                        console.error(res.data.message)
                         this.message = res.data.message
                     }
-
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                     console.error(this.message)
                 })
+
+
             }
-            // это не теплица - поэтому перемещение товара - за 2й шаг
+            // это не теплица
             else {
                 axios.post('/api/goodsMovementPush',{
                     storage_id_from: this.my_storage_id,
@@ -348,15 +328,15 @@ export default {
                     amount: this.goods_amount
                 }).then(res => {
                     if(res.data.status === 'ok') {
-                        console.log('[server]: '+res.data.message)
+                        console.log('[server]: ' + res.data.message)
                         this.$router.push({name: 'home'});
                     }else {
-                        console.log(res.data.message)
+                        console.error(res.data.message)
                         this.message = res.data.message
                     }
                 }).catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                    console.log(this.message)
+                    console.error(this.message)
                 })
             }
         }
