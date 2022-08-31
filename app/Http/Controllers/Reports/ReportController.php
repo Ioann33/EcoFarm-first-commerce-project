@@ -29,24 +29,28 @@ class ReportController extends Controller
 
     public function getListGoodsMovements(Request $request){
 
-        $listGoodsMovement = Movements::where('date_accepted','>=', $request->date_from)
+        $listGoodsMovement = Movements::
+              where('date_accepted','>=', $request->date_from)
             ->where('date_accepted','<=', $request->date_to)
             ->where(function($query) use ($request) {
                 $query->where('storage_id_to', '=', $request->storage_id)
                     ->orWhere('storage_id_from', '=', $request->storage_id);
-            })->orderBy('date_accepted', 'desc')->limit(30)->get();
+            })
+            ->orderBy('date_accepted', 'desc')
+//            ->limit(30)
+            ->get();
         return ListGoodsMovementResource::collection($listGoodsMovement);
 
     }
 
-    public function getSumMoneyMovementGoods(Request $request){
+    public function getSumMoneyGoodsMovements(Request $request){
         $listGoodsMovement = $this->movementsModel
             ->where('storage_id_from', '=', $request->storage_id)
             ->where('date_accepted','>=', $request->date_from)
             ->where('date_accepted','<=', $request->date_to)
             ->where('category','=','move')
             ->sum(function ($item){
-            return $item->price*$item->amount;
+                return number_format($item->price * $item->amount, 2, '.', '');
         });
 
         return ['sum'=>$listGoodsMovement];
@@ -97,42 +101,53 @@ class ReportController extends Controller
      public function checkStockBalance(Request $request, LogService $service){
         $price = 0;
         $amount =  0.0;
-        //$b = '';
+        $b = '';
         $goods = Movements::where('date_accepted', '!=', null)
             ->where('goods_id', '=', $request->goods_id)
             ->where(function($query) use ($request) {
                 $query->where('storage_id_to', '=', $request->storage_id)
                     ->orWhere('storage_id_from', '=', $request->storage_id);
-            })->get();
+            })->orderBy('date_accepted', 'ASC')->get();
 
         foreach ($goods as $value){
+            $b .= "#".$value['id'].": ";
             if($value['storage_id_to'] == $request->storage_id){
                 if ($price == 0){
                     $price = $value['price'];
                 }else{
                     $existValue = $price * $amount;
-                    $inputValue = $value['price']*$value['amount'];
+                    $inputValue = $value['price'] * $value['amount'];
                     $totalAmount = $amount + $value['amount'];
+                    //$totalAmount = bcadd($amount, $value['amount'], 2);
                     $price = ($existValue + $inputValue)/$totalAmount;
                 }
 
-                //$b .= " $amount +  ".$value['amount'];
+                $b .= " $amount +  ".$value['amount'];
                 //  $amount +=  (float)$value['amount'];
-                $amount = bcadd($amount, $value['amount']);
-                // $b.= "=".$amount." ";
-
+                $amount = bcadd($amount, $value['amount'],2);
             }
 
             if($value['storage_id_from'] == $request->storage_id){
-                //$b .= " $amount -  ".$value['amount'];
+                $b .= " $amount -  ".$value['amount'];
                 // $amount -=  (float)$value['amount'];
-                $amount = bcsub($amount, $value['amount']);
-                //$b.= "=".$amount." ";
-
+                $amount = bcsub($amount, $value['amount'], 2);
             }
-            //$b .= "storage_id_to:".$value['storage_id_to'].", storage_id_from:".$value['storage_id_from']." amount: $amount, (".$value['amount'].") \n";
+
+                $b .= " = ".$amount." [".$value['storage_id_from']." -> ".$value['storage_id_to']."] total_amount: $amount \n";
         }
-//return $b;
+        if ($request->action == 'list'){
+            if (isset($request->latest)){
+                $latest = $request->latest;
+            }else{
+                $latest = 10;
+            }
+            $resArr = preg_split("/(\r\n|\n|\r)/",$b);
+            $result = array_slice($resArr, -($latest+1), $latest);
+
+
+            return response()->json($result);
+        }
+
 
         $price = number_format($price,2,'.','');
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Goods;
 
 use App\Exceptions\NotEnoughGoods;
+use App\Facades\GetName;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Storage\StorageController;
 use App\Http\Resources\CostGoodsOnStockResource;
@@ -76,7 +77,7 @@ class GoodsController extends Controller
 
 
         if($movement->save()) {
-            $service->newLog('setPrice', 'set price '.$request->price.' for good_id '.$movement->goods_id, $request->movement_id);
+            $service->newLog('setPrice', 'set price '.$request->price.' for goods '.GetName::goods($movement->goods_id), $request->movement_id);
             return response()->json(
                 [
                     'status' => 'ok',
@@ -121,9 +122,9 @@ class GoodsController extends Controller
 
         $result = HandleGoods::addGoodsOnStockBalance($movement->storage_id_to, $movement->goods_id, $movement->amount, $dateNow, $movement->price);
 
-        $service->newLog('pullGoods', 'pull goods('.$movement->goods_id.'), from '.$movement->storage_id_from.'->'.$movement->storage_id_to.', amount: '.$movement->amount. ', price: '.$movement->price, $request->movement_id);
+        $service->newLog('pullGoods', 'pull goods('.GetName::goods($movement->goods_id).'), from '.GetName::storage($movement->storage_id_from).' -> '.GetName::storage($movement->storage_id_to).', amount: '.$movement->amount. ', price: '.$movement->price, $request->movement_id);
         if($movement->save() && $result) {
-            return response()->json(['status'=>'ok', 'message'=>'pull goods('.$movement->goods_id.'), from '.$movement->storage_id_from.'->'.$movement->storage_id_to.', amount: '.$movement->amount. ', price: '.$movement->price]);
+            return response()->json(['status'=>'ok', 'message'=>'pull goods('.GetName::goods($movement->goods_id).'), from '.GetName::storage($movement->storage_id_from).' -> '.GetName::storage($movement->storage_id_to).', amount: '.$movement->amount. ', price: '.$movement->price]);
         }
     }
 
@@ -133,7 +134,7 @@ class GoodsController extends Controller
      *
      *
      * @param Request $request
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @return mixed
      */
     public function getStorageGoods(Request $request){
 
@@ -196,13 +197,61 @@ class GoodsController extends Controller
         }
 
         if ($request->key === 'allowed'){
-
+            $goods = StorageGoods::all()
+                ->where('storage_id','=', $request->storage_id);
             return StorageAllowedGoodsResource::collection($goods);
         }
 
         return StorageGoodsResource::collection($goods);
 
     }
+
+
+
+
+    public function searchStorageGoods(Request $request){
+
+
+        if ($request->key === 'available'){
+            if ($request->storage_id === 'all') {
+                $goods = DB::table('stock_balance')
+                    ->join('goods', 'stock_balance.goods_id', '=','goods.id')
+                    ->where('goods.name', 'like',"%$request->name%" )
+                    ->join('storages', 'stock_balance.storage_id', '=','storages.id')
+                    ->select(DB::raw("stock_balance.storage_id as storage_id, storages.name as storage_name, stock_balance.goods_id as goods_id, goods.name as goods_name, goods.unit, goods.type, stock_balance.price, stock_balance.amount"))
+                    ->get();
+
+            }else{
+                $goods = DB::table('stock_balance')
+                    ->where('storage_id', '=', $request->storage_id)
+                    ->join('goods', 'stock_balance.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )
+                    ->select(DB::raw("stock_balance.goods_id as goods_id, goods.name as goods_name, goods.unit, goods.type, stock_balance.price, stock_balance.amount"))
+                    ->get();
+            }
+            return response()->json(['data' => $goods]);
+        }
+
+
+        if ($request->key === 'allowed'){
+            if ($request->storage_id === 'all') {
+                $goods = DB::table('storage_goods')
+                    ->join('goods', 'storage_goods.goods_id', '=','goods.id')
+                    ->where('goods.name', 'like',"%$request->name%" )
+                    ->join('storages', 'storage_goods.storage_id', '=','storages.id')
+                    ->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type, storages.id as storage_id, storages.name as storage_name, storages.type as storage_type"))
+                    ->get();
+            }else{
+                $goods = DB::table('storage_goods')
+                    ->where('storage_id', '=', $request->storage_id)
+                    ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
+                    ->get();
+            }
+
+            return response()->json(['data' => $goods]);
+        }
+
+    }
+
 
     /**
      * api/getGoodsStockBalance/{goods_id}
@@ -251,7 +300,7 @@ class GoodsController extends Controller
             $push = HandleGoods::moveGoods($request->storage_id_from, $request->storage_id_to, $request->goods_id, $request->amount,'move');
 
 
-            $service->newLog('GrowAndMove', 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount, $push['productID']);
+            $service->newLog('GrowAndMove', 'grow and push goods('.GetName::goods($request->goods_id).'), storage: '.GetName::storage($request->storage_id_from).' -> '.GetName::storage($request->storage_id_to).', amount: '.$request->amount, $push['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -262,7 +311,7 @@ class GoodsController extends Controller
         DB::commit();
         return response()->json([
             'status'=>'ok',
-            'message' => 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount
+            'message' => 'grow and push goods('.GetName::goods($request->goods_id).'), storage: '.GetName::storage($request->storage_id_from).' -> '.GetName::storage($request->storage_id_to).', amount: '.$request->amount
 
         ]);
     }
@@ -291,7 +340,7 @@ class GoodsController extends Controller
 
             $result = HandleGoods::addGoodsOnStockBalance($pull->storage_id_to, $pull->goods_id, $pull->amount, $dateNow, $pull->price);
 
-            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price, $push['productID']);
+            $service->newLog('GrowAndMoveOnMainStorage', 'grow and push goods('.GetName::goods($request->goods_id).'), storage: '.GetName::storage($request->storage_id_from).' -> '.GetName::storage($request->storage_id_to).', amount: '.$request->amount. ', price: '. $request->price, $push['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json([
@@ -302,7 +351,7 @@ class GoodsController extends Controller
         DB::commit();
         return response()->json([
             'status'=>'ok',
-            'message' => 'grow and push goods('.$request->goods_id.'), storage: '.$request->storage_id_from.'->'.$request->storage_id_to.', amount: '.$request->amount. ', price: '. $request->price
+            'message' => 'grow and push goods('.GetName::goods($request->goods_id).'), storage: '.GetName::storage($request->storage_id_from).' -> '.GetName::storage($request->storage_id_to).', amount: '.$request->amount. ', price: '. $request->price
 
         ]);
 
@@ -346,13 +395,13 @@ class GoodsController extends Controller
 
             HandleGoods::moveGoods($request->storage_id, $mainStore[0]['param'], $request->goods_id, $request->amount,'move', $readyProductID['productID']);
 
-            $service->newLog('makeProduct', 'made product '.$request->goods_id.' in the amount '. $request->amount.' ,self cost :'.$setSelfCostProduct->price.' and move to main storage', $readyProductID['productID']);
+            $service->newLog('makeProduct', 'made product '.GetName::goods($request->goods_id).' in the amount '. $request->amount.' ,self cost :'.$setSelfCostProduct->price.' and move to main storage', $readyProductID['productID']);
         }catch (NotEnoughGoods $e){
             DB::rollBack();
             return response()->json(['status'=>$e->resMess()]);
         }
         DB::commit();
-        return response()->json(['status'=>'ok', 'message'=>'made product '.$request->goods_id.' in the amount '. $request->amount.' ,self cost :'.$setSelfCostProduct->price.' and move to main storage']);
+        return response()->json(['status'=>'ok', 'message'=>'made product '.GetName::goods($request->goods_id).' in the amount '. $request->amount.' ,self cost :'.$setSelfCostProduct->price.' and move to main storage']);
     }
 
     public function costGoods(Request $request){
@@ -439,7 +488,7 @@ class GoodsController extends Controller
             $param = 0;
         }
         if ($res){
-            $service->newLog('setGoodsPermit', ($param ? 'set' : 'remove').' permit goods_id '.$request->goods_id.' to storage '. $request->storage_id, $param);
+            $service->newLog('setGoodsPermit', ($param ? 'set' : 'remove').' permit goods ('.GetName::goods($request->goods_id).') to storage '.GetName::storage($request->storage_id), $param);
             return response()->json(['status'=>'ok']);
         }else{
             return response()->json(['status'=>'error']);
@@ -462,11 +511,11 @@ class GoodsController extends Controller
                 'status'=> 'error'
             ]);
         }
-        $service->newLog('doTrash','продукт ('.$request->goods_id.'), был утилизирован на складе ('.$request->storage_id.'), в количестве ('.$request->amount.')', $trashID['productID']);
+        $service->newLog('doTrash','продукт ('.GetName::goods($request->goods_id).'), был утилизирован на складе ('.GetName::storage($request->storage_id).'), в количестве ('.$request->amount.')', $trashID['productID']);
         DB::commit();
         return response()->json([
             'status'=>'ok',
-            'message' => 'продукт ('.$request->goods_id.'), был утилизирован на складе ('.$request->storage_id.'), в количестве ('.$request->amount.')'
+            'message' => 'продукт ('.GetName::goods($request->goods_id).'), был утилизирован на складе ('.GetName::storage($request->storage_id).'), в количестве ('.$request->amount.')'
 
         ]);
 
@@ -485,8 +534,10 @@ class GoodsController extends Controller
     }
 
     public function searchGoods(Request $request){
+
+
 //        $goods = Goods::where('name', 'like', "$request->name%")->get();
-        $goods = Goods::whereRaw('LOWER(name) like \'%'.$request->name.'%\'')->get();
+        $goods = Goods::whereRaw('LOWER(name) like \'%'.mb_strtolower($request->name).'%\'')->get();
         return response()->json($goods);
     }
 
@@ -494,25 +545,36 @@ class GoodsController extends Controller
         $user_id = Auth::id();
         $dateNow = date('Y-m-d H:i:s');
 
-        if ($request->old_amount > $request->new_amount){
+        DB::beginTransaction();
 
-            $actualAmount = $request->old_amount - $request->new_amount ;
-
-            $move = HandleGoods::moveGoods($request->storage_id, null, $request->goods_id, $actualAmount, 'stock_correct', null, null,$user_id, $dateNow, $request->price, null);
-
-            $service->newLog('correctGoods', 'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', written off amount: '.$actualAmount. ' with price: '.$request->price, $move['productID']);
-            return response()->json(['status'=> 'ok', 'message'=>'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', written off amount: '.$actualAmount. ' with price: '.$request->price]);
+        $goods = StockBalance::where('storage_id', '=', $request->storage_id)->where('goods_id','=',$request->goods_id);
+        $move = $goods->get();
+        if (count($move)==0){
+            HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $request->new_amount,$dateNow, $request->price);
+            $oldAmount = 0;
+            $oldPrice = 0;
+            $move_in = HandleGoods::movements(null, $request->storage_id , $request->goods_id, 'stock_correct', null, $request->new_amount, null, $request->price, $user_id, $dateNow);
         }else{
-            $actualAmount = $request->new_amount - $request->old_amount;
+            if (isset($request->price)){
+                $price = $request->price;
+            }else{
+                $price = $move[0]['price'];
+            }
+            $oldAmount = $move[0]['amount'];
+            $oldPrice = $move[0]['price'];
+            $move_out = HandleGoods::movements($request->storage_id, null, $move[0]['goods_id'], 'stock_correct', null, $move[0]['amount'], null, $price, $user_id, $dateNow);
+            $goods->delete();
 
-            $move = HandleGoods::movements(null, $request->storage_id, $request->goods_id, 'stock_correct', null, $actualAmount, null, $request->price, $user_id, $dateNow);
+            if ($request->new_amount!= 0){
+                $move_in = HandleGoods::movements(null, $request->storage_id , $request->goods_id, 'stock_correct', null, $request->new_amount, null, $price, $user_id, $dateNow);
 
+                HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $request->new_amount,$dateNow, $price);
+            }
 
-             HandleGoods::addGoodsOnStockBalance($request->storage_id, $request->goods_id, $actualAmount, $dateNow, $request->price);
-            $service->newLog('correctGoods', 'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', added amount: '.$actualAmount. ' with price: '.$request->price, $move['productID']);
-
-            return response()->json(['status'=> 'ok', 'message'=>'correction goods_id '.$request->goods_id.' on storage '.$request->storage_id.', added amount: '.$actualAmount. ' with price: '.$request->price]);
         }
+        $service->newLog('correctGoods', 'correction goods ('.GetName::goods($request->goods_id).') on storage '.GetName::storage($request->storage_id).', old amount: '.$oldAmount.' -> new amount'.$request->new_amount. ' with old price: '.$oldPrice.' -> new price '.$request->price, null);
+        DB::commit();
+        return response()->json(['status'=> 'ok', 'message'=>'correction goods ('.GetName::goods($request->goods_id).') on storage '.GetName::storage($request->storage_id).', old amount: '.$oldAmount.' -> new amount'.$request->new_amount. ' with old price: '.$oldPrice.' -> new price '.$request->price]);
     }
 
 
@@ -551,8 +613,9 @@ class GoodsController extends Controller
             $newRecipe->ingredients_id = $ingredient->goods_id;
             $newRecipe->save();
         }
+        $service->newLog('saveRecipe', 'recipe for goods '.GetName::goods($request->goods_id).' create successful', $request->goods_id);
 
-        return response()->json(['status' => 'ok', 'message' => 'recipe create successful']);
+        return response()->json(['status' => 'ok', 'message' => 'recipe for goods'.GetName::goods($request->goods_id).' create successful']);
     }
 
     public function getRecipe(Request $request){
@@ -560,7 +623,7 @@ class GoodsController extends Controller
         return response()->json(['data'=>$recipe]);
     }
 
-    public function updateRecipe(Request $request){
+    public function updateRecipe(Request $request, LogService $service){
         DB::beginTransaction();
         $recipe = Recipe::where('readygoods_id', '=', $request->goods_id)->delete();
 
@@ -574,9 +637,39 @@ class GoodsController extends Controller
 
         DB::commit();
 
-        return response()->json(['status' => 'ok', 'message' => 'recipe updated successful']);
+        $service->newLog('updateRecipe', 'recipe for goods '.GetName::goods($request->goods_id).' updated successful', $request->goods_id);
+        return response()->json(['status' => 'ok', 'message' => 'recipe for goods '.GetName::goods($request->goods_id).' updated successful']);
 
 
+    }
+
+    public function pushPackageGoods(Request $request, LogService $service){
+        $request = json_decode($request->getContent());
+        $user = Auth::id();
+        $data = date('Y-m-d H:i:s');
+        DB::beginTransaction();
+
+        try {
+            foreach ($request as $value){
+                if (isset($value->storage_id_from)){
+                    $category = 'move';
+                }else{
+                    $category = 'grow';
+                }
+
+                $push = HandleGoods::moveGoods($value->storage_id_from, $value->storage_id_to, $value->goods_id, $value->amount, $category);
+                $service->newLog('pushPackageGoods', ' push goods('.GetName::goods($value->goods_id).'), storage: '.GetName::storage($value->storage_id_from).' -> '.GetName::storage($value->storage_id_to).', amount: '.$value->amount.', category '.$category, $push['productID']);
+            }
+        }catch (NotEnoughGoods $e){
+            DB::rollBack();
+            return response()->json([
+                'message'=>$e->resMess(),
+                'status'=> 'error'
+            ]);
+        }
+        DB::commit();
+
+        return response()->json(['status' => 'ok', 'message' => 'goods successful pushed']);
     }
 
 }

@@ -248,20 +248,31 @@
             this.dt = '2022-09-05 00:00:00'
 
 
-            // получим все перемещений на этом складе
+            // получим Сумму всех перемещений на этом складе за период
             // getListGoodsMovements/3/2022-08-01/2022-09-01
-            let total = 0
-            axios.get('/api/getListGoodsMovements/'+ this.my_storage_id+'/'+this.df+'/'+this.dt).then(res => {
-                res.data.data.forEach((el, index) => {
-                    if(el.category === 'move' && el.user_id_accepted !== null) // товар отгружен и принят гл.складом
-                    {
-                        total += el.price * el.amount
-                        this.sumMovement = total
-                        //console.log('+ id:'+el.id+' goods:'+el.goods_id+ ': '+ el.price +'*'+ el.amount+' = '+total)
-                    }
-                    //else
-                        //console.log('-'+el.id+' '+el.goods_id)
-                })
+            // let total = 0
+            // axios.get('/api/getListGoodsMovements/'+ this.my_storage_id+'/'+this.df+'/'+this.dt).then(res => {
+            //     res.data.data.forEach((el, index) => {
+            //         if(el.category === 'move' && el.user_id_accepted !== null) // товар отгружен и принят гл.складом
+            //         {
+            //             total += el.price * el.amount
+            //             this.sumMovement = total.toFixed(2)
+            //             //console.log('+ id:'+el.id+' goods:'+el.goods_id+ ': '+ el.price +'*'+ el.amount+' = '+total)
+            //         }
+            //         //else
+            //             //console.log('-'+el.id+' '+el.goods_id)
+            //     })
+            // }).catch(err => {
+            //     console.error(err)
+            //     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            // })
+
+
+
+
+
+            axios.get('/api/getSumMoneyGoodsMovements/'+ this.my_storage_id+'/'+this.df+'/'+this.dt).then(res => {
+                this.sumMovement = res.data.sum
             }).catch(err => {
                 console.error(err)
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
@@ -269,7 +280,7 @@
 
             // получим затраты на ЗП
             // api/getSalary/total/3/100/2022-06-01 00:00:00/2022-09-05 00:00:00
-            total = 0
+            //total = 0
             axios.get('/api/getSalary/total/'+ this.my_storage_id+'/100/'+this.df+'/'+this.dt).then(res => {
                 this.sumSalary = res.data.sum
             }).catch(err => {

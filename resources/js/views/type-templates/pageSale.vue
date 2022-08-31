@@ -106,7 +106,12 @@
         </div>
         <!--ПЕРЕДАТЬ ТОВАР    -->
 
-<list-goods :storage_id="this.my_storage_id"></list-goods>
+
+        <router-link :to="{name: 'listMovements'}">
+            <a href="">список операций</a>
+        </router-link>
+
+        <list-goods :storage_id="this.my_storage_id"></list-goods>
 
 
 
