@@ -12,11 +12,23 @@
             <div class="card card-style p-4 overflow-visible">
 
                 <div class="row mb-0" v-for="(item, index) in buy_goods" :key="item.goods_id">
-                    <select-input :data="list_goods"
-                                  :label="'Товар '+ (index+1)"
-                                  :value="item.goods_id"
-                                  @getSelected="getGoodsId($event, index)">
-                    </select-input>
+                    <div class="position-relative pb-3">
+                        <label class="color-blue-dark position-absolute" style="z-index: 10; left: 25px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт</label>
+                        <v-select :options="list_goods"
+                                  :value="'goods_id'"
+                                  :label="'goods_name'"
+                                  :placeholder="'выбрать продукт'"
+                                  @option:selected="changeGoods($event, index)"
+                                  @search="searchGoods"
+                        >
+                        </v-select>
+                    </div>
+
+<!--                    <select-input :data="list_goods"-->
+<!--                                  :label="'Товар '+ (index+1)"-->
+<!--                                  :value="item.goods_id"-->
+<!--                                  @getSelected="getGoodsId($event, index)">-->
+<!--                    </select-input>-->
 
                     <div class="col-12 d-flex justify-content-end">
                         <div class="form-check icon-check">
@@ -117,6 +129,7 @@
     import TitlePage from '../Components/Title'
     import SelectInput from "../Components/SelectInput"
     import cardBalance from "../Components/cardBalance";
+    import vSelect from "vue-select"
 
     export default {
         name: "pageBuyProducts",
@@ -124,7 +137,7 @@
             error,
             TitlePage,
             headBar, NavBar, NavBarMenu, SelectInput,
-            cardBalance
+            cardBalance, vSelect
         },
         data() {
             return {
@@ -156,9 +169,24 @@
         },
         mounted() {
             this.my_storage_id = localStorage.getItem('my_storage_id');
-            this.getAllowedGoods(this.my_storage_id)
+            // this.getAllowedGoods(this.my_storage_id)
         },
         methods: {
+            searchGoods(value){
+                if(!value) return;
+                axios.get('/api/searchStorageGoods/available/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
+                    this.list_goods = res.data.data;
+                }).catch(e => {
+                    this.message = e.response.data.message
+                    console.log(e)
+                });
+            },
+            changeGoods(value, index){
+                if(!value) return;
+                const current = this.list_goods.find(el => el.goods_id === value);
+                this.buy_goods[index].unit = current.unit;
+                this.buy_goods[index].goods_id = value;
+            },
             async getAllowedGoods(storage_id){
                 const res = await axios.get(`/api/getStorageGoods/available/${storage_id}/all`);
                 if(!res.data){
