@@ -29,24 +29,28 @@ class ReportController extends Controller
 
     public function getListGoodsMovements(Request $request){
 
-        $listGoodsMovement = Movements::where('date_accepted','>=', $request->date_from)
+        $listGoodsMovement = Movements::
+              where('date_accepted','>=', $request->date_from)
             ->where('date_accepted','<=', $request->date_to)
             ->where(function($query) use ($request) {
                 $query->where('storage_id_to', '=', $request->storage_id)
                     ->orWhere('storage_id_from', '=', $request->storage_id);
-            })->orderBy('date_accepted', 'desc')->limit(30)->get();
+            })
+            ->orderBy('date_accepted', 'desc')
+//            ->limit(30)
+            ->get();
         return ListGoodsMovementResource::collection($listGoodsMovement);
 
     }
 
-    public function getSumMoneyMovementGoods(Request $request){
+    public function getSumMoneyGoodsMovements(Request $request){
         $listGoodsMovement = $this->movementsModel
             ->where('storage_id_from', '=', $request->storage_id)
             ->where('date_accepted','>=', $request->date_from)
             ->where('date_accepted','<=', $request->date_to)
             ->where('category','=','move')
             ->sum(function ($item){
-            return $item->price*$item->amount;
+                return number_format($item->price * $item->amount, 2, '.', '');
         });
 
         return ['sum'=>$listGoodsMovement];
