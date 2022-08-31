@@ -23,12 +23,13 @@
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
-                    <div class="col-12" v-if="existing_goods.length">
-                        <p class="mb-0">Уже существуют похожие товары:</p>
+
+                    <div class="ms-0 me-0 mb-5 alert alert-small rounded-s shadow-xl bg-red-dark" role="alert" v-if="existing_goods.length">
+                        <p class="mb-0 color-white">Уже существуют похожие товары:</p>
                         <ul>
                             <li v-for="(exist, index) in existing_goods">{{ exist.name }}</li>
                         </ul>
-                        <p class="mb-0">Продолжить создания продукта?</p>
+                        <p class="mb-0 color-white">Продолжить создания продукта?</p>
                         <div class="col-6 d-flex align-items-center justify-content-between">
                             Нет
                             <div class="custom-control android-switch" style="z-index: 10;">
@@ -37,8 +38,26 @@
                             </div>
                             Да
                         </div>
-
                     </div>
+
+<!--                    <div class="col-12" v-if="existing_goods.length">-->
+<!--                        <p class="mb-0">Уже существуют похожие товары:</p>-->
+<!--                        <ul>-->
+<!--                            <li v-for="(exist, index) in existing_goods">{{ exist.name }}</li>-->
+<!--                        </ul>-->
+<!--                        <p class="mb-0">Продолжить создания продукта?</p>-->
+<!--                        <div class="col-6 d-flex align-items-center justify-content-between">-->
+<!--                            Нет-->
+<!--                            <div class="custom-control android-switch" style="z-index: 10;">-->
+<!--                                <input type="checkbox" class="android-input" id="toggle-id-4" v-model="ignore" @change="ignoreExistingGoods">-->
+<!--                                <label class="custom-control-label" for="toggle-id-4"></label>-->
+<!--                            </div>-->
+<!--                            Да-->
+<!--                        </div>-->
+
+<!--                    </div>-->
+
+
                     <div class="col-4">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <label class="color-blue-dark" for="product_unit">Ед. изм.</label>
@@ -133,6 +152,7 @@
                 });
             },
             searchGoods(){
+                console.log(this.name)
                 if(this.name === '') return;
                 this.searching = true;
                 axios.get(`/api/searchGoods/${this.name}`).then(res => {
