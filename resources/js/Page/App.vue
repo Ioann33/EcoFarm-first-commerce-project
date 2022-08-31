@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import 'vue-select/dist/vue-select.css';
+
 export default {
     name: "App",
     mounted() {
@@ -10,4 +12,10 @@ export default {
     }
 }
 </script>
+
+<style>
+    .vs__dropdown-toggle {
+        border-radius: 10px;
+    }
+</style>
 

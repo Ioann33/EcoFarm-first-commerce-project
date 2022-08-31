@@ -8,15 +8,28 @@
             <title-page title_main="Редактировать товар"></title-page>
 
             <div class="card card-style p-4 pt-3 mt-3">
-                <select-input :data="goods"
-                              :keyOfValue="'goods_id'"
-                              :value="selected_goods"
-                              :label="'Продукт'"
-                              :defaultOption="'выбрать продукт'"
-                              :loading="loadingGoods"
-                              @getSelected="selectGoods"
-                >
-                </select-input>
+                <div class="position-relative pb-3">
+                    <label class="color-blue-dark position-absolute" style="z-index: 10; left: 9px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт</label>
+                    <v-select :options="list_goods"
+                              :value="'goods_id'"
+                              :label="'goods_name'"
+                              :placeholder="'выбрать продукт'"
+                              @option:selected="changeGoods"
+                              @search="searchGoods"
+                    >
+                    </v-select>
+                </div>
+
+
+<!--                <select-input :data="goods"-->
+<!--                              :keyOfValue="'goods_id'"-->
+<!--                              :value="selected_goods"-->
+<!--                              :label="'Продукт'"-->
+<!--                              :defaultOption="'выбрать продукт'"-->
+<!--                              :loading="loadingGoods"-->
+<!--                              @getSelected="selectGoods"-->
+<!--                >-->
+<!--                </select-input>-->
 
                 <select-input :data="types"
                               :keyOfValue="'id'"
@@ -40,7 +53,7 @@
                             <em></em>
                         </div>
                     </div>
-                    <div class="col-3 p-1">
+                    <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="text" class="form-control focus-color focus-blue validate-name "
                                    id="unit"
@@ -75,18 +88,20 @@
     import TitlePage from "../Components/Title";
     import SelectInput from "../Components/SelectInput";
     import Success from "../Components/Success";
+    import vSelect from "vue-select"
 
     export default {
         name: "pagePreSale",
         components: {
             error,
             TitlePage,
-            headBar, NavBar, NavBarMenu, SelectInput, Success
+            headBar, NavBar, NavBarMenu, SelectInput, Success, vSelect
         },
         data(){
             return {
                 loadingGoods: false,
                 goods: [],
+                list_goods: [],
                 selected_goods: 'default',
                 types: [
                     {id: 1, name: 'Ингредиент'},
@@ -117,6 +132,26 @@
         updated() {
         },
         methods: {
+            test(value){
+              console.log(value)
+            },
+            searchGoods(value){
+                if(!value) return;
+                axios.get('/api/searchStorageGoods/available/all/'+value.toLowerCase()).then(res => {
+                    this.list_goods = res.data.data;
+                }).catch(e => {
+                    this.message = e.response.data.message
+                    console.log(e)
+                });
+            },
+            changeGoods(value){
+                console.log(value)
+                if(!value) return;
+                this.selected_goods = value.goods_id;
+                this.selected_type = value.type;
+                this.name = value.goods_name;
+                this.unit = value.unit;
+            },
             getListGoods(){
                 this.loadingGoods = true;
                 axios.get('/api/getListGoods').then(res => {
@@ -163,6 +198,10 @@
 </script>
 
 <style>
+    .vs__selected-options > input, .vs__selected-options > input:focus {
+        padding: 12px 6px;
+        border: none;
+    }
     .btn-default {
         background-color: #A0D468;
         border-radius: 10px;
