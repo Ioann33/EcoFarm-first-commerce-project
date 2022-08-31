@@ -65,7 +65,6 @@
     import TitlePage from "../Components/Title";
     import SelectInput from "../Components/SelectInput";
     import vSelect from "vue-select"
-    import 'vue-select/dist/vue-select.css';
 
     export default {
         name: "pagePermitGoods",
