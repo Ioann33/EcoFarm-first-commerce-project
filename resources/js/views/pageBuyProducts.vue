@@ -11,7 +11,7 @@
 
             <div class="card card-style p-4 overflow-visible">
 
-                <div class="row mb-0" v-for="(item, index) in buy_goods" :key="item.goods_id">
+                <div class="row mb-0" v-for="(item, index) in buy_goods" :key="index">
                     <div class="position-relative pb-3">
                         <label class="color-blue-dark position-absolute" style="z-index: 10; left: 25px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт</label>
                         <v-select :options="list_goods"
@@ -174,7 +174,7 @@
         methods: {
             searchGoods(value){
                 if(!value) return;
-                axios.get('/api/searchStorageGoods/available/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
+                axios.get('/api/searchStorageGoods/allowed/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
                     this.list_goods = res.data.data;
                 }).catch(e => {
                     this.message = e.response.data.message
@@ -182,10 +182,8 @@
                 });
             },
             changeGoods(value, index){
-                if(!value) return;
-                const current = this.list_goods.find(el => el.goods_id === value);
-                this.buy_goods[index].unit = current.unit;
-                this.buy_goods[index].goods_id = value;
+                this.buy_goods[index].unit = value.unit;
+                this.buy_goods[index].goods_id = value.goods_id;
             },
             async getAllowedGoods(storage_id){
                 const res = await axios.get(`/api/getStorageGoods/available/${storage_id}/all`);
