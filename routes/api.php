@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getSalary/{type}/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSalary']);
     Route::get('/getSaldo/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSaldo']);
     Route::get('/getLogs/{event}/{date_from?}/{date_to?}', [\App\Http\Controllers\Reports\ReportController::class, 'getLogs']);
+    Route::get('/getAdvancedLogs', [\App\Http\Controllers\Reports\ReportController::class, 'getAdvancedLogs']);
     Route::get('/checkStockBalance/{storage_id}/{goods_id}/{action?}/{latest?}', [\App\Http\Controllers\Reports\ReportController::class, 'checkStockBalance']);
 
     Route::get('/getFinance/{storage_id}/{type?}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
