@@ -10,28 +10,42 @@
 
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
 
-                <div class="row mb-0" v-for="(item, i) in sale_goods" :key="item.goods_id">
+                <div class="row mb-0" v-for="(item, i) in sale_goods" :key="index">
                     <div class="col-12 p-1 position-relative">
                         <button v-if="sale_goods.length > 1" class="fa fa-times-circle font-18 delete-product" @click="deleteProduct(i)"></button>
-                        <div class="input-style input-style-always-active has-borders no-icon">
-                            <label for="storage-list" class="color-blue-dark">Товар {{ i+ 1}}</label>
-                            <select id="storage-list" v-model="item.goods_id" @change="selectedGoods(item.goods_id, i)" class="form-control">
-                                <option value="default" disabled selected>выбрать товар</option>
-                                <option
-                                    v-for="(goods, index) in available_goods.filter(el => ![...selected_goods.slice(0,i), ...selected_goods.slice(i+1,selected_goods.length)].includes(el.goods_id))"
-                                    v-bind:value="goods.goods_id"
-                                >
-                                    {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}
-                                </option>
-
-                            </select>
+                        <div class="position-relative pb-3">
+                            <label class="color-blue-dark position-absolute" style="z-index: 10; left: 9px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт {{i+ 1}}</label>
+                            <v-select :options="available_goods.filter(el => ![...selected_goods.slice(0,i), ...selected_goods.slice(i+1,selected_goods.length)].includes(el.goods_id))"
+                                      :value="'goods_id'"
+                                      :label="'goods_name'"
+                                      :placeholder="'выбрать продукт'"
+                                      @option:selected="changeGoods($event, i)"
+                                      @search="searchGoods($event, i)"
+                            >
+                            </v-select>
                             <div v-if="loading_goods" class="spinner-border text-light select-input-spinner" role="status">
                                 <span class="sr-only">Loading...</span>
                             </div>
-                            <span><i class="fa fa-chevron-down"></i></span>
-                            <i class="fa fa-check disabled valid color-green-dark"></i>
-                            <em></em>
                         </div>
+<!--                        <div class="input-style input-style-always-active has-borders no-icon">-->
+<!--                            <label for="storage-list" class="color-blue-dark">Товар {{ i+ 1}}</label>-->
+<!--                            <select id="storage-list" v-model="item.goods_id" @change="selectedGoods(item.goods_id, i)" class="form-control">-->
+<!--                                <option value="default" disabled selected>выбрать товар</option>-->
+<!--                                <option-->
+<!--                                    v-for="(goods, index) in available_goods.filter(el => ![...selected_goods.slice(0,i), ...selected_goods.slice(i+1,selected_goods.length)].includes(el.goods_id))"-->
+<!--                                    v-bind:value="goods.goods_id"-->
+<!--                                >-->
+<!--                                    {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}-->
+<!--                                </option>-->
+
+<!--                            </select>-->
+<!--                            <div v-if="loading_goods" class="spinner-border text-light select-input-spinner" role="status">-->
+<!--                                <span class="sr-only">Loading...</span>-->
+<!--                            </div>-->
+<!--                            <span><i class="fa fa-chevron-down"></i></span>-->
+<!--                            <i class="fa fa-check disabled valid color-green-dark"></i>-->
+<!--                            <em></em>-->
+<!--                        </div>-->
 
                     </div>
                     <div class="col-4 p-1">
@@ -102,12 +116,14 @@
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
     import TitlePage from "../Components/Title";
+    import vSelect from "vue-select"
+
     export default {
         name: "pageSaleProducts",
         components:{
             error,
             TitlePage,
-            headBar, NavBar, NavBarMenu,
+            headBar, NavBar, NavBarMenu, vSelect
         },
 
         data() {
@@ -143,13 +159,41 @@
         },
         async mounted() {
             this.my_storage_id = localStorage.getItem('my_storage_id');
-            await this.getStorageGoods(this.my_storage_id);
+            // await this.getStorageGoods(this.my_storage_id);
 
         },
         updated() {
             update_template()
         },
         methods: {
+            searchGoods(value, index){
+                if(!value) return;
+                axios.get('/api/searchStorageGoods/available/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
+                    this.available_goods = res.data.data;
+                }).catch(e => {
+                    this.message = e.response.data.message
+                    console.log(e)
+                });
+            },
+            changeGoods(value, index){
+                // Сохраняем те данные, которые мы получили от апи поиска по товарах
+                this.sale_goods[index].goods_id = value.goods_id;
+                this.sale_goods[index].unit = value.unit;
+
+                // Теперь нужно получить конкретные показатели по товару на текущем складе,
+                // например, максимальное к-во
+                this.loading_goods = true;
+                axios.get('/api/getStorageGoods/available/' + this.my_storage_id + '/' + value.goods_id).then(res => {
+                    console.log(res.data.data)
+                    if(res.data.data[0]){
+                        this.sale_goods[index].max_amount = res.data.data[0].amount;
+                    }
+                    this.loading_goods = false;
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+            },
             deleteProduct(i){
                this.sale_goods.splice(i, 1);
             },
@@ -230,7 +274,7 @@
         position: absolute;
         z-index: 1;
         right: -2px;
-        top: 60px;
+        top: 68px;
         color: #DA4453;
     }
     .btn-default {
@@ -243,8 +287,8 @@
     }
     .select-input-spinner{
         position: absolute;
-        right: 35px;
-        top: 10px;
+        right: 45px;
+        top: 14px;
     }
     .add-goods-btn{
         position: absolute;
