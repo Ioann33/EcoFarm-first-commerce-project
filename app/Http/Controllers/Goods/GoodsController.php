@@ -371,6 +371,10 @@ class GoodsController extends Controller
 
             $readyProductID = HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
 
+            $movements = Movements::findOrFail($readyProductID['productID']);
+            $movements->link_id = $readyProductID['productID'];
+            $movements->save();
+
             foreach ($ingredients as $ingredient){
 
                 HandleGoods::moveGoods($request->storage_id, null, $ingredient->goods_id, $ingredient->amount, 'ingredients', $readyProductID['productID'], null, $user_id, $dateNow);
