@@ -656,7 +656,7 @@ class GoodsController extends Controller
                 }
 
                 $push = HandleGoods::moveGoods($value->storage_id_from, $value->storage_id_to, $value->goods_id, $value->amount, $category);
-                $service->newLog('pushPackageGoods', ' push goods('.GetName::goods($value->goods_id).'), storage: '.GetName::storage($value->storage_id_from).' -> '.GetName::storage($value->storage_id_to).', amount: '.$value->amount.', category '.$category, $push['productID']);
+                $service->newLog('pushPackageGoods', $category.' goods('.GetName::goods($value->goods_id).'), storage: '.GetName::storage($value->storage_id_from).' -> '.GetName::storage($value->storage_id_to).', amount: '.$value->amount.', category '.$category, $push['productID']);
             }
         }catch (NotEnoughGoods $e){
             DB::rollBack();
@@ -667,7 +667,7 @@ class GoodsController extends Controller
         }
         DB::commit();
 
-        return response()->json(['status' => 'ok', 'message' => 'goods successful pushed']);
+        return response()->json(['status' => 'ok', 'message' => 'goods successful '.$category]);
     }
 
 }
