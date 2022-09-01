@@ -246,6 +246,7 @@ class ReportController extends Controller
          $this->validate($request,[
              'limit' => 'integer'
              ]);
+
          $movements_full = DB::table('movements_full')->orderBy('date_created', 'desc')->limit($request->limit)->get();
 
          return response()->json(['data' => $movements_full]);
