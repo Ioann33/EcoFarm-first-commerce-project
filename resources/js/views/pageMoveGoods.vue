@@ -20,15 +20,16 @@
 
 
 
-                    <div class="row mb-0">
+                    <div class="row mb-0" v-for="(el, index) in move_goods" :key="index">
                         <div class="position-relative col-7 pb-3">
-                            <label class="color-blue-dark position-absolute" style="z-index: 10; left: 22px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт</label>
-                            <v-select :options="listGoods"
+                            <label class="color-blue-dark position-absolute" style="z-index: 10; left: 22px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт {{ index + 1 }}</label>
+                            <v-select :options="listGoods.filter(elem => ![...selected_goods.slice(0,index), ...selected_goods.slice(index+1,selected_goods.length)].includes(elem.goods_id))"
                                       :value="'goods_id'"
                                       :label="'goods_name'"
                                       :placeholder="'выбрать продукт'"
-                                      @option:selected="changeGoods"
+                                      @option:selected="changeGoods($event, index)"
                                       @search="searchGoods"
+                                      :disabled="selected_storage_id === 'default'"
                             >
                             </v-select>
                         </div>
@@ -53,23 +54,23 @@
 
                         <div class="col-3 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
-                                <input type="number" :disabled="max_amount === 0" class="form-control focus-color focus-blue validate-name "
+                                <input type="number" :disabled="el.max_amount === 0" class="form-control focus-color focus-blue validate-name "
                                        id="f1"
-                                       v-model="goods_amount"
-                                       @input="checkAmount"
+                                       v-model="el.amount"
+                                       @input="checkAmount(index)"
                                        @focus="$event.target.select()"
                                 >
 <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                                 <i class="fa fa-times disabled invalid color-red-dark"></i>
                                 <i class="fa fa-check disabled valid color-green-dark"></i>
-                                <em>{{ max_amount }}</em>
+                                <em>{{ el.max_amount }}</em>
                             </div>
                         </div>
 
                         <div class="col-2 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
                                 <input type="number" disabled class="form-control focus-color focus-blue validate-name text-center"
-                                       :placeholder="unit"
+                                       :placeholder="el.unit"
                                 >
 
                                 <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -79,7 +80,7 @@
 
                     </div>
 
-
+                    <button class="btn btn-success" style="margin: 0 auto 10px auto" @click="addGoods">+</button>
 
                     <!--выбор склада/департамента. только для главного склада                    -->
                     <div class="row position-relative" v-if="canSelectStorageTo">
@@ -87,13 +88,13 @@
                             <div class="input-style input-style-always-active has-borders no-icon">
                                 <label for="f6" class="color-blue-dark">на склад</label>
                                 <select id="f6" v-model="selected_storage_id">
-                                    <option value="default" disabled selected>выбрать склад</option>
+                                    <option value="default" disabled>выбрать склад</option>
 
                                     <option
                                         v-for="(storage, index) in listStorage"
-                                        v-bind:value="storage.storage_id"
+                                        v-bind:value="storage.id"
                                     >
-                                        {{ storage.storage_name }}
+                                        {{ storage.name }}
                                     </option>
 
                                 </select>
@@ -110,7 +111,7 @@
                 </div>
 
 
-                <a v-if="canDoPull" @click.prevent="makeMoveGoods" href="#" >
+                <a v-if="canDoPull" @click.prevent="makeMoveGoodsNEW" href="#" >
                     <div class="content-boxed bg-blue-dark mt-1 pb-3 text-center text-uppercase">
                         <h4 class="color-white">Передать на склад</h4>
                     </div>
@@ -157,9 +158,12 @@ export default {
             selected_goods_id: 'default',
             selected_storage_id: 'default',
 
-            goods_amount: 0 ,   // количество товара
-            max_amount: 0,  // максимальное количество товара
-            unit: 'кг',  // единица измерения товара
+            move_goods: [{
+                goods_id: 'default',
+                amount: 0, // количество товара
+                max_amount: 0, // максимальное количество товара
+                unit: 'кг' // единица измерения товара
+            }],
 
             order_id: '',      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
             order: [],     // массив. getOrder/order_id
@@ -231,8 +235,18 @@ export default {
         //         console.log(this.message)
         //     })
         // }
+
+        // Получаем список всех складов и предоставляем их на выбор пользователя
+        this.getListStorages();
     },
     computed: {
+        selected_goods(){
+            let arr = [];
+            this.move_goods.forEach(el => {
+                arr.push(el.goods_id);
+            })
+            return arr;
+        },
         canDoPull(){
             if(this.selected_storage_id!=='default' && this.goods_amount > 0)
                 return 1
@@ -262,32 +276,35 @@ export default {
         update_template()
     },
     methods: {
-        getStorageGoodsOne(goods_id){
-            axios.get('/api/getStorageGoods/' + this.rule + '/' + this.my_storage_id + '/' + goods_id).then(res => {
-                this.max_amount = res.data.data[0].amount;
-            })
+        getListStorages(){
+          axios.get('/api/getListStorages/').then(res => {
+              this.listStorage = res.data.data;
+          }).catch(e => {
+             console.log(e)
+          });
+        },
+        addGoods(){
+          this.move_goods.push({
+              goods_id: 'default',
+              amount: 0,
+              max_amount: 0,
+              unit: 'кг'
+          })
         },
         searchGoods(value){
-            if(!value) return;
-            axios.get('/api/searchStorageGoods/allowed/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
+            if(value === '') return;
+            axios.get('/api/searchStorageGoods/' + this.rule + '/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
+
                 this.listGoods = res.data.data;
             }).catch(e => {
                 this.message = e.response.data.message
                 console.log(e)
             });
         },
-        changeGoods(value){
-            this.selected_goods_id = value.goods_id;
-            this.unit = value.unit;
-
-            // В запросе /api/searchStorageGoods мы не получаем max_amount этого товара,
-            // поэтому делаем запрос на /api/getStorageGoods с конкретным goods_id
-
-            // Этот запрос чтобы получить именно мксимальное количество товара
-            this.getStorageGoodsOne(value.goods_id);
-
-            // А этот запрос уже для получения списка доступных департаментов
-            this.getListStoragesGoodsPermit();
+        changeGoods(value, index){
+            this.move_goods[index].goods_id = value.goods_id;
+            this.move_goods[index].max_amount = value.amount;
+            this.move_goods[index].unit = value.unit;
         },
         getStorageProp(storage_id){
             axios.get('/api/getStorageProp/'+storage_id).then(res => {
@@ -298,9 +315,9 @@ export default {
                 console.log(this.message)
             })
         },
-        checkAmount(){
-            if(this.goods_amount > this.max_amount){
-                this.goods_amount = this.max_amount;
+        checkAmount(index){
+            if(this.move_goods[index].amount > this.move_goods[index].max_amount){
+                this.move_goods[index].amount = this.move_goods[index].max_amount;
             }
         },
         // Метод для тарой версии инпута без возможности поиска
@@ -331,6 +348,31 @@ export default {
                 console.error(this.message)
             })
         },
+        makeMoveGoodsNEW(){
+            let payload = [];
+            this.move_goods.forEach(el => {
+                // Исключаем пустые инпуты с товаром или количеством 0
+               if(el.goods_id !== 'default' || el.amount !== 0){
+                   payload.push({
+                       storage_id_from: this.my_storage_id,
+                       storage_id_to: this.selected_storage_id,
+                       goods_id: el.goods_id,
+                       amount: el.amount
+                   })
+               }
+            });
+            // Теперь непосредственно исполняем запрос
+            axios.post('/api/pushPackageGoods', {
+                payload
+            }).then(res => {
+                console.log('Запрос исполнен успешно:')
+                console.log(res.data)
+            }).catch(e => {
+                console.log('При выполнении запроса ошибка:')
+                console.log(e)
+            })
+        },
+        // В чем принципиальная разница запросов, если разный type? Выше написал простой, короткий метод для нового апи
         makeMoveGoods(){
             console.log('Move Goods:' +
                 '\n     goods: ' + this.selected_goods_id +
