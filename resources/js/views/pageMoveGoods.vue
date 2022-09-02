@@ -30,6 +30,7 @@
                                       @option:selected="changeGoods($event, index)"
                                       @search="searchGoods"
                                       :disabled="selected_storage_id === 'default'"
+                                      :loading="el.loading"
                             >
                             </v-select>
                         </div>
@@ -77,7 +78,7 @@
                                 <i class="fa fa-check disabled valid color-green-dark"></i>
                             </div>
                         </div>
-
+                        <span style="color:red; padding-bottom: 5px;" v-if="permits[index] === false">Товар не разрешен на выбранном складе</span>
                     </div>
 
                     <button class="btn btn-success" style="margin: 0 auto 10px auto" @click="addGoods">+</button>
@@ -162,8 +163,10 @@ export default {
                 goods_id: 'default',
                 amount: 0, // количество товара
                 max_amount: 0, // максимальное количество товара
-                unit: 'кг' // единица измерения товара
+                unit: 'кг', // единица измерения товара
+                loading: false
             }],
+            permits: [],
 
             order_id: '',      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
             order: [],     // массив. getOrder/order_id
@@ -240,6 +243,14 @@ export default {
         this.getListStorages();
     },
     computed: {
+        isAllPermits(){
+            let count = 0;
+            this.permits.forEach(el => {
+              if(el) count++
+            });
+            if(count === this.permits.length) return true;
+            return false;
+        },
         selected_goods(){
             let arr = [];
             this.move_goods.forEach(el => {
@@ -248,7 +259,8 @@ export default {
             return arr;
         },
         canDoPull(){
-            if(this.selected_storage_id!=='default' && this.goods_amount > 0)
+            // if(this.selected_storage_id!=='default' && this.goods_amount > 0)
+            if(this.selected_storage_id!=='default')
                 return 1
             else
                 return 0
@@ -288,7 +300,8 @@ export default {
               goods_id: 'default',
               amount: 0,
               max_amount: 0,
-              unit: 'кг'
+              unit: 'кг',
+              loading: false
           })
         },
         searchGoods(value){
@@ -301,10 +314,26 @@ export default {
                 console.log(e)
             });
         },
+        getStorageGoodsPermit(id, index){
+            this.move_goods[index].loading = true;
+            axios.get('/api/getListStoragesGoodsPermit/' + id).then(res => {
+                const allowed = res.data.data.find(el => el.storage_id === this.selected_storage_id && el.allowed);
+                if(allowed){
+                    this.permits[index] = true;
+                } else {
+                    this.permits[index] = false;
+                }
+                this.move_goods[index].loading = false;
+            }).catch(e => {
+               console.log(e)
+            });
+        },
         changeGoods(value, index){
             this.move_goods[index].goods_id = value.goods_id;
             this.move_goods[index].max_amount = value.amount;
             this.move_goods[index].unit = value.unit;
+
+            this.getStorageGoodsPermit(value.goods_id, index)
         },
         getStorageProp(storage_id){
             axios.get('/api/getStorageProp/'+storage_id).then(res => {
@@ -349,6 +378,7 @@ export default {
             })
         },
         makeMoveGoodsNEW(){
+            if(!this.isAllPermits) return;
             let payload = [];
             this.move_goods.forEach(el => {
                 // Исключаем пустые инпуты с товаром или количеством 0
