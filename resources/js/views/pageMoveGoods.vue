@@ -20,7 +20,7 @@
 
 
 
-                    <div class="row mb-0" v-for="(el, index) in move_goods" :key="index">
+                    <div class="row mb-3 position-relative" v-for="(el, index) in move_goods" :key="index">
                         <div class="position-relative col-7 pb-3">
                             <label class="color-blue-dark position-absolute" style="z-index: 10; left: 22px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт {{ index + 1 }}</label>
                             <v-select :options="listGoods.filter(elem => ![...selected_goods.slice(0,index), ...selected_goods.slice(index+1,selected_goods.length)].includes(elem.goods_id))"
@@ -78,7 +78,8 @@
                                 <i class="fa fa-check disabled valid color-green-dark"></i>
                             </div>
                         </div>
-                        <span style="color:red; padding-bottom: 5px;" v-if="permits[index] === false">Товар не разрешен на выбранном складе</span>
+                        <i v-if="permits[index]" class="fa fa-check font-18 goods-allowed"></i>
+                        <span class="goods-not-allowed" v-if="permits[index] === false">Товар не разрешен на выбранном складе</span>
                     </div>
 
                     <button class="btn btn-success" style="margin: 0 auto 10px auto" @click="addGoods">+</button>
@@ -88,7 +89,7 @@
                         <div class="col-12 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
                                 <label for="f6" class="color-blue-dark">на склад</label>
-                                <select id="f6" v-model="selected_storage_id">
+                                <select id="f6" v-model="selected_storage_id" @change="changeStorage">
                                     <option value="default" disabled>выбрать склад</option>
 
                                     <option
@@ -288,6 +289,14 @@ export default {
         update_template()
     },
     methods: {
+        changeStorage(){
+            // При изменении склада проверить выбранные товары на allowed
+            this.move_goods.forEach((el, index) => {
+                if(el.goods_id !== 'default'){
+                    this.getStorageGoodsPermit(el.goods_id, index);
+                }
+            });
+        },
         getListStorages(){
           axios.get('/api/getListStorages/').then(res => {
               this.listStorage = res.data.data;
@@ -460,5 +469,22 @@ export default {
 
 }
 </script>
-
+<style>
+    .goods-allowed {
+        position: absolute;
+        z-index: 10;
+        left: 100px;
+        top: -8px;
+        background-color: white;
+        width: auto;
+        padding: 0 5px;
+        color: #A0D468;
+    }
+    .goods-not-allowed {
+        color: #DA4453;
+        position: absolute;
+        left: 4px;
+        bottom: -6px;
+    }
+</style>
 
