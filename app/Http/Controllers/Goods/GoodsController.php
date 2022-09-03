@@ -452,14 +452,23 @@ class GoodsController extends Controller
     }
 
     public function addGoods(Request $request, LogService $service){
+        DB::beginTransaction();
         $addGoods = new Goods();
         $addGoods->name = $request->name;
         $addGoods->unit = $request->unit;
         $addGoods->type = $request->type;
         $addGoods->save();
         $id = $addGoods->id;
-        $service->newLog('addGoods', 'added new goods '.$id, $id);
-        return response()->json(['goods_id'=>$id, 'status'=>'ok', 'message'=>'added new goods ']);
+        $set = new StorageGoods();
+        $mainStore = MainStore::where('name', '=', 'main_storage')
+            ->get()
+            ->toArray();
+        $set->storage_id = $mainStore[0]['param'];
+        $set->goods_id = $id;
+        $set->save();
+        DB::commit();
+        $service->newLog('addGoods', 'added new goods '.$id.', and set permit on main storage', $id);
+        return response()->json(['goods_id'=>$id, 'status'=>'ok', 'message'=>'added new goods , and set permit on main storage']);
     }
 
     public function updateGoods(Request $request, LogService $service){
