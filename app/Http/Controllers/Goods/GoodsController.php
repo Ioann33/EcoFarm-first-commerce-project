@@ -547,8 +547,10 @@ class GoodsController extends Controller
     }
 
     public function searchGoods(Request $request){
+
+
 //        $goods = Goods::where('name', 'like', "$request->name%")->get();
-        $goods = Goods::whereRaw('LOWER(name) like \'%'.$request->name.'%\'')->get();
+        $goods = Goods::whereRaw('LOWER(name) like \'%'.mb_strtolower($request->name).'%\'')->get();
         return response()->json($goods);
     }
 
