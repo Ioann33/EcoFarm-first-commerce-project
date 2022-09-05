@@ -695,13 +695,16 @@ class GoodsController extends Controller
         DB::beginTransaction();
 
         try {
-            foreach ($request as $value){
+            foreach ($request->move as $value){
                 if (isset($value->storage_id_from)){
                     $category = 'move';
                 }else{
                     $category = 'grow';
                 }
-
+                $permit = CheckGoodsRight::check($value->goods_id, $value->storage_id_to);
+                if ($permit){
+                    return response()->json(['status'=>'error', 'message' => 'the goods ( '.GetName::goods($value->goods_id).' ) does not allowed on this storage ( '.GetName::storage($value->storage_id_to).' ), you can^t push, operation was canceled !']);
+                }
                 $push = HandleGoods::moveGoods($value->storage_id_from, $value->storage_id_to, $value->goods_id, $value->amount, $category);
                 $service->newLog('pushPackageGoods', $category.' goods('.GetName::goods($value->goods_id).'), storage: '.GetName::storage($value->storage_id_from).' -> '.GetName::storage($value->storage_id_to).', amount: '.$value->amount.', category '.$category, $push['productID']);
             }
