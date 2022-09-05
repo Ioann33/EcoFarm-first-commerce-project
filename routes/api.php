@@ -83,6 +83,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/setUserPermit', [\App\Http\Controllers\User\UserController::class, 'setUserPermit']);
     Route::get('/searchUser/{login}', [\App\Http\Controllers\User\UserController::class, 'searchUser']);
 
+
+    #############################api/V2
+
+    Route::get('/v2/getStorageGoods/{key}/{storage_id}/{goods_id?}', [\App\Http\Controllers\Goods\GoodsController::class, 'getStorageGoodsTwo']);
 });
 
 

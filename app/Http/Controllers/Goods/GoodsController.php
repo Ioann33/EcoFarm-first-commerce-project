@@ -207,6 +207,33 @@ class GoodsController extends Controller
     }
 
 
+    public function getStorageGoodsTwo(Request $request){
+
+        if ($request->key === 'available') {
+            $goods = DB::table('stock_balance')
+                ->join('goods', 'stock_balance.goods_id', '=', 'goods.id')
+                ->join('storages', 'stock_balance.storage_id', '=', 'storages.id')
+                ->select(DB::raw("stock_balance.storage_id as storage_id, storages.name as storage_name, stock_balance.goods_id as goods_id, goods.name as goods_name, goods.unit, goods.type, stock_balance.price, stock_balance.amount"));
+        }else{
+            $goods = DB::table('storage_goods')
+                ->join('goods', 'storage_goods.goods_id', '=','goods.id')
+                ->join('storages', 'storage_goods.storage_id', '=','storages.id')
+                ->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type, storages.id as storage_id, storages.name as storage_name, storages.type as storage_type"));
+        }
+
+        if ($request->storage_id !== 'all'){
+            $goods->where('storage_id', '=', $request->storage_id);
+        }
+
+        if ($request->goods_id !== 'all'){
+            $goods->where('goods.id', '=',$request->goods_id);
+        }
+
+
+        return response()->json(['data' => $goods->get()]);
+    }
+
+
 
 
     public function searchStorageGoods(Request $request){
