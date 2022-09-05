@@ -20,6 +20,7 @@ use App\Http\Resources\StorageResource;
 use App\Models\Goods;
 use App\Models\MainStore;
 use App\Models\Movements;
+use App\Models\MyModel\CheckGoodsRight;
 use App\Models\MyModel\HandleGoods;
 use App\Models\Orders;
 use App\Models\Recipe;
@@ -297,6 +298,10 @@ class GoodsController extends Controller
 
     public function goodsMovementPush(Request $request, LogService $service)
     {
+        $permit = CheckGoodsRight::check($request->goods_id, $request->storage_id_to);
+        if ($permit){
+            return response()->json(['status'=>'error', 'message' => 'the goods does not allowed on this storage, you can^t push !']);
+        }
         DB::beginTransaction();
 
         try {
