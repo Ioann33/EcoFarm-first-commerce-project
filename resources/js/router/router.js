@@ -57,6 +57,11 @@ const router = createRouter({
             component: () => import('../views/pageMoveGoods')
         },
         {
+            path: '/MoveGoods2/:order_id?',
+            name: 'MoveGoods2',
+            component: () => import('../views/pageMoveGoods2')
+        },
+        {
             path: '/GrowMoveGoods/',
             name: 'GrowMoveGoods',
             component: () => import('../views/pageGrowMoveGoods')
