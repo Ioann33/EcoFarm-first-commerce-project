@@ -22,7 +22,14 @@
 
                         <div class="input-style no-borders has-icon validate-field mt-4">
                             <i class="fa fa-lock"></i>
-                            <input v-model="user_password"  type="password" class="form-control validate-password" id="form3a" placeholder="Пароль">
+                            <input
+                                v-model="user_password"
+                                v-on:keydown.enter="login"
+                                type="password"
+                                class="form-control validate-password"
+                                id="form3a"
+                                placeholder="Пароль"
+                            >
                             <label for="form3a" class="color-blue-dark font-10 mt-1">Пароль</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
                             <i class="fa fa-check disabled valid color-green-dark"></i>
@@ -30,10 +37,12 @@
                         </div>
 
                         <div class="d-flex mt-4 mb-4">
-                            <div class="w-50 font-11 pb-2 color text-start"><a href="#">ссылка куда то</a></div>
-                            <div class="w-50 font-11 pb-2 text-end"><a href="#">Забыл пароль</a></div>
+<!--                            <div class="w-50 font-11 pb-2 color text-start"><a href="#">ссылка куда то</a></div>-->
+<!--                            <div class="w-50 font-11 pb-2 text-end"><a href="#">Забыл пароль</a></div>-->
                         </div>
-                        <a @click.prevent="login" href="#" class="back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-900 bg-highlight">Вход</a>
+                        <a
+                            @click.prevent="login"
+                            href="#" class="back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-900 bg-highlight">Вход</a>
                     </div>
                 </div>
                 <div v-if="error" class="mt-5 mx-3 alert alert-small rounded-s shadow-xl bg-red-dark login-error" role="alert">
