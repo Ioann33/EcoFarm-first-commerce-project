@@ -4,9 +4,9 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
-            <div class="card card-style p-4 pt-3 mt-3 content">
+<!--            <div class="card card-style p-4 pt-3 mt-3 content">-->
 
-                <div class=" mb-0">
+                <div class=" p-1 pt-0 ">
                     <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
                         <thead>
 <!--                            <tr class="bg-grass-light">-->
@@ -43,7 +43,7 @@
                     </table>
                 </div>
 
-            </div>
+<!--            </div>-->
         </div>
 
         <nav-bar-menu></nav-bar-menu>
@@ -68,7 +68,7 @@
             return {
                 listMovements: [],
                 df: '2022-06-01 00:00:00',
-                dt: '2022-09-05 00:00:00'
+                dt: '2022-10-05 00:00:00'
             }
         },
         computed: {},
