@@ -28,6 +28,7 @@
                     <i class="fa-solid fa-right-from-bracket font-25 bg-orange-dark rounded-s" v-if="item.category==='move' && item.storage_id_from == my_storage_id"></i>
                     <i class="fa-solid fa-right-to-bracket font-25" v-if="item.category==='move' && item.storage_id_to == my_storage_id"></i>
                     <i class="fas fa-check-to-slot font-25 bg-green-dark rounded-s " v-if="item.category==='ready'"></i>
+                    <i class="fas fa-cash-register font-25 bg-green-dark rounded-s " v-if="item.category==='sale'"></i>
                     <i class="fa-solid fa-recycle" v-if="item.category==='correct'"></i>
                     <i class="fa-solid fa-seedling font-25 bg-green-dark rounded-s" v-if="item.category==='grow'"></i>
                     <i class="fa-solid fa-dollar font-25 bg-green-dark rounded-s" v-if="item.category==='buy'"></i>
