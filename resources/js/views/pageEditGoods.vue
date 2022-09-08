@@ -11,8 +11,8 @@
                 <div class="position-relative pb-3">
                     <label class="color-blue-dark position-absolute" style="z-index: 10; left: 9px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт</label>
                     <v-select :options="list_goods"
-                              :value="'goods_id'"
-                              :label="'goods_name'"
+                              :value="'id'"
+                              :label="'name'"
                               :placeholder="'выбрать продукт'"
                               @option:selected="changeGoods"
                               @search="searchGoods"
@@ -70,11 +70,14 @@
                     </div>
 
                 </div>
-                <button type="button" class="btn btn-lg btn-default" :disabled="disabled_btn" @click="editGoods">Редактировать</button>
+                <button type="button" class="btn btn-lg btn-default" :disabled="disabled_btn" @click="editGoods">Сохранить изменения</button>
             </div>
         </div>
 
         <success v-if="success" :success="success"></success>
+
+        <!-- TOAST -->
+        <div id="toast-successful" class="snackbar-toast bg-green-dark color-white" data-delay="1500" data-autohide="true"><i class="fa fa-check-circle me-3"></i>{{ this.toast_message}}</div>
 
         <nav-bar-menu></nav-bar-menu>
     </div>
@@ -111,7 +114,8 @@
                 name: '',
                 unit: '',
                 goods_id: '',
-                success: ''
+                success: '',
+                toast_message: '',
             }
         },
         computed: {
@@ -132,61 +136,78 @@
         updated() {
         },
         methods: {
+            toast(id, message){
+                this.toast_message = message
+
+                var notificationToast = new bootstrap.Toast(document.getElementById(id))
+                notificationToast.show()
+            },
+
             searchGoods(value){
                 if(!value) return;
-                axios.get('/api/searchStorageGoods/available/all/'+value.toLowerCase()).then(res => {
-                    this.list_goods = res.data.data;
-                }).catch(e => {
-                    this.message = e.response.data.message
-                    console.log(e)
-                });
+                // axios.get('/api/searchStorageGoods/allowed/all/'+value.toLowerCase()).then(res => {
+                axios.get('/api/searchGoods/'+value.toLowerCase()).then(res => {
+                    this.list_goods = res.data;
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
             },
+
             changeGoods(value){
                 console.log(value)
                 if(!value) return;
-                this.selected_goods = value.goods_id;
+                this.selected_goods = value.id;
                 this.selected_type = value.type;
-                this.name = value.goods_name;
+                this.name = value.name;
                 this.unit = value.unit;
             },
+
             getListGoods(){
                 this.loadingGoods = true;
                 axios.get('/api/getListGoods').then(res => {
                     this.goods = res.data.data;
                     this.loadingGoods = false;
-                }).catch(e => {
-                    console.log(e)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
                 })
             },
+
             editGoods(){
                 axios.post('/api/updateGoods', {
                     name: this.name,
                     unit: this.unit,
                     type: this.selected_type,
-                    goods_id: this.goods_id,
+                    goods_id: this.selected_goods,
                     group_id: 2,
                     image: ''
                 }).then(res => {
-                    this.success = 'Изменения сохранены'
+
                     this.getListGoods()
-                    setTimeout(() => this.success = '', 1500)
-                }).catch(e => {
-                    console.log(e)
-                });
+                    this.toast('toast-successful', 'Изменения сохранены')
+                    //this.success = 'Изменения сохранены'
+                    //setTimeout(() => this.success = '', 1500)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
             },
+
             selectGoods(value){
                 this.selected_goods = value;
                 if(value !== 'default'){
-                    const current = this.goods.find(el => el.goods_id === value);
+                    const current = this.goods.find(el => el.id === value);
                     this.name = current.name;
                     this.unit = current.unit;
-                    this.goods_id = current.goods_id
+                    this.goods_id = current.id
                     this.selected_type = current.type;
                 } else {
                     this.name = this.unit = '';
                     this.selected_type = 'default';
                 }
             },
+
             selectType(value){
                 this.selected_type = value
             }
