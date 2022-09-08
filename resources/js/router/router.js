@@ -14,7 +14,7 @@ const router = createRouter({
         {
             path: '/home',
             name: 'home',
-            component: () => import('../views/Home.vue')
+            component: () => import('../views/Home')
         },
         {
             path: '/selectStorage',
@@ -32,6 +32,7 @@ const router = createRouter({
             component: () => import('../views/pageMovements')
         },
         {
+//@todo не используется ? 2022-09-08
             path: '/pageSetPriceAndPull/:movement_id',
             name: 'SetPriceAndPull',
             component: () => import('../views/pageSetPriceAndPull')
@@ -123,7 +124,7 @@ const router = createRouter({
             component: () => import('../views/pageSpendInvest'),
         },
         {
-            path: '/PermitGoods',
+            path: '/PermitGoods/:goods_id?/:goods_name?',
             name: 'PermitGoods',
             component: () => import('../views/pagePermitGoods')
         },
