@@ -176,10 +176,10 @@
                 if(!value) return;
                 axios.get('/api/searchStorageGoods/allowed/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
                     this.list_goods = res.data.data;
-                }).catch(e => {
-                    this.message = e.response.data.message
-                    console.log(e)
-                });
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
             },
             changeGoods(value, index){
                 this.buy_goods[index].unit = value.unit;
@@ -198,9 +198,9 @@
                 res.data.data.forEach(el => {
                     if(el.type !=2) {
                         if(el.amount>0)
-                            name = el.name + ' ('+ el.amount+el.unit+' ➠ '+ el.price+'грн)'
+                            name = el.goods_name + ' ('+ el.amount+el.unit+' ➠ '+ el.price+'грн)'
                         else
-                            name = el.name
+                            name = el.goods_name
 
                        this.list_goods.push({
                             goods_id: el.goods_id,
