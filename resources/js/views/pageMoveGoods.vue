@@ -12,12 +12,37 @@
 
 
             <div class="card card-style">
-                <div class="content-boxed bg-blue-dark mb-1 pb-3 text-center">
-                    <h4 class="color-white">Передать продукцию</h4>
+                <div class="content-boxed bg-4 mb-1 pb-3 text-center">
+                    <h4 class="color-white">Передать продукцию <br>(новая тестовая функция)</h4>
                 </div>
 
                 <div class="content mb-0 p-0">
 
+                    <!--выбор склада/департамента. только для главного склада                    -->
+                    <div class="row position-relative" v-if="canSelectStorageTo">
+                        <div class="col-12 p-1">
+                            <div class="input-style input-style-always-active has-borders no-icon">
+                                <label for="f6" class="color-blue-dark">на склад</label>
+                                <select id="f6" v-model="selected_storage_id" @change="changeStorage">
+                                    <option value="default" disabled>выбрать склад</option>
+
+                                    <option
+                                        v-for="(storage, index) in listStorage"
+                                        v-bind:value="storage.id"
+                                    >
+                                        {{ storage.name }}
+                                    </option>
+
+                                </select>
+                                <span><i class="fa fa-chevron-down"></i></span>
+                                <i class="fa fa-check disabled valid color-green-dark"></i>
+                                <em></em>
+                            </div>
+                        </div>
+                        <div v-if="loadingStorage" class="spinner-border position-absolute text-light" role="status" style="top: 14px; right: 35px;">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
 
 
                     <div class="row mb-3 position-relative" v-for="(el, index) in move_goods" :key="index">
@@ -84,31 +109,6 @@
 
                     <button class="btn btn-success" style="margin: 0 auto 10px auto" @click="addGoods">+</button>
 
-                    <!--выбор склада/департамента. только для главного склада                    -->
-                    <div class="row position-relative" v-if="canSelectStorageTo">
-                        <div class="col-12 p-1">
-                            <div class="input-style input-style-always-active has-borders no-icon">
-                                <label for="f6" class="color-blue-dark">на склад</label>
-                                <select id="f6" v-model="selected_storage_id" @change="changeStorage">
-                                    <option value="default" disabled>выбрать склад</option>
-
-                                    <option
-                                        v-for="(storage, index) in listStorage"
-                                        v-bind:value="storage.id"
-                                    >
-                                        {{ storage.name }}
-                                    </option>
-
-                                </select>
-                                <span><i class="fa fa-chevron-down"></i></span>
-                                <i class="fa fa-check disabled valid color-green-dark"></i>
-                                <em></em>
-                            </div>
-                        </div>
-                        <div v-if="loadingStorage" class="spinner-border position-absolute text-light" role="status" style="top: 14px; right: 35px;">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
 
                 </div>
 
@@ -180,7 +180,7 @@ export default {
         }
     },
     beforeMount() {
-        this.my_storage_id = localStorage.getItem('my_storage_id')
+        this.my_storage_id = parseInt(localStorage.getItem('my_storage_id'))
         this.my_storage_name = localStorage.getItem('my_storage_name')
         this.my_storage_type = localStorage.getItem('my_storage_type')
     },
@@ -267,7 +267,7 @@ export default {
                 return 0
         },
         canSelectStorageTo() {
-            if(this.my_storage_id === localStorage.getItem('main_storage_id'))
+            if(this.my_storage_id === parseInt(localStorage.getItem('main_storage_id')))
             {
                 // axios.get('/api/getListStorages').then(res => {
                 //     this.listStorage = res.data.data.filter(el => el.id !== Number.parseInt(this.storage_id))
@@ -299,7 +299,8 @@ export default {
         },
         getListStorages(){
           axios.get('/api/getListStorages/').then(res => {
-              this.listStorage = res.data.data;
+              //this.listStorage = res.data.data;
+              this.listStorage = res.data.data.filter(el => el.id !== +this.my_storage_id)
           }).catch(e => {
              console.log(e)
           });
@@ -400,6 +401,21 @@ export default {
                    })
                }
             });
+            console.log(payload)
+
+
+            let mve2 =this.move_goods.map(el => {
+                    if(el.goods_id !== 'default' || el.amount !== 0){
+                        return {
+                            storage_id_from: this.my_storage_id,
+                            storage_id_to: this.selected_storage_id,
+                            goods_id: el.goods_id,
+                            amount: el.amount
+                        }
+                    }
+            })
+
+            console.log(mve2)
             // Теперь непосредственно исполняем запрос
             axios.post('/api/pushPackageGoods', {
                 payload
