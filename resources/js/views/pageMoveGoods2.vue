@@ -101,19 +101,19 @@
 
                 </div>
 
-                <div v-if="!this.isAllPermits" class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase">
+                <div v-if="!this.isAllPermits" class="content-boxed bg-red-dark pb-3 mt-5 text-center text-uppercase">
                     <h4 class="color-white">Уберите товар, который нельзя передать на склад</h4>
                 </div>
 
                 <a v-else-if="canDoPull" @click.prevent="makeMoveGoodsNEW" href="#">
-                    <div class="content-boxed bg-green-dark mt-1 pb-3 text-center text-uppercase mt-5">
+                    <div class="content-boxed bg-green-dark mt-1 pb-3  mt-5 text-center text-uppercase">
                         <h4 class="color-white">Передать</h4>
                     </div>
                 </a>
-                <div v-else-if="this.move_goods[0].goods_id === 'default'" class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase">
+                <div v-else-if="this.move_goods[0].goods_id === 'default'" class="content-boxed bg-red-dark mt-1 pb-3 mt-5 text-center text-uppercase">
                     <h4 class="color-white">Необходимо выбрать товар для передачи</h4>
                 </div>
-                <div v-else-if="this.move_goods[0].amount === 0" class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase">
+                <div v-else-if="this.move_goods[0].amount === 0" class="content-boxed bg-red-dark mt-1 pb-3 mt-5 text-center text-uppercase">
                     <h4 class="color-white">Необходимо установить количество</h4>
                 </div>
 
@@ -168,22 +168,22 @@ export default {
 
             move_goods: [{
                 goods_id: 'default',
-                amount: 0, // количество товара
-                max_amount: 0, // максимальное количество товара
-                unit: 'кг', // единица измерения товара
+                amount: 0,          // количество товара
+                max_amount: 0,      // максимальное количество товара
+                unit: 'кг',         // единица измерения товара
                 loading: false
             }],
             permits: [],
 
-            order_id: '',      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
-            order: [],     // массив. getOrder/order_id
+            order_id: '',       // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
+            order: [],          // массив. getOrder/order_id
 
             dir: 'in',
             status: 'progress',
             rule: 'allowed',     // правило подгрузки списка товаров, на основании storage.type= {теплица, склад, продажи,... }
 
             loadingStorage: false,
-            ListStoragesAllowed: ['sale', 'buy', 'storage', 'creditor', 'cook', 'creditor']
+            ListStoragesAllowed: ['sale', 'buy', 'storage', 'creditor', 'cook', 'creditor']     // список разрешенных складов для перемещений
         }
     },
     beforeMount() {
@@ -345,7 +345,7 @@ export default {
                 this.listGoods=[]
                 res.data.data.forEach(el => {
 
-                    if(el.amount>0)
+                    if(el.amount > 0)
                         name = el.goods_name + ' ('+ el.amount + el.unit + ' ➠ '+ el.price+' грн)'
                     else
                         name = el.goods_name
@@ -423,33 +423,32 @@ export default {
             if(!this.isAllPermits) return;
 
             // вариант-1 обработки массива
-            // let move = [];
-            // this.move_goods.forEach(el => {
-            //     // Исключаем пустые инпуты с товаром или количеством 0
-            //    if(el.goods_id !== 'default' || el.amount !== 0){
-            //        move.push({
-            //            storage_id_from: this.my_storage_id,
-            //            storage_id_to: this.selected_storage_id,
-            //            goods_id: el.goods_id,
-            //            amount: el.amount
-            //        })
-            //    }
-            // });
-            // console.log(move)
+            let move = [];
+            this.move_goods.forEach(el => {
+                // Исключаем пустые инпуты с товаром или количеством 0
+               if(el.goods_id !== 'default' && +el.amount > 0){
+                   move.push({
+                       storage_id_from: this.my_storage_id,
+                       storage_id_to: this.selected_storage_id,
+                       goods_id: el.goods_id,
+                       amount: el.amount
+                   })
+               }
+            });
 
             // вариант-2 обработки массива
-            let move = this.move_goods.map(el => {
-                    if(el.goods_id !== 'default' || el.amount !== 0){
-                        return {
-                            storage_id_from: this.my_storage_id,
-                            storage_id_to: this.selected_storage_id,
-                            goods_id: el.goods_id,
-                            amount: el.amount
-                        }
-                    }
-            })
-            console.log(move)
-
+            // let move = this.move_goods.map(el => {
+            //         if(el.goods_id !== 'default' || el.amount > 0){
+            //             return {
+            //                 storage_id_from: this.my_storage_id,
+            //                 storage_id_to: this.selected_storage_id,
+            //                 goods_id: el.goods_id,
+            //                 amount: el.amount
+            //             }
+            //         }
+            // })
+            console.table(move)
+// return;
             // Теперь непосредственно исполняем запрос
             axios.post('/api/pushPackageGoods', {
                 move

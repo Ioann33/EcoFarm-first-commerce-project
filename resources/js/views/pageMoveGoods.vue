@@ -16,7 +16,7 @@
                     <h4 class="color-white">Передать продукцию</h4>
                 </div>
 
-                <div class="content mb-0 p-0">
+                <div class="content mb-5 p-b5">
 
 
 
@@ -283,7 +283,7 @@ export default {
                 this.listGoods=[]
                 res.data.data.forEach(el => {
 
-                        if(el.amount>0)
+                        if(+el.amount > 0)
                             name = el.goods_name + ' ('+ el.amount + el.unit + ' ➠ '+ el.price+'грн)'
                         else
                             name = el.goods_name
