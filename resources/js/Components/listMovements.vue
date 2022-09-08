@@ -78,15 +78,15 @@
                 // console.log('storage=' + this.storage_id)
                 this.getListGoodsMovements()
             }
-            if(this.goods_id !== undefined && this.goods_id !== 'default') {
+            else if(this.goods_id !== undefined && this.goods_id !== 'default') {
                 // console.log('goods=' + this.goods_id)
                 this.getListGoodsMovementsOnStorages()
             }
         },
         methods: {
             getListGoodsMovements(){
-                axios.get(`/api/getListGoodsMovements/${this.storage_id}/2022-08-01/2022-09-01`).then(res => {
-                    this.movements = res.data.data.splice(0,30);
+                axios.get(`/api/getListGoodsMovements/${this.storage_id}/2022-08-01/2022-10-01`).then(res => {
+                    this.movements = res.data.data.splice(0,300);
                     console.log('storage: '+this.storage_id)
                     console.log(this.movements)
                 }).catch(e => {
@@ -94,8 +94,8 @@
                 });
             },
             getListGoodsMovementsOnStorages(){
-                axios.get(`/api/getListGoodsMovementsOnStorages/${this.goods_id}/2022-08-01/2022-09-01`).then(res => {
-                    this.movements = res.data.data.splice(0,30);
+                axios.get(`/api/getListGoodsMovementsOnStorages/${this.goods_id}/2022-08-01/2022-10-01`).then(res => {
+                    this.movements = res.data.data.splice(0,300);
                     console.log('goods: '+this.goods_id)
                     console.log(this.movements)
                 }).catch(e => {
