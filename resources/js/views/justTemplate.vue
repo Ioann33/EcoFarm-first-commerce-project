@@ -5,7 +5,13 @@
 
         <div class="page-content header-clear-medium">
             <!-- ERROR -->  <error  :message="message"></error>
+
+
+<!--
+    @focus="$event.target.select()"
+-->
         </div>
+
 
         <nav-bar-menu></nav-bar-menu>
     </div>
