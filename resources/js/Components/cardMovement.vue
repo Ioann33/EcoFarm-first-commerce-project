@@ -71,7 +71,7 @@
 </div>
 <div v-else>
     <a @click='cancelMovements(movement.id)' class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">
-        отменить <sup>(в разработке)</sup> </a>
+        отменить  </a>
 </div>
 
                     </div>
