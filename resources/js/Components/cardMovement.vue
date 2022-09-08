@@ -49,20 +49,29 @@
                     </div>
                     <div class="col-6 pe-1">
 
+<div v-if="this.dir !== 'out'">
+    <div v-if="movement.goods_type === 2">
+                            <router-link v-if="editPrice" :to="{name: 'SetPriceAndPull', params: {movement_id: movement.id}}">
+                                <a class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">
+                                    Установить цену продукции и Оприходовать</a>
+                            </router-link>
 
-<div v-if="movement.goods_type===2">
-                        <router-link v-if="editPrice" :to="{name: 'SetPriceAndPull', params: {movement_id: movement.id}}">
-                            <a   class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">Установить цену продукции и Оприходовать</a>
-                        </router-link>
+                            <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)'                           class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">
+                                Оприходовать</a>
 
-                        <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)'                           class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
+    </div>
+    <div v-else>
 
+                            <a href="#" v-if="editPrice"            @click='this.$emit("getMovementId", movement.id)' data-menu="menu-setPrice" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">
+                                Установить цену продукта и Оприходовать</a>
+                            <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)'                           class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">
+                                Оприходовать</a>
+    <!--                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(movement.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</a>-->
+    </div>
 </div>
 <div v-else>
-
-                        <a href="#" v-if="editPrice"            @click='this.$emit("getMovementId", movement.id)' data-menu="menu-setPrice" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Установить цену продукта и Оприходовать</a>
-                        <a href="#" v-else-if="this.dir==='in'" @click='this.$emit("getMovementId", movement.id)'                           class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Оприходовать</a>
-<!--                        <a href="#" v-if="canMoveGoods"     @click.prevent="setOrderStatus(movement.order_id, 'canceled')" class="btn shadow-bg shadow-bg-m btn-m btn-full mb-3 rounded-s text-uppercase font-900 shadow-s bg-green-dark">Отгрузить</a>-->
+    <a @click='cancelMovements(movement.id)' class="btn btn-m btn-full mb-3 rounded-0 text-uppercase font-900 shadow-s bg-red-light">
+        отменить <sup>(в разработке)</sup> </a>
 </div>
 
                     </div>
@@ -170,6 +179,20 @@ export default {
 
     },
     methods: {
+        cancelMovements(movement_id){
+            console.log('sdfsd' + movement_id)
+            axios.post('api/deleteMovement', { movement_id}).then(res => {
+                console.log(res.data)
+                if(res.data.status === 'ok')
+                {
+                    console.log('delete ok')
+                    location.reload();
+                }
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.error(this.message)
+            })
+        },
         setPrice(move_id){
             console.log(move_id)
             this.editPrice2=true
