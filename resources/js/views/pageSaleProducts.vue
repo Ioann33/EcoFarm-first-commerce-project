@@ -22,30 +22,18 @@
                                       @option:selected="changeGoods($event, i)"
                                       @search="searchGoods($event, i)"
                             >
+                                <template #no-options="{ search, searching, loading }">
+                                    Ничего не найдено
+                                </template>
+                                <template #option="{ goods_name, amount, unit, price }">
+                                    <h6 style="margin: 0">{{ goods_name }}</h6>
+                                    <em v-if="this.my_storage_type !== 'grow'">{{ amount }} {{ unit }} ➠ {{ price }}грн</em>
+                                </template>
                             </v-select>
                             <div v-if="loading_goods" class="spinner-border text-light select-input-spinner" role="status">
                                 <span class="sr-only">Loading...</span>
                             </div>
                         </div>
-<!--                        <div class="input-style input-style-always-active has-borders no-icon">-->
-<!--                            <label for="storage-list" class="color-blue-dark">Товар {{ i+ 1}}</label>-->
-<!--                            <select id="storage-list" v-model="item.goods_id" @change="selectedGoods(item.goods_id, i)" class="form-control">-->
-<!--                                <option value="default" disabled selected>выбрать товар</option>-->
-<!--                                <option-->
-<!--                                    v-for="(goods, index) in available_goods.filter(el => ![...selected_goods.slice(0,i), ...selected_goods.slice(i+1,selected_goods.length)].includes(el.goods_id))"-->
-<!--                                    v-bind:value="goods.goods_id"-->
-<!--                                >-->
-<!--                                    {{ goods.name }}, {{ goods.amount }} {{ goods.unit }}-->
-<!--                                </option>-->
-
-<!--                            </select>-->
-<!--                            <div v-if="loading_goods" class="spinner-border text-light select-input-spinner" role="status">-->
-<!--                                <span class="sr-only">Loading...</span>-->
-<!--                            </div>-->
-<!--                            <span><i class="fa fa-chevron-down"></i></span>-->
-<!--                            <i class="fa fa-check disabled valid color-green-dark"></i>-->
-<!--                            <em></em>-->
-<!--                        </div>-->
 
                     </div>
                     <div class="col-4 p-1">
@@ -66,6 +54,7 @@
                                    id="f21"
                                    v-model="item.amount"
                                    @input="checkAmount(i)"
+                                   @focus="$event.target.select()"
                             >
                             <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
@@ -177,22 +166,24 @@
             },
             changeGoods(value, index){
                 // Сохраняем те данные, которые мы получили от апи поиска по товарах
-                this.sale_goods[index].goods_id = value.goods_id;
-                this.sale_goods[index].unit = value.unit;
+                this.sale_goods[index].goods_id = value.goods_id
+                this.sale_goods[index].unit = value.unit
+                this.sale_goods[index].max_amount = value.amount
+                this.sale_goods[index].price = value.price;
 
                 // Теперь нужно получить конкретные показатели по товару на текущем складе,
                 // например, максимальное к-во
-                this.loading_goods = true;
-                axios.get('/api/getStorageGoods/available/' + this.my_storage_id + '/' + value.goods_id).then(res => {
-                    console.log(res.data.data)
-                    if(res.data.data[0]){
-                        this.sale_goods[index].max_amount = res.data.data[0].amount;
-                    }
-                    this.loading_goods = false;
-                }).catch(err => {
-                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                    console.error(this.message)
-                })
+                // this.loading_goods = true;
+                // axios.get('/api/getStorageGoods/available/' + this.my_storage_id + '/' + value.goods_id).then(res => {
+                //     console.log(res.data.data)
+                //     if(res.data.data[0]){
+                //         this.sale_goods[index].max_amount = res.data.data[0].amount;
+                //     }
+                //     this.loading_goods = false;
+                // }).catch(err => {
+                //     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                //     console.error(this.message)
+                // })
             },
             deleteProduct(i){
                this.sale_goods.splice(i, 1);
@@ -222,13 +213,14 @@
                 }
                 this.sale_goods[i].total = (this.sale_goods[i].amount * this.sale_goods[i].price).toFixed(2);
             },
+
             addGoods(){
                 this.sale_goods.push({
                     goods_id: 'default',
                     amount: 0,
                     max_amount: 0,
                     unit: 'кг',
-                    price: 5,
+                    price: 0,
                     total: 0
                 });
             },
