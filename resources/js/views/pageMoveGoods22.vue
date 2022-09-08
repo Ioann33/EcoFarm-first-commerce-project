@@ -9,53 +9,26 @@
             <!-- ERROR -->
             <error :message="message"></error>
 
-
+<router-link to="MoveGoods2" class="ms-3">передать сразу много товара (тестовая функция)</router-link> <br><br>
 
             <div class="card card-style">
-                <div class="content-boxed bg-4 mb-1 pb-3 text-center">
-                    <h4 class="color-white">Передать продукцию <br>(новая тестовая функция)</h4>
+                <div class="content-boxed bg-blue-dark mb-1 pb-3 text-center">
+                    <h4 class="color-white">Передать продукцию</h4>
                 </div>
 
                 <div class="content mb-0 p-0">
 
-                    <!--выбор склада/департамента. только для главного склада                    -->
-                    <div class="row position-relative" v-if="canSelectStorageTo">
-                        <div class="col-12 p-1">
-                            <div class="input-style input-style-always-active has-borders no-icon">
-                                <label for="f6" class="color-blue-dark">на склад</label>
-                                <select id="f6" v-model="selected_storage_id" @change="changeStorage">
-                                    <option value="default" disabled>выбрать склад</option>
-
-                                    <option
-                                        v-for="(storage, index) in listStorage"
-                                        v-bind:value="storage.id"
-                                    >
-                                        {{ storage.name }}
-                                    </option>
-
-                                </select>
-                                <span><i class="fa fa-chevron-down"></i></span>
-                                <i class="fa fa-check disabled valid color-green-dark"></i>
-                                <em></em>
-                            </div>
-                        </div>
-                        <div v-if="loadingStorage" class="spinner-border position-absolute text-light" role="status" style="top: 14px; right: 35px;">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
 
 
-                    <div class="row mb-3 position-relative" v-for="(el, index) in move_goods" :key="index">
+                    <div class="row mb-0">
                         <div class="position-relative col-7 pb-3">
-                            <label class="color-blue-dark position-absolute" style="z-index: 10; left: 22px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт {{ index + 1 }}</label>
-                            <v-select :options="listGoods.filter(elem => ![...selected_goods.slice(0,index), ...selected_goods.slice(index+1,selected_goods.length)].includes(elem.goods_id))"
+                            <label class="color-blue-dark position-absolute" style="z-index: 10; left: 22px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт</label>
+                            <v-select :options="listGoods"
                                       :value="'goods_id'"
                                       :label="'goods_name'"
                                       :placeholder="'выбрать продукт'"
-                                      @option:selected="changeGoods($event, index)"
+                                      @option:selected="changeGoods"
                                       @search="searchGoods"
-                                      :disabled="selected_storage_id === 'default'"
-                                      :loading="el.loading"
                             >
                             </v-select>
                         </div>
@@ -80,40 +53,64 @@
 
                         <div class="col-3 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
-                                <input type="number" :disabled="el.max_amount === 0" class="form-control focus-color focus-blue validate-name "
+                                <input type="number" :disabled="max_amount === 0" class="form-control focus-color focus-blue validate-name "
                                        id="f1"
-                                       v-model="el.amount"
-                                       @input="checkAmount(index)"
+                                       v-model="goods_amount"
+                                       @input="checkAmount"
                                        @focus="$event.target.select()"
                                 >
 <!--                                <label for="f1" class="color-blue-dark">кол-во</label>-->
                                 <i class="fa fa-times disabled invalid color-red-dark"></i>
                                 <i class="fa fa-check disabled valid color-green-dark"></i>
-                                <em>{{ el.max_amount }}</em>
+                                <em>{{ max_amount }}</em>
                             </div>
                         </div>
 
                         <div class="col-2 p-1">
                             <div class="input-style input-style-always-active has-borders no-icon">
                                 <input type="number" disabled class="form-control focus-color focus-blue validate-name text-center"
-                                       :placeholder="el.unit"
+                                       :placeholder="unit"
                                 >
 
                                 <i class="fa fa-times disabled invalid color-red-dark"></i>
                                 <i class="fa fa-check disabled valid color-green-dark"></i>
                             </div>
                         </div>
-                        <i v-if="permits[index]" class="fa fa-check font-18 goods-allowed"></i>
-                        <span class="goods-not-allowed" v-if="permits[index] === false">Товар не разрешен на выбранном складе</span>
+
                     </div>
 
-                    <button class="btn btn-success" style="margin: 0 auto 10px auto" @click="addGoods">+</button>
 
+
+                    <!--выбор склада/департамента. только для главного склада                    -->
+                    <div class="row position-relative" v-if="canSelectStorageTo">
+                        <div class="col-12 p-1">
+                            <div class="input-style input-style-always-active has-borders no-icon">
+                                <label for="f6" class="color-blue-dark">на склад</label>
+                                <select id="f6" v-model="selected_storage_id">
+                                    <option value="default" disabled selected>выбрать склад</option>
+
+                                    <option
+                                        v-for="(storage, index) in listStorage"
+                                        v-bind:value="storage.storage_id"
+                                    >
+                                        {{ storage.storage_name }}
+                                    </option>
+
+                                </select>
+                                <span><i class="fa fa-chevron-down"></i></span>
+                                <i class="fa fa-check disabled valid color-green-dark"></i>
+                                <em></em>
+                            </div>
+                        </div>
+                        <div v-if="loadingStorage" class="spinner-border position-absolute text-light" role="status" style="top: 14px; right: 35px;">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
 
                 </div>
 
 
-                <a v-if="canDoPull" @click.prevent="makeMoveGoodsNEW" href="#" >
+                <a v-if="canDoPull" @click.prevent="makeMoveGoods" href="#" >
                     <div class="content-boxed bg-blue-dark mt-1 pb-3 text-center text-uppercase">
                         <h4 class="color-white">Передать на склад</h4>
                     </div>
@@ -160,14 +157,9 @@ export default {
             selected_goods_id: 'default',
             selected_storage_id: 'default',
 
-            move_goods: [{
-                goods_id: 'default',
-                amount: 0, // количество товара
-                max_amount: 0, // максимальное количество товара
-                unit: 'кг', // единица измерения товара
-                loading: false
-            }],
-            permits: [],
+            goods_amount: 0 ,   // количество товара
+            max_amount: 0,  // максимальное количество товара
+            unit: 'кг',  // единица измерения товара
 
             order_id: '',      // для входящего параметра из route order_id. если параметр есть - то на основании него и будет формироваться передача продукци
             order: [],     // массив. getOrder/order_id
@@ -180,7 +172,7 @@ export default {
         }
     },
     beforeMount() {
-        this.my_storage_id = parseInt(localStorage.getItem('my_storage_id'))
+        this.my_storage_id = localStorage.getItem('my_storage_id')
         this.my_storage_name = localStorage.getItem('my_storage_name')
         this.my_storage_type = localStorage.getItem('my_storage_type')
     },
@@ -239,35 +231,16 @@ export default {
         //         console.log(this.message)
         //     })
         // }
-
-        // Получаем список всех складов и предоставляем их на выбор пользователя
-        this.getListStorages();
     },
     computed: {
-        isAllPermits(){
-            let count = 0;
-            this.permits.forEach(el => {
-              if(el) count++
-            });
-            if(count === this.permits.length) return true;
-            return false;
-        },
-        selected_goods(){
-            let arr = [];
-            this.move_goods.forEach(el => {
-                arr.push(el.goods_id);
-            })
-            return arr;
-        },
         canDoPull(){
-            // if(this.selected_storage_id!=='default' && this.goods_amount > 0)
-            if(this.selected_storage_id!=='default')
+            if(this.selected_storage_id!=='default' && this.goods_amount > 0)
                 return 1
             else
                 return 0
         },
         canSelectStorageTo() {
-            if(this.my_storage_id === parseInt(localStorage.getItem('main_storage_id')))
+            if(this.my_storage_id === localStorage.getItem('main_storage_id'))
             {
                 // axios.get('/api/getListStorages').then(res => {
                 //     this.listStorage = res.data.data.filter(el => el.id !== Number.parseInt(this.storage_id))
@@ -289,61 +262,32 @@ export default {
         update_template()
     },
     methods: {
-        changeStorage(){
-            // При изменении склада проверить выбранные товары на allowed
-            this.move_goods.forEach((el, index) => {
-                if(el.goods_id !== 'default'){
-                    this.getStorageGoodsPermit(el.goods_id, index);
-                }
-            });
-        },
-        getListStorages(){
-          axios.get('/api/getListStorages/').then(res => {
-              //this.listStorage = res.data.data;
-              this.listStorage = res.data.data.filter(el => el.id !== +this.my_storage_id)
-          }).catch(e => {
-             console.log(e)
-          });
-        },
-        addGoods(){
-          this.move_goods.push({
-              goods_id: 'default',
-              amount: 0,
-              max_amount: 0,
-              unit: 'кг',
-              loading: false
-          })
+        getStorageGoodsOne(goods_id){
+            axios.get('/api/getStorageGoods/' + this.rule + '/' + this.my_storage_id + '/' + goods_id).then(res => {
+                this.max_amount = res.data.data[0].amount;
+            })
         },
         searchGoods(value){
-            if(value === '') return;
-            axios.get('/api/searchStorageGoods/' + this.rule + '/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
-
+            if(!value) return;
+            axios.get('/api/searchStorageGoods/allowed/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
                 this.listGoods = res.data.data;
             }).catch(e => {
                 this.message = e.response.data.message
                 console.log(e)
             });
         },
-        getStorageGoodsPermit(id, index){
-            this.move_goods[index].loading = true;
-            axios.get('/api/getListStoragesGoodsPermit/' + id).then(res => {
-                const allowed = res.data.data.find(el => el.storage_id === this.selected_storage_id && el.allowed);
-                if(allowed){
-                    this.permits[index] = true;
-                } else {
-                    this.permits[index] = false;
-                }
-                this.move_goods[index].loading = false;
-            }).catch(e => {
-               console.log(e)
-            });
-        },
-        changeGoods(value, index){
-            this.move_goods[index].goods_id = value.goods_id;
-            this.move_goods[index].max_amount = value.amount;
-            this.move_goods[index].unit = value.unit;
+        changeGoods(value){
+            this.selected_goods_id = value.goods_id;
+            this.unit = value.unit;
 
-            this.getStorageGoodsPermit(value.goods_id, index)
+            // В запросе /api/searchStorageGoods мы не получаем max_amount этого товара,
+            // поэтому делаем запрос на /api/getStorageGoods с конкретным goods_id
+
+            // Этот запрос чтобы получить именно мксимальное количество товара
+            this.getStorageGoodsOne(value.goods_id);
+
+            // А этот запрос уже для получения списка доступных департаментов
+            this.getListStoragesGoodsPermit();
         },
         getStorageProp(storage_id){
             axios.get('/api/getStorageProp/'+storage_id).then(res => {
@@ -354,9 +298,9 @@ export default {
                 console.log(this.message)
             })
         },
-        checkAmount(index){
-            if(this.move_goods[index].amount > this.move_goods[index].max_amount){
-                this.move_goods[index].amount = this.move_goods[index].max_amount;
+        checkAmount(){
+            if(this.goods_amount > this.max_amount){
+                this.goods_amount = this.max_amount;
             }
         },
         // Метод для тарой версии инпута без возможности поиска
@@ -387,47 +331,6 @@ export default {
                 console.error(this.message)
             })
         },
-        makeMoveGoodsNEW(){
-            if(!this.isAllPermits) return;
-            let payload = [];
-            this.move_goods.forEach(el => {
-                // Исключаем пустые инпуты с товаром или количеством 0
-               if(el.goods_id !== 'default' || el.amount !== 0){
-                   payload.push({
-                       storage_id_from: this.my_storage_id,
-                       storage_id_to: this.selected_storage_id,
-                       goods_id: el.goods_id,
-                       amount: el.amount
-                   })
-               }
-            });
-            console.log(payload)
-
-
-            let mve2 =this.move_goods.map(el => {
-                    if(el.goods_id !== 'default' || el.amount !== 0){
-                        return {
-                            storage_id_from: this.my_storage_id,
-                            storage_id_to: this.selected_storage_id,
-                            goods_id: el.goods_id,
-                            amount: el.amount
-                        }
-                    }
-            })
-
-            console.log(mve2)
-            // Теперь непосредственно исполняем запрос
-            axios.post('/api/pushPackageGoods', {
-                payload
-            }).then(res => {
-                console.log('Запрос исполнен успешно:')
-                console.log(res.data)
-            }).catch(e => {
-                console.log('При выполнении запроса ошибка:')
-                console.log(e)
-            })
-        },
-        // В чем принципиальная разница запросов, если разный type? Выше написал простой, короткий метод для нового апи
         makeMoveGoods(){
             console.log('Move Goods:' +
                 '\n     goods: ' + this.selected_goods_id +
@@ -485,22 +388,5 @@ export default {
 
 }
 </script>
-<style>
-    .goods-allowed {
-        position: absolute;
-        z-index: 10;
-        left: 100px;
-        top: -8px;
-        background-color: white;
-        width: auto;
-        padding: 0 5px;
-        color: #A0D468;
-    }
-    .goods-not-allowed {
-        color: #DA4453;
-        position: absolute;
-        left: 4px;
-        bottom: -6px;
-    }
-</style>
+
 
