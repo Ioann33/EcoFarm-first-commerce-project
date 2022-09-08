@@ -106,13 +106,15 @@
         methods: {
             searchGoods(value){
                 if(!value || this.selected_storage === 'default') return;
-                axios.get('/api/searchStorageGoods/available/all/'+value.toLowerCase()).then(res => {
+                axios.get('/api/searchStorageGoods/available/'+ this.selected_storage +'/'+value.toLowerCase()).then(res => {
                     this.goods = res.data.data;
-                }).catch(e => {
-                    this.message = e.response.data.message
-                    console.log(e)
-                });
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
             },
+
+
             changeGoods(value){
                 if(!value) return;
                 this.selected_goods = value.goods_id;
@@ -121,30 +123,35 @@
                 this.amount = value.amount;
                 this.unit = value.unit;
             },
+
             getStorages(){
                 axios.get('/api/getListStorages/').then(res => {
                     this.storages = res.data.data;
-                }).catch(e => {
-                    console.log(e)
-                });
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
             },
+
             selectStorage(value){
                 if(value === 'default'){
                     this.goods = [];
                     return;
                 }
                 this.selected_storage = value;
-                this.getGoods(value)
+                //this.getGoods(value)
             },
-            getGoods(storage_id){
-                this.loadingGoods = true;
-                axios.get(`/api/getStorageGoods/available/${storage_id}/all`).then(res => {
-                    this.goods = res.data.data;
-                    this.loadingGoods = false;
-                }).catch(e => {
-                    console.log(e)
-                })
-            },
+
+            // getGoods(storage_id){
+            //     this.loadingGoods = true;
+            //     axios.get(`/api/getStorageGoods/available/${storage_id}/all`).then(res => {
+            //         this.goods = res.data.data;
+            //         this.loadingGoods = false;
+            //     }).catch(e => {
+            //         console.log(e)
+            //     })
+            // },
+
             selectGoods(value){
                 if(value === 'default') return;
                 this.selected_goods = value;
@@ -154,6 +161,7 @@
                 this.amount = current_goods.amount;
                 this.unit = current_goods.unit;
             },
+
             correctGoods(){
                 axios.post('/api/correctGoods', {
                     old_amount: this.goods.find(el => el.goods_id === this.selected_goods).amount,
@@ -164,8 +172,9 @@
                 }).then(res => {
                     console.log('скорректировали товар('+this.selected_goods+')')
                     this.$router.push({name: 'home'});
-                }).catch(e => {
-                    console.log(e)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
                 })
             }
         }
