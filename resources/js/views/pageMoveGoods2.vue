@@ -14,7 +14,7 @@
             <div class="card card-style">
 
                 <div class="content-boxed bg-4 mb-1 pb-3 text-center">
-                    <h4 class="color-white">Передать продукцию <br>(новая тестовая функция)</h4>
+                    <h4 class="color-white">Передать продукцию <br>(тестовая функция)</h4>
                 </div>
 
                 <div class="content mb-5 p-0">
@@ -101,15 +101,26 @@
 
                 </div>
 
+                <div v-if="!this.isAllPermits" class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase">
+                    <h4 class="color-white">Уберите товар, который нельзя передать на склад</h4>
+                </div>
 
-                <a v-if="canDoPull" @click.prevent="makeMoveGoodsNEW" href="#">
-                    <div class="content-boxed bg-blue-dark mt-1 pb-3 text-center text-uppercase mt-5">
-                        <h4 class="color-white">Передать на склад</h4>
+                <a v-else-if="canDoPull" @click.prevent="makeMoveGoodsNEW" href="#">
+                    <div class="content-boxed bg-green-dark mt-1 pb-3 text-center text-uppercase mt-5">
+                        <h4 class="color-white">Передать</h4>
                     </div>
                 </a>
+                <div v-else-if="this.move_goods[0].goods_id === 'default'" class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase">
+                    <h4 class="color-white">Необходимо выбрать товар для передачи</h4>
+                </div>
+                <div v-else-if="this.move_goods[0].amount === 0" class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase">
+                    <h4 class="color-white">Необходимо установить количество</h4>
+                </div>
+
                 <div v-else class="content-boxed bg-red-dark mt-1 pb-3 text-center text-uppercase mt-5">
                     <h4 class="color-white">Необходимо выбрать склад</h4>
                 </div>
+
 
             </div>
 
@@ -236,8 +247,10 @@ export default {
         //     })
         // }
 
-        // Получаем список всех складов и предоставляем их на выбор пользователя
-        this.getListStorages();
+        if(this.canSelectStorageTo)
+            this.getListStorages();     // Получаем список всех складов и предоставляем их на выбор пользователя
+        else
+            this.selected_storage_id = localStorage.getItem('main_storage_id')
     },
     computed: {
         isAllPermits(){
@@ -248,6 +261,7 @@ export default {
             if(count === this.permits.length) return true;
             return false;
         },
+
         selected_goods(){
             let arr = [];
             this.move_goods.forEach(el => {
@@ -255,24 +269,18 @@ export default {
             })
             return arr;
         },
+
         canDoPull(){
             // if(this.selected_storage_id!=='default' && this.goods_amount > 0)
-            if(this.selected_storage_id!=='default')
+            if(this.selected_storage_id!=='default' && this.move_goods[0].amount > 0)
                 return 1
             else
                 return 0
         },
+
         canSelectStorageTo() {
             if(this.my_storage_id === parseInt(localStorage.getItem('main_storage_id')))
             {
-                // axios.get('/api/getListStorages').then(res => {
-                //     this.listStorage = res.data.data.filter(el => el.id !== Number.parseInt(this.storage_id))
-                //
-                // }).catch(err => {
-                //     this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                //     console.log(this.message)
-                // })
-
                 return 1
             } else
             {
@@ -314,9 +322,10 @@ export default {
               //
               this.listStorage = res.data.data.filter(el => el.id !== +this.my_storage_id && this.ListStoragesAllowed.includes(el.type))
 
-            }).catch(e => {
-             console.log(e)
-            });
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.error(this.message)
+            })
         },
 
         addGoods(){
@@ -360,8 +369,8 @@ export default {
         getStorageGoodsPermit(id, index){
             this.move_goods[index].loading = true;
             axios.get('/api/getListStoragesGoodsPermit/' + id).then(res => {
-                const allowed = res.data.data.find(el => el.storage_id === this.selected_storage_id && el.allowed);
-                if(allowed){
+                const allowed = res.data.data.filter(el => el.storage_id === +this.selected_storage_id && el.allowed);
+                if(allowed.length > 0){
                     this.permits[index] = true;
                 } else {
                     this.toast('toast-error',  'Товар не разрешен на выбранном складе')
@@ -371,7 +380,7 @@ export default {
             }).catch(err => {
                 this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                 console.error(this.message)
-            });
+            })
         },
 
         changeGoods(value, index){
@@ -398,16 +407,17 @@ export default {
             }
         },
 
-        getListStoragesGoodsPermit(){
-            this.loadingStorage = true;
-            axios.get('/api/getListStoragesGoodsPermit/' + this.selected_goods_id).then(res => {
-                this.listStorage = res.data.data.filter(el => el.allowed === true && el.storage_id !== +this.my_storage_id)
-                this.loadingStorage = false;
-            }).catch(err => {
-                this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
-                console.error(this.message)
-            })
-        },
+// @todo не используется ?
+//         getListStoragesGoodsPermit(){
+//             this.loadingStorage = true;
+//             axios.get('/api/getListStoragesGoodsPermit/' + this.selected_goods_id).then(res => {
+//                 this.listStorage = res.data.data.filter(el => el.allowed === true && el.storage_id !== +this.my_storage_id)
+//                 this.loadingStorage = false;
+//             }).catch(err => {
+//                 this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
+//                 console.error(this.message)
+//             })
+//         },
 
         makeMoveGoodsNEW(){
             if(!this.isAllPermits) return;
