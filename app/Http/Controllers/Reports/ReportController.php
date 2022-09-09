@@ -37,10 +37,14 @@ class ReportController extends Controller
                 $query->where('storage_id_to', '=', $request->storage_id)
                     ->orWhere('storage_id_from', '=', $request->storage_id);
             })
-            ->orderBy('date_accepted', 'desc')
+            ->orderBy('date_accepted', 'desc');
 //            ->limit(30)
-            ->get();
-        return ListGoodsMovementResource::collection($listGoodsMovement);
+//            ->get();
+        if ($request->category !== 'all'){
+            $listGoodsMovement->where('category', '=', $request->category);
+        }
+
+        return ListGoodsMovementResource::collection($listGoodsMovement->get());
 
     }
 
