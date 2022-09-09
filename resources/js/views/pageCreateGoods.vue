@@ -143,12 +143,18 @@
                     unit: this.unit.toLowerCase(),
                     type: this.type
                 }).then(res => {
-                   if(!res.data){
+                   if(!res.data) {
                        console.error('при добавлении товара произошла ошибка')
                        this.message = 'при добавлении товара произошла ошибка'
                    }
-                    console.log('товар добавлен в систему')
-                    this.$router.push({name: 'home'});
+                   else {
+                       console.log('товар добавлен в систему')
+                       this.$router.push({name: 'PermitGoods', params: {
+                           goods_id: res.data.goods_id,
+                           goods_name: this.name.toLowerCase()
+                         }
+                       });
+                   }
                 });
             },
             searchGoods(){

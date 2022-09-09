@@ -25,6 +25,7 @@
                           :map-keydown="handlers"
                           @option:selected="changeGoods"
                           @search="searchGoods"
+                          v-model="selected_goods_name"
                 >
                 </v-select>
                 <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">
@@ -65,7 +66,6 @@
     import TitlePage from "../Components/Title";
     import SelectInput from "../Components/SelectInput";
     import vSelect from "vue-select"
-    import 'vue-select/dist/vue-select.css';
 
     export default {
         name: "pagePermitGoods",
@@ -84,7 +84,8 @@
                 loading_storages_goods: false,
                 selected_goods: 'default',
                 available_goods: [],
-                storages: []
+                storages: [],
+                selected_goods_name: ''
             }
         },
         computed: {},
@@ -93,6 +94,13 @@
         mounted() {
             // this.getStorageGoods()
             this.getListStorages()
+            console.log(this.$route.params)
+            if (this.$route.params.goods_id > 0) {
+                console.log('> landing with goods_id: '+this.$route.params.goods_id)
+                this.changeGoods({id: this.$route.params.goods_id})
+                this.searchGoods(this.$route.params.goods_name)
+                this.selected_goods_name = this.$route.params.goods_name
+            }
         },
         methods: {
             handlers: (map, vm) => ({
@@ -105,7 +113,6 @@
             }),
             async getStorageGoods(){
                 this.loading_goods = true;
-                // const res = await axios.get(`/api/getStorageGoods/available/1/all`);
                 const res = await axios.get(`/api/getListGoods`);
                 this.loading_goods = false;
                 if(!res.data){

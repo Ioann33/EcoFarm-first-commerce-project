@@ -11,6 +11,7 @@ use App\Models\Movements;
 use App\Models\StockBalance;
 use App\Services\LogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Utils;
 
 class ReportController extends Controller
@@ -239,5 +240,16 @@ class ReportController extends Controller
              return $logs = Log::orderBy('date', 'desc')->limit(25)->get();
              else
          return $logs = Log::where('event', '=', $request->event)->limit(25)->get();
+     }
+
+     public function getAdvancedLogs(Request $request){
+         $this->validate($request,[
+             'limit' => 'integer'
+             ]);
+
+         $movements_full = DB::table('movements_full')->orderBy('date_created', 'desc')->limit($request->limit)->get();
+
+         return response()->json(['data' => $movements_full]);
+
      }
 }

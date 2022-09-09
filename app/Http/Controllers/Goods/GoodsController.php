@@ -20,6 +20,7 @@ use App\Http\Resources\StorageResource;
 use App\Models\Goods;
 use App\Models\MainStore;
 use App\Models\Movements;
+use App\Models\MyModel\CheckGoodsRight;
 use App\Models\MyModel\HandleGoods;
 use App\Models\Orders;
 use App\Models\Recipe;
@@ -207,6 +208,33 @@ class GoodsController extends Controller
     }
 
 
+    public function getStorageGoodsTwo(Request $request){
+
+        if ($request->key === 'available') {
+            $goods = DB::table('stock_balance')
+                ->join('goods', 'stock_balance.goods_id', '=', 'goods.id')
+                ->join('storages', 'stock_balance.storage_id', '=', 'storages.id')
+                ->select(DB::raw("stock_balance.storage_id as storage_id, storages.name as storage_name, stock_balance.goods_id as goods_id, goods.name as goods_name, goods.unit, goods.type, stock_balance.price, stock_balance.amount"));
+        }else{
+            $goods = DB::table('storage_goods')
+                ->join('goods', 'storage_goods.goods_id', '=','goods.id')
+                ->join('storages', 'storage_goods.storage_id', '=','storages.id')
+                ->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type, storages.id as storage_id, storages.name as storage_name, storages.type as storage_type"));
+        }
+
+        if ($request->storage_id !== 'all'){
+            $goods->where('storage_id', '=', $request->storage_id);
+        }
+
+        if ($request->goods_id !== 'all'){
+            $goods->where('goods.id', '=',$request->goods_id);
+        }
+
+
+        return response()->json(['data' => $goods->get()]);
+    }
+
+
 
 
     public function searchStorageGoods(Request $request){
@@ -270,6 +298,10 @@ class GoodsController extends Controller
 
     public function goodsMovementPush(Request $request, LogService $service)
     {
+        $permit = CheckGoodsRight::check($request->goods_id, $request->storage_id_to);
+        if ($permit){
+            return response()->json(['status'=>'error', 'message' => 'the goods does not allowed on this storage, you can^t push !']);
+        }
         DB::beginTransaction();
 
         try {
@@ -371,6 +403,10 @@ class GoodsController extends Controller
 
             $readyProductID = HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
 
+            $movements = Movements::findOrFail($readyProductID['productID']);
+            $movements->link_id = $readyProductID['productID'];
+            $movements->save();
+
             foreach ($ingredients as $ingredient){
 
                 HandleGoods::moveGoods($request->storage_id, null, $ingredient->goods_id, $ingredient->amount, 'ingredients', $readyProductID['productID'], null, $user_id, $dateNow);
@@ -448,14 +484,23 @@ class GoodsController extends Controller
     }
 
     public function addGoods(Request $request, LogService $service){
+        DB::beginTransaction();
         $addGoods = new Goods();
         $addGoods->name = $request->name;
         $addGoods->unit = $request->unit;
         $addGoods->type = $request->type;
         $addGoods->save();
         $id = $addGoods->id;
-        $service->newLog('addGoods', 'added new goods '.$id, $id);
-        return response()->json(['goods_id'=>$id, 'status'=>'ok', 'message'=>'added new goods ']);
+        $set = new StorageGoods();
+        $mainStore = MainStore::where('name', '=', 'main_storage')
+            ->get()
+            ->toArray();
+        $set->storage_id = $mainStore[0]['param'];
+        $set->goods_id = $id;
+        $set->save();
+        DB::commit();
+        $service->newLog('addGoods', 'added new goods '.$id.', and set permit on main storage', $id);
+        return response()->json(['goods_id'=>$id, 'status'=>'ok', 'message'=>'added new goods , and set permit on main storage']);
     }
 
     public function updateGoods(Request $request, LogService $service){
@@ -650,15 +695,18 @@ class GoodsController extends Controller
         DB::beginTransaction();
 
         try {
-            foreach ($request as $value){
+            foreach ($request->move as $value){
                 if (isset($value->storage_id_from)){
                     $category = 'move';
                 }else{
                     $category = 'grow';
                 }
-
+                $permit = CheckGoodsRight::check($value->goods_id, $value->storage_id_to);
+                if ($permit){
+                    return response()->json(['status'=>'error', 'message' => 'the goods ( '.GetName::goods($value->goods_id).' ) does not allowed on this storage ( '.GetName::storage($value->storage_id_to).' ), you can^t push, operation was canceled !']);
+                }
                 $push = HandleGoods::moveGoods($value->storage_id_from, $value->storage_id_to, $value->goods_id, $value->amount, $category);
-                $service->newLog('pushPackageGoods', ' push goods('.GetName::goods($value->goods_id).'), storage: '.GetName::storage($value->storage_id_from).' -> '.GetName::storage($value->storage_id_to).', amount: '.$value->amount.', category '.$category, $push['productID']);
+                $service->newLog('pushPackageGoods', $category.' goods('.GetName::goods($value->goods_id).'), storage: '.GetName::storage($value->storage_id_from).' -> '.GetName::storage($value->storage_id_to).', amount: '.$value->amount.', category '.$category, $push['productID']);
             }
         }catch (NotEnoughGoods $e){
             DB::rollBack();
@@ -669,7 +717,7 @@ class GoodsController extends Controller
         }
         DB::commit();
 
-        return response()->json(['status' => 'ok', 'message' => 'goods successful pushed']);
+        return response()->json(['status' => 'ok', 'message' => 'goods successful '.$category]);
     }
 
 }

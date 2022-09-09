@@ -339,6 +339,10 @@ class FinanceController extends Controller
 
                 $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 700, $move_id['productID'], $user_id);
 
+                $movements = Movements::findOrFail($move_id['productID']);
+                $movements->link_id = $trance_id;
+                $movements->save();
+
                 $service->newLog('doSale', 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], $trance_id);
 
             }
@@ -365,6 +369,10 @@ class FinanceController extends Controller
 
                 $trance_id = MoneyTransfer::moneyTransfer(-$costProduct, $dateNow, $buy['storage_id'], 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], 800, $move_id['productID'],$user_id);
                 $service->newLog('doBuy', 'покупка товара '.$buy['goods_id'].', в количестве '.$buy['amount'].', по цене '. $buy['price'], $trance_id);
+
+                $movements = Movements::findOrFail($move_id['productID']);
+                $movements->link_id = $trance_id;
+                $movements->save();
 
             }
         }catch (NotEnoughGoods $e){
