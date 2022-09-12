@@ -484,6 +484,9 @@ class GoodsController extends Controller
     }
 
     public function addGoods(Request $request, LogService $service){
+        $this->validate($request, [
+            'name' => 'unique:goods'
+        ]);
         DB::beginTransaction();
         $addGoods = new Goods();
         $addGoods->name = $request->name;
