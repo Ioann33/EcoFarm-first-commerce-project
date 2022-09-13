@@ -39,12 +39,13 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
 
 
-    Route::get('/getListGoodsMovements/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getListGoodsMovements']);
+    Route::get('/getListGoodsMovements/{storage_id}/{category}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getListGoodsMovements']);
     Route::get('/getSumMoneyGoodsMovements/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSumMoneyGoodsMovements']);
     Route::get('/getSalary/{type}/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSalary']);
     Route::get('/getSaldo/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSaldo']);
     Route::get('/getLogs/{event}/{date_from?}/{date_to?}', [\App\Http\Controllers\Reports\ReportController::class, 'getLogs']);
     Route::get('/getAdvancedLogs', [\App\Http\Controllers\Reports\ReportController::class, 'getAdvancedLogs']);
+    Route::get('/getReportAboutMadeProduct', [\App\Http\Controllers\Reports\ReportController::class, 'getReportAboutMadeProduct']);
     Route::get('/checkStockBalance/{storage_id}/{goods_id}/{action?}/{latest?}', [\App\Http\Controllers\Reports\ReportController::class, 'checkStockBalance']);
 
     Route::get('/getFinance/{storage_id}/{type?}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
@@ -52,7 +53,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getMovementInfo/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovementInfo']);
     Route::get('/getListGoodsMovementsOnStorages/{goods_id}/{date_from}/{date_to}', [\App\Http\Controllers\Goods\GoodsController::class, 'getListGoodsMovementsOnStorages']);
     Route::get('/getListGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'getListGoods']);
-    Route::get('/getIngredients/{goods_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getIngredients']);
+    Route::get('/getIngredients/{movement_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getIngredients']);
     Route::get('/searchGoods/{name}', [\App\Http\Controllers\Goods\GoodsController::class, 'searchGoods']);
     Route::post('/GrowAndMoveOnMainStorage', [\App\Http\Controllers\Goods\GoodsController::class, 'GrowAndMoveOnMainStorage']);
     Route::post('/GrowAndMove', [\App\Http\Controllers\Goods\GoodsController::class, 'GrowAndMove']);
