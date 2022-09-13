@@ -96,7 +96,7 @@
                                     <div class="col-2 align-content-end p-0">
                                         <div class="icon icon-m rounded-s shadow-l me-1 p-0 bg-twitter">
                                             <i class="fa-solid fa-right-from-bracket font-25 bg-blue-dark rounded-s" v-if="movement.category==='move'"></i>
-                                            <i class="fas fa-check-to-slot font-25 bg-green-dark  rounded-s" v-if="movement.category==='ready'"></i>
+                                            <i class="fas fa-check-to-slot font-25 bg-green-dark  rounded-s" v-if="movement.category==='ready'" @click="aboutReady(movement.goods_id)"></i>
                                             <i class="fa-solid fa-recycle" v-if="movement.category==='correct'"></i>
                                             <i class="fa-solid fa-seedling font-25 bg-green-dark rounded-s" v-if="movement.category==='grow'"></i>
                                             <i class="fa-solid fa-dollar font-25 bg-green-dark rounded-s" v-if="movement.category==='buy'"></i>
@@ -126,6 +126,11 @@
                 </div>
             </div>
 
+            <modal :title="'Информация о товаре'" :loading="loadingModal" @close="hideModal" v-if="showModal">
+                <template v-if="!loadingModal" v-slot:data>
+                        <p>123</p>
+                </template>
+            </modal>
 
 <!--            <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">-->
 <!--                <span class="sr-only">Loading...</span>-->
@@ -149,7 +154,7 @@
     import 'vue-select/dist/vue-select.css';
     import SelectInput from "../Components/SelectInput";
     import listMovements from "../Components/listMovements";
-
+    import Modal from "../Components/Modal";
 
 
     export default {
@@ -159,7 +164,7 @@
             TitlePage,
             headBar, NavBar, NavBarMenu,
             SelectInput, vSelect,
-            listMovements
+            listMovements, Modal
         },
         data(){
             return {
@@ -173,7 +178,10 @@
                 storage_goods: [],
                 loading_list_goods: false,
                 empty_storage: false,
-                movements_goods: []
+                movements_goods: [],
+                loadingModal: false,
+                showModal: true,
+                aboutDataModal: []
             }
         },
         computed: {},
@@ -189,6 +197,19 @@
         updated() {
         },
         methods: {
+            hideModal(value){
+              if(value) this.showModal = false;
+            },
+            aboutReady(goods_id){
+                this.showModal = true;
+                this.loadingModal = true;
+                axios.get(`/api/getIngredients/${goods_id}`).then(res => {
+                    this.loadingModal = false;
+                    console.log(res.data.data)
+                }).catch(e => {
+                    console.log(e)
+                });
+            },
             getListStorages(){
               axios.get('/api/getListStorages/').then(res => {
                   this.list_storages = res.data.data;
