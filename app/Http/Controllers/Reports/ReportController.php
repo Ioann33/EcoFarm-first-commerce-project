@@ -289,4 +289,39 @@ class ReportController extends Controller
          return response()->json(['data' => $movements_full]);
 
      }
+
+     public function getReportAboutMadeProduct(Request $request){
+        $movements = Movements::query()
+            ->select(['amount', 'price', 'id'])->where('storage_id_to', '=', $request->storage_id)
+            ->where('category', '=', 'ready')
+            ->where('date_created', '>=', $request->date_from)
+            ->where('date_created', '<=', $request->date_to)
+            ->get();
+        $selfCost = null;
+        $marketCost = null;
+        $catMov = [];
+        $resArr = [];
+
+        foreach ($movements as $movement){
+            $catMov[] = $movement->id;
+            $selfCost+= $movement->amount * $movement->price;
+        }
+
+        foreach ($catMov as $value){
+            $movements = Movements::query()->select(['amount', 'price'])->where('link_id', '=', $value)->where('category', '=', 'move')->get();
+            $resArr[] = $movements[0];
+        }
+
+        foreach ($resArr as $item){
+            $marketCost+= $item->amount * $item->price;
+        }
+
+        $profit = $marketCost - $selfCost;
+
+        return response()->json([
+            'self_cost' => $selfCost,
+            'market_cost' => $marketCost,
+            'profit' => $profit
+        ]);
+    }
 }
