@@ -291,6 +291,9 @@ class ReportController extends Controller
      }
 
      public function getReportAboutMadeProduct(Request $request){
+         $this->validate($request,[
+             'storage_id'=>'integer'
+         ]);
         $movements = Movements::query()
             ->select(['amount', 'price', 'id'])->where('storage_id_to', '=', $request->storage_id)
             ->where('category', '=', 'ready')
