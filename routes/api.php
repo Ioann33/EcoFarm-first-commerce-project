@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/setOrderStatus/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'setOrderStatus']);
     Route::get('/getStorageGoods/{key}/{storage_id}/{goods_id?}', [\App\Http\Controllers\Goods\GoodsController::class, 'getStorageGoods']);
     Route::get('/searchStorageGoods/{key}/{storage_id}/{name?}', [\App\Http\Controllers\Goods\GoodsController::class, 'searchStorageGoods']);
+    Route::get('/getPermitOnBothStorages/{storage_id_from}/{storage_id_to}/{name?}', [\App\Http\Controllers\Goods\GoodsController::class, 'getPermitOnBothStorages']);
     Route::get('/getMovement/{dir}/{status}/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovement']);
     Route::get('/getOrder/{order_id}', [\App\Http\Controllers\Orders\OrderController::class, 'getOrder']);
 
