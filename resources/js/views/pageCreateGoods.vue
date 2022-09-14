@@ -95,6 +95,7 @@
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
     import TitlePage from "../Components/Title";
+
     export default {
         name: "pageSaleProducts",
         components:{
@@ -133,12 +134,12 @@
             changeType(value){
                 this.type = value;
             },
-            async createGoods(){
+            createGoods(){
                 if(!this.name || !this.unit || !this.type){
                     this.message = 'Вы не указали обязательное поле';
                     return;
                 }
-                const res = await axios.post('/api/addGoods', {
+                const res = axios.post('/api/addGoods', {
                     name: this.name.toLowerCase(),
                     unit: this.unit.toLowerCase(),
                     type: this.type
@@ -155,6 +156,11 @@
                          }
                        });
                    }
+                }).catch(e => {
+                    console.log(e)
+                    if(e.status === 422) {
+                        this.message = 'Товар с такой назвой уже существует в базе.'
+                    }
                 });
             },
             searchGoods(){
