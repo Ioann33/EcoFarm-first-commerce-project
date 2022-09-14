@@ -309,7 +309,9 @@ class ReportController extends Controller
 
         foreach ($catMov as $value){
             $movements = Movements::query()->select(['amount', 'price'])->where('link_id', '=', $value)->where('category', '=', 'move')->get();
-            $resArr[] = $movements[0];
+            if (isset($movements[0])){
+                $resArr[] = $movements[0];
+            }
         }
 
         foreach ($resArr as $item){
