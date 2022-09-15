@@ -723,4 +723,26 @@ class GoodsController extends Controller
         return response()->json(['status' => 'ok', 'message' => 'goods successful '.$category]);
     }
 
+    public function getPermitOnBothStorages(Request $request){
+
+        $goodsOnFirst = DB::table('storage_goods')
+            ->where('storage_id', '=', $request->storage_id_from)
+            ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
+            ->get();
+
+        $goodsOnSecond = DB::table('storage_goods')
+            ->where('storage_id', '=', $request->storage_id_to)
+            ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
+            ->get();
+
+        if (count($goodsOnFirst)>0 && count($goodsOnSecond)>0){
+            return response()->json(['status'=>'ok', 'message'=>'on both allowed']);
+        }else{
+
+            return response()->json(['status'=>'error', 'message'=>'deny', 'firstStorage'=>$goodsOnFirst, 'secondStorage' => $goodsOnSecond]);
+        }
+
+
+    }
+
 }

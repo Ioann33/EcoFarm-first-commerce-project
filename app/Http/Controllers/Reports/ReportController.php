@@ -64,15 +64,21 @@ class ReportController extends Controller
 //            ->orderBy('date_accepted', 'desc')->get();
 
         $listGoodsMovement = Movements::
-              where('date_accepted','>=', $request->date_from)
-            ->where('date_accepted','<=', $request->date_to)
-            ->where(function($query) use ($request) {
-                $query->where('storage_id_to', '=', $request->storage_id)
-                    ->orWhere('storage_id_from', '=', $request->storage_id);
-            })
+              where('date_created','>=', $request->date_from)
+            ->where('date_created','<=', $request->date_to)
+//            ->where(function($query) use ($request) {
+//                $query->where('storage_id_to', '=', $request->storage_id)
+//                    ->orWhere('storage_id_from', '=', $request->storage_id);
+//            })
             ->orderBy('date_accepted', 'desc');
 //            ->limit(30)
 //            ->get();
+        if ($request->storage_id_from != 'null'){
+            $listGoodsMovement->where('storage_id_from', '=', $request->storage_id_from);
+        }
+        if ($request->storage_id_to != 'null'){
+            $listGoodsMovement->where('storage_id_to', '=', $request->storage_id_to);
+        }
         if ($request->category !== 'all'){
             $listGoodsMovement->where('category', '=', $request->category);
         }
@@ -291,6 +297,9 @@ class ReportController extends Controller
      }
 
      public function getReportAboutMadeProduct(Request $request){
+         $this->validate($request,[
+             'storage_id'=>'integer'
+         ]);
         $movements = Movements::query()
             ->select(['amount', 'price', 'id'])->where('storage_id_to', '=', $request->storage_id)
             ->where('category', '=', 'ready')
@@ -309,7 +318,9 @@ class ReportController extends Controller
 
         foreach ($catMov as $value){
             $movements = Movements::query()->select(['amount', 'price'])->where('link_id', '=', $value)->where('category', '=', 'move')->get();
-            $resArr[] = $movements[0];
+            if (isset($movements[0])){
+                $resArr[] = $movements[0];
+            }
         }
 
         foreach ($resArr as $item){
