@@ -628,7 +628,6 @@ class GoodsController extends Controller
 
     public function getIngredients(Request $request){
 
-
         $ready = Movements::find((int)$request->movement_id);
         if ($ready){
             return getIngredientsReasource::make($ready);
