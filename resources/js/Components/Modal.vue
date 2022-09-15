@@ -54,4 +54,8 @@
         z-index: 10;
         background-color: white;
     }
+    .modal-body {
+        max-height: calc(100vh - 206px);
+        overflow: scroll;
+    }
 </style>

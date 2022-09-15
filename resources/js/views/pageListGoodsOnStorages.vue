@@ -94,9 +94,9 @@
                                         <span class="font-10" v-if="movement.price">{{movement.price}}   <sup class="opacity-50">₴</sup> </span>
                                     </div>
                                     <div class="col-2 align-content-end p-0">
-                                        <div class="icon icon-m rounded-s shadow-l me-1 p-0 bg-twitter">
+                                        <div class="icon icon-m rounded-s shadow-l me-1 p-0 bg-twitter" :style="movement.category==='ready' ? 'cursor: pointer;' : ''">
                                             <i class="fa-solid fa-right-from-bracket font-25 bg-blue-dark rounded-s" v-if="movement.category==='move'"></i>
-                                            <i class="fas fa-check-to-slot font-25 bg-green-dark  rounded-s" v-if="movement.category==='ready'" @click="aboutReady(movement.goods_id)"></i>
+                                            <i class="fas fa-check-to-slot font-25 bg-green-dark  rounded-s" v-if="movement.category==='ready'" @click="aboutReady(movement.id)"></i>
                                             <i class="fa-solid fa-recycle" v-if="movement.category==='correct'"></i>
                                             <i class="fa-solid fa-seedling font-25 bg-green-dark rounded-s" v-if="movement.category==='grow'"></i>
                                             <i class="fa-solid fa-dollar font-25 bg-green-dark rounded-s" v-if="movement.category==='buy'"></i>
@@ -126,9 +126,44 @@
                 </div>
             </div>
 
-            <modal :title="'Информация о товаре'" :loading="loadingModal" @close="hideModal" v-if="showModal">
+            <modal :title="'Движение №'+activeModal.id" :loading="loadingModal" @close="hideModal" v-if="showModal">
                 <template v-if="!loadingModal" v-slot:data>
-                        <p>123</p>
+                    <table class="table table-sm">
+<!--                        <thead>-->
+<!--                        <tr>-->
+<!--                            <th scope="col">#</th>-->
+<!--                            <th scope="col">First</th>-->
+<!--                            <th scope="col">Last</th>-->
+<!--                            <th scope="col">Handle</th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+                        <tbody>
+                        <tr>
+                            <th scope="row" colspan="4" class="text-center">Общая информация</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><i>Создано:</i><br>{{ activeModal.date_created }}</td>
+                            <td colspan="2"><i>Пользоватеть:</i><br>{{ activeModal.user_id_created }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><i>Кол-во:</i><br>{{ activeModal.amount }}</td>
+                            <td colspan="2"><i>Цена:</i><br>{{ activeModal.price }}</td>
+                        </tr>
+                        <tr v-if="activeModal.user_id_accepted">
+                            <td colspan="2"><i>Принято:</i><br>{{ activeModal.user_id_accepted }}</td>
+                            <td colspan="2"><i>Дата:</i><br>{{ activeModal.date_accepted }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="4" class="text-center">Ингредиенты</th>
+                        </tr>
+                        <tr v-for="(ingredient, index) in activeModal.ingredients">
+                            <th scope="row">{{ index + 1 }}</th>
+                            <td>Ингредиент {{ ingredient.goods_id }}</td>
+                            <td>Кол-во: {{ ingredient.amount }}</td>
+                            <td>Цена: {{ ingredient.price }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </template>
             </modal>
 
@@ -179,9 +214,12 @@
                 loading_list_goods: false,
                 empty_storage: false,
                 movements_goods: [],
+
+                // Модальное окно
                 loadingModal: false,
-                showModal: true,
-                aboutDataModal: []
+                showModal: false,
+                aboutDataModal: [],
+                activeModal: {}
             }
         },
         computed: {},
@@ -200,10 +238,18 @@
             hideModal(value){
               if(value) this.showModal = false;
             },
-            aboutReady(goods_id){
+            aboutReady(id){
                 this.showModal = true;
                 this.loadingModal = true;
-                axios.get(`/api/getIngredients/${goods_id}`).then(res => {
+                const current = this.aboutDataModal.find(el => el.id === id);
+                if(current) {
+                    this.activeModal = current;
+                    this.loadingModal = false;
+                    return;
+                }
+                axios.get(`/api/getIngredients/${id}`).then(res => {
+                    this.aboutDataModal.push(res.data.data);
+                    this.activeModal = res.data.data;
                     this.loadingModal = false;
                     console.log(res.data.data)
                 }).catch(e => {
