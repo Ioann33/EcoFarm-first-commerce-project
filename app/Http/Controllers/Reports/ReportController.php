@@ -330,9 +330,9 @@ class ReportController extends Controller
         $profit = $marketCost - $selfCost;
 
         return response()->json([
-            'self_cost' => $selfCost,
-            'market_cost' => $marketCost,
-            'profit' => $profit
+            'self_cost' => number_format($selfCost,2,'.',''),
+            'market_cost' => number_format($marketCost,2,'.',''),
+            'profit' => number_format($profit,2,'.','')
         ]);
     }
 }
