@@ -398,7 +398,6 @@ class GoodsController extends Controller
         $dateNow = date('Y-m-d H:i:s');
         $request = json_decode($request->getContent());
         $ingredients = $request->ingredients;
-
         try {
 
             $readyProductID = HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
@@ -408,7 +407,9 @@ class GoodsController extends Controller
             $movements->save();
 
             foreach ($ingredients as $ingredient){
-
+                if ($ingredient->goods_id === 'default'){
+                    continue;
+                }
                 HandleGoods::moveGoods($request->storage_id, null, $ingredient->goods_id, $ingredient->amount, 'ingredients', $readyProductID['productID'], null, $user_id, $dateNow);
 
             }
@@ -627,7 +628,6 @@ class GoodsController extends Controller
 
 
     public function getIngredients(Request $request){
-
 
         $ready = Movements::find((int)$request->movement_id);
         if ($ready){
