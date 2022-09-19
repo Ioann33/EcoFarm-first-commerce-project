@@ -208,17 +208,28 @@
                     console.error(this.message)
                 })
 
-            //api/getListGoodsMovements/2/2022-08-01/2022-09-01
-            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
+            // УТИЛИЗАЦИЯ
+            //api/getListGoodsMovements/2/move/2022-08-01/2022-09-01
+            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/trash/'+this.df+'/'+this.dt).then(res => {
+                res.data.data.forEach((el ,index) => {
+                    this.sumTrash = +el.amount * el.price
+                })
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.error (' [serv] '+this.message)
+            })
+
+            //api/getListGoodsMovements/2/trash/2022-08-01/2022-09-01
+            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/move/'+this.df+'/'+this.dt)
                 .then(res => {
                     this.listMovements = res.data.data
                     // this.listTrash = this.listMovements.filter(el => el.category=='trash')
                     let totalCostPrice = 0
                     let totalProduce = 0
                     this.listMovements.forEach((el ,index) => {
-                        if(el.category == 'trash'){ // Утилизация
-                            this.sumTrash =+ el.amount * el.price
-                        }else
+                        // if(el.category == 'trash'){ // Утилизация
+                        //     this.sumTrash =+ el.amount * el.price
+                        // }else
                         if(el.category == 'move' && el.link_id !== null){
                             // отгружена ГП
                             // если null то это было перемещение сырья, а не ГП
