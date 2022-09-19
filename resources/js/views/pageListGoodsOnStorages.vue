@@ -129,38 +129,32 @@
             <modal :title="'Движение №'+activeModal.id" :loading="loadingModal" @close="hideModal" v-if="showModal">
                 <template v-if="!loadingModal" v-slot:data>
                     <table class="table table-sm">
-<!--                        <thead>-->
-<!--                        <tr>-->
-<!--                            <th scope="col">#</th>-->
-<!--                            <th scope="col">First</th>-->
-<!--                            <th scope="col">Last</th>-->
-<!--                            <th scope="col">Handle</th>-->
-<!--                        </tr>-->
-<!--                        </thead>-->
                         <tbody>
                         <tr>
                             <th scope="row" colspan="4" class="text-center">Общая информация</th>
                         </tr>
                         <tr>
                             <td colspan="2"><i>Создано:</i><br>{{ activeModal.date_created }}</td>
-                            <td colspan="2"><i>Пользоватеть:</i><br>{{ activeModal.user_id_created }}</td>
+                            <td colspan="2"><i>Пользоватеть:</i><br>{{ activeModal.user_name_created }}</td>
                         </tr>
                         <tr>
                             <td colspan="2"><i>Кол-во:</i><br>{{ activeModal.amount }}</td>
                             <td colspan="2"><i>Цена:</i><br>{{ activeModal.price }}</td>
                         </tr>
-                        <tr v-if="activeModal.user_id_accepted">
-                            <td colspan="2"><i>Принято:</i><br>{{ activeModal.user_id_accepted }}</td>
-                            <td colspan="2"><i>Дата:</i><br>{{ activeModal.date_accepted }}</td>
-                        </tr>
                         <tr>
                             <th scope="row" colspan="4" class="text-center">Ингредиенты</th>
                         </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Ингредиент</th>
+                            <th>кол-во</th>
+                            <th>цена</th>
+                        </tr>
                         <tr v-for="(ingredient, index) in activeModal.ingredients">
                             <th scope="row">{{ index + 1 }}</th>
-                            <td>Ингредиент {{ ingredient.goods_id }}</td>
-                            <td>Кол-во: {{ ingredient.amount }}</td>
-                            <td>Цена: {{ ingredient.price }}</td>
+                            <td> {{ ingredient.goods_name }}</td>
+                            <td> {{ ingredient.amount }} {{ ingredient.unit }}</td>
+                            <td> {{ ingredient.price }}</td>
                         </tr>
                         </tbody>
                     </table>

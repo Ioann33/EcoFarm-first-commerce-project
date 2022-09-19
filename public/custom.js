@@ -1477,3 +1477,9 @@ function init_template(){
         }
     }
 }
+
+function showMenu(menu_name){
+    document.getElementsByClassName('menu-hider')[0].classList.add('menu-active')
+    document.getElementById(menu_name).classList.add('menu-active');
+
+}
