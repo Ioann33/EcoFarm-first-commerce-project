@@ -134,8 +134,8 @@
             changeType(value){
                 this.type = value;
             },
-            createGoods(){
-                if(!this.name || !this.unit || !this.type){
+            createGoods() {
+                if (!this.name || !this.unit || !this.type) {
                     this.message = 'Вы не указали обязательное поле';
                     return;
                 }
@@ -144,22 +144,22 @@
                     unit: this.unit.toLowerCase(),
                     type: this.type
                 }).then(res => {
-                   if(!res.data) {
-                       console.error('при добавлении товара произошла ошибка')
-                       this.message = 'при добавлении товара произошла ошибка'
-                   }
-                   else {
-                       console.log('товар добавлен в систему')
-                       this.$router.push({name: 'PermitGoods', params: {
-                           goods_id: res.data.goods_id,
-                           goods_name: this.name.toLowerCase()
-                         }
-                       });
-                   }
+                    if (!res.data) {
+                        this.message = 'при добавлении товара произошла ошибка'
+                        console.error(this.message)
+                    } else {
+                        console.log('товар добавлен в систему')
+                        this.$router.push({
+                            name: 'PermitGoods', params: {
+                                goods_id: res.data.goods_id,
+                                goods_name: this.name.toLowerCase()
+                            }
+                        });
+                    }
                 }).catch(e => {
                     console.log(e)
-                    if(e.status === 422) {
-                        this.message = 'Товар с такой назвой уже существует в базе.'
+                    if (e.response.status === 422) {
+                        this.message = 'Товар с таким названием уже существует в системе. Товар не добавлен.'
                     }
                 });
             },
