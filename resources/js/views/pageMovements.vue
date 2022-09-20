@@ -92,7 +92,7 @@
 
             <div class="row mb-3">
                 <div class="col-8">
-                    <a href="#" v-if="activeModal.storage_id_to == my_storage_id" class="close-menu btn btn-m font-800 rounded-sm btn-full text-uppercase bg-red-dark"> удалить приготовление</a>
+                    <a href="#" v-if="activeModal.storage_id_to == my_storage_id" @click.prevent='removeReady(activeModal.link_id)' class="close-menu btn btn-m font-800 rounded-sm btn-full text-uppercase bg-red-dark"> удалить приготовление</a>
                 </div>
                 <div class="col-4">
                     <a href="#" class="close-menu btn btn-m font-800 rounded-sm btn-full text-uppercase bg-gray-dark">закрыть</a>
@@ -129,6 +129,9 @@
         </div>
     </div>
 
+    <!-- TOAST -->
+    <div id="toast-successful" class="snackbar-toast bg-green-dark color-white" data-delay="1500" data-autohide="true"><i class="fa fa-check-circle me-3"></i>{{ this.toast_message}}</div>
+
     <nav-bar-menu></nav-bar-menu>
 
 </div>  <!-- id="page" -->
@@ -156,6 +159,7 @@ export default {
             dir: null,              // { in | out }
             status: null,           // { opened | canceled | progress }
             message: null,           // for error message
+            toast_message: '',
             movement_id: '',
             price: -0,
             editPrice: false,
@@ -201,6 +205,34 @@ export default {
             //update_template()
     },
     methods: {
+        toast(id, message){
+            this.toast_message = message
+            var notificationToast = new bootstrap.Toast(document.getElementById(id))
+            notificationToast.show()
+        },
+        removeReady(link_id){
+            console.log('remove ready: '+link_id)
+
+
+            axios.get('/api/removeReady',{
+                    params: {link_id}
+                })
+                .then(res => {
+                    console.log('  [serv] ' + res.data.message)
+
+                    if(res.data.status === 'ok'){
+                        removeMenu('menu-showIngredients')
+                        this.toast('toast-successful','Удалено')
+                        let a = this.listMovements.findIndex((el, index) => el.link_id == link_id)
+                        this.listMovements.splice(a,1)
+                    }
+
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.error (' [serv] '+this.message)
+            })
+
+        },
         showIngredients(id){
 
             console.log('ingredients:')
@@ -208,12 +240,12 @@ export default {
                 this.activeModal = res.data.data
                 console.log(res.data.data)
 
-
                 showMenu('menu-showIngredients')
 
-            }).catch(e => {
-                console.log(e)
-            });
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.error (' [serv] '+this.message)
+            })
         },
         setMovementId(e){
             this.movement_id = e;

@@ -187,7 +187,6 @@ export default {
     beforeMount() {
         this.my_storage_id = localStorage.getItem('my_storage_id')
         this.main_storage_id = localStorage.getItem('main_storage_id')
-
     },
     methods: {
         cancelMovements(movement_id){
