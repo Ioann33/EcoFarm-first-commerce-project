@@ -6,11 +6,11 @@
         <div class="page-content header-clear-medium m-0">
             <!-- ERROR -->  <error  :message="message"></error>
 
-            <div class="content" id="tab-group-3">
-                <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-green-dark">
-                    <a href="#" class="no-effect bg-green-dark no-click" data-active="" data-bs-toggle="collapse" data-bs-target="#tab-8" aria-expanded="true">Товар</a>
-                    <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-9" aria-expanded="false">Склад</a>
-                    <a href="#" class="no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#tab-10" aria-expanded="false">Движение</a>
+            <div class="content mt-0" id="tab-group-3">
+                <div class="tab-controls tabs-small tabs-rounded" data-highlight="bg-blue-dark">
+                    <a href="#" class="no-effect collapsed " data-active="" data-bs-toggle="collapse" data-bs-target="#tab-8"  aria-expanded="true"> Товар      </a>
+                    <a href="#" class="no-effect collapsed"                             data-bs-toggle="collapse" data-bs-target="#tab-9"  aria-expanded="false"> Склад     </a>
+                    <a href="#" class="no-effect collapsed"                             data-bs-toggle="collapse" data-bs-target="#tab-10" aria-expanded="false"> Движение  </a>
                 </div>
 
                 <div class="clearfix mb-3"></div>
@@ -25,6 +25,8 @@
                               @search="searchGoods"
                     >
                     </v-select>
+
+                    <!-- товар, на складах -->
                     <div class="card card-style p-4 pt-3 mt-3" style="margin: 0 0 30px 0;">
                         <p class="text-center" v-if="selected_goods === 'default'">Выберете продукт</p>
                         <div v-if="loading_goods" class="spinner-border text-light" role="status" style="margin: 0 auto;">
@@ -34,7 +36,20 @@
                             <div class="col-8">{{goods.storage_name}}</div>
                             <div class="col-4 align-content-end">{{goods.amount}} <sup class="opacity-50">{{goods.unit}}</sup></div>
                         </div>
+
                     </div>
+
+                    <!-- товар, который в пути -->
+                    <div v-if="goods_in_progress.length > 0">
+                    Товар в пути:
+                        <div class="card card-style p-4 pt-3 mt-3" style="margin: 0 0 30px 0;">
+                            <div class="row m-0" v-for="(goods, index) in goods_in_progress" :key="goods.storage_id">
+                                <div class="col-8">{{goods.storage_name_from}} ➠ {{goods.storage_name_to}}</div>
+                                <div class="col-4 align-content-end">{{goods.amount}} <sup class="opacity-50">{{goods.goods_unit}}</sup></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div data-bs-parent="#tab-group-3" class="collapse" id="tab-9" style="">
                     <p class="mb-2 text-center">Посмотреть все продукты на выбранном складе</p>
@@ -108,10 +123,10 @@
 
                             </div>
                         </div>
-                        <div data-bs-parent="#tab-group-20" class="collapse" id="tab-21" style="">
-                            <div v-if="this.selected_goods" class="mt-3">
+                        <div data-bs-parent="#tab-group-20" class="collapse"  id="tab-21" style="">
+                            <div v-if="this.movements_selected_goods" class="mt-3">
                                 <list-movements
-                                    :goods_id="this.selected_goods"
+                                    :goods_id="this.movements_selected_goods"
                                 >
                                 </list-movements>
 
@@ -200,8 +215,10 @@
                 message: '',
                 available_goods: [],
                 selected_goods: 'default',
+                movements_selected_goods: 'default',
                 loading_goods: false,
                 goods_in_storages: [],
+                goods_in_progress: [],
                 list_storages: [],
                 selected_storage: 'default',
                 storage_goods: [],
@@ -280,9 +297,11 @@
             changeGoods(value){
                 this.selected_goods = value.id;
                 console.log('selected goods: '+this.selected_goods)
+
+                // на каких складах есть выбранный товар
                 this.loading_goods = true;
-                axios.get('/api/getStorageGoods/available/all/'+this.selected_goods).then(res => {
-                    this.goods_in_storages = res.data.data.filter(el => el.amount >0);
+                axios.get('/api/v2/getStorageGoods/available/all/'+this.selected_goods).then(res => {
+                    this.goods_in_storages = res.data.data
                     this.loading_goods = false;
                     console.log(this.goods_in_storages)
                 }).catch(err => {
@@ -290,14 +309,23 @@
                     console.error(this.message)
                 })
 
+                // есть ли выбранный товар в пути
+                axios.get('/api/getMovementsInProgress/', {params: {goods_id: this.selected_goods}}).then(res => {
+                    this.goods_in_progress = res.data.data
+                    console.log(this.goods_in_progress)
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+
             },
             showMovementsGoods(value){
-                this.selected_goods = value.id;
-                console.log('selected goods: '+this.selected_goods)
+                this.movements_selected_goods = value.id;
+                console.log('selected goods: '+this.movements_selected_goods)
                 this.loading_goods = true;
 
                 //получить движение продукта по складам
-                axios.get('/api/getListGoodsMovementsOnStorages/'+this.selected_goods+'/2022-08-01/2022-10-01').then(res => {
+                axios.get('/api/getListGoodsMovementsOnStorages/'+this.movements_selected_goods+'/2022-08-01/2022-10-01').then(res => {
 /*
 {
   "id": 849,
