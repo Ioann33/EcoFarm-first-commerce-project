@@ -77,6 +77,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/updateRecipe', [\App\Http\Controllers\Goods\GoodsController::class, 'updateRecipe']);
     Route::post('/pushPackageGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'pushPackageGoods']);
     Route::get('/getRecipe/{goods_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getRecipe']);
+    Route::get('/getMovementsInProgress', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovementsInProgress']);
 
     Route::post('/addUser', [\App\Http\Controllers\User\UserController::class, 'addUser']);
     Route::post('/updateUser', [\App\Http\Controllers\User\UserController::class, 'updateUser']);

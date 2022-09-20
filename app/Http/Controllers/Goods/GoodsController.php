@@ -13,6 +13,7 @@ use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\GetMovementInfoResource;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
+use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsPermitResource;
 use App\Http\Resources\StorageGoodsResource;
@@ -764,6 +765,15 @@ class GoodsController extends Controller
             }
         }
         return response()->json($goods);
+    }
+
+    public function getMovementsInProgress(){
+        $progressMovements = Movements::query()
+            ->select()
+            ->where('user_id_accepted', '=', null)
+            ->get();
+
+        return ListGoodsMovementResource::collection($progressMovements);
     }
 
 }
