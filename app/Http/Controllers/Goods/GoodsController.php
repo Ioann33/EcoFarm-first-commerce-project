@@ -776,4 +776,50 @@ class GoodsController extends Controller
         return ListGoodsMovementResource::collection($progressMovements);
     }
 
+    public function removeReady(Request $request, LogService $logService){
+        $this->validate($request,[
+            'link_id' => 'required'
+        ]);
+        $checkAccepted = Movements::query()
+            ->select()
+            ->where('link_id', '=', $request->link_id)
+            ->where('category', '=', 'move')
+            ->get();
+        if (count($checkAccepted)==0){
+            return response()->json([
+                'status'=>'error',
+                'message'=>'перемещения не существует'
+            ]);
+        }
+        if ($checkAccepted[0]['user_id_accepted']){
+            return response()->json([
+                'status'=>'error',
+                'message'=>'этот продукт уже оприходован, удаление невозможно'
+            ]);
+        }
+        $goods_id = $checkAccepted[0]['goods_id'];
+        $amount = $checkAccepted[0]['amount'];
+        DB::beginTransaction();
+        $readyMovements = Movements::query()
+            ->select()
+            ->where('link_id', '=', $request->link_id)
+            ->get();
+        $movements_id = [];
+        foreach ($readyMovements as $movement){
+            $movements_id[] = $movement->id;
+        }
+
+        foreach ($movements_id as $value){
+            $remove = Movements::findOrFail($value);
+            $remove->delete();
+        }
+        $logService->newLog('removeReady', 'продукт '.$goods_id.' в количестве '.$amount.' ,был удален с перемещений ', $goods_id);
+        DB::commit();
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'продукт '.$goods_id.' в количестве '.$amount.' ,был удален с перемещений '
+        ]);
+
+    }
+
 }
