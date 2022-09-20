@@ -97,7 +97,7 @@
 
                         <div data-bs-parent="#tab-group-20" class="collapse show" id="tab-20" style="">
                             <div class="card card-style p-0 m-0 pt-2">
-                                <p class="text-center" v-if="selected_goods === 'default'">Выберете продукт</p>
+                                <p class="text-center" v-if="movements_selected_goods === 'default'">Выберете продукт</p>
                                 <div v-if="loading_goods" class="spinner-border text-light" role="status" style="margin: 0 auto;">
                                     <span class="sr-only">Loading...</span>
                                 </div>
@@ -111,11 +111,12 @@
                                     <div class="col-2 align-content-end p-0">
                                         <div class="icon icon-m rounded-s shadow-l me-1 p-0 bg-twitter" :style="movement.category==='ready' ? 'cursor: pointer;' : ''">
                                             <i class="fa-solid fa-right-from-bracket font-25 bg-blue-dark rounded-s" v-if="movement.category==='move'"></i>
-                                            <i class="fas fa-check-to-slot font-25 bg-green-dark  rounded-s" v-if="movement.category==='ready'" @click="aboutReady(movement.id)"></i>
+                                            <i class="fas fa-check-to-slot font-25 bg-green-dark  rounded-s" v-if="movement.category==='ready'" @click="showIngredients(movement.link_id)"></i>
                                             <i class="fa-solid fa-recycle" v-if="movement.category==='correct'"></i>
                                             <i class="fa-solid fa-seedling font-25 bg-green-dark rounded-s" v-if="movement.category==='grow'"></i>
                                             <i class="fa-solid fa-dollar font-25 bg-green-dark rounded-s" v-if="movement.category==='buy'"></i>
                                             <i class="fas fa-boxes-alt font-25 bg-gray-dark rounded-s" v-if="movement.category==='ingredients'"></i>
+                                            <i class="fas fa-cash-register font-25 bg-green-dark rounded-s " v-if="movement.category==='sale'"></i>
                                         </div>
                                     </div>
                                     <hr class="opacity-10">
@@ -184,6 +185,75 @@
 
         </div>
 
+
+        <!-- меню показать Ингредиенты -->
+        <div id="menu-showIngredients" class="menu menu-box-bottom menu-box-detached" data-menu-effect="menu-over">
+            <div class="menu-title"><h1>Состав готовой продукции</h1><p class="color-green-dark">ингредиенты</p><a href="#" class="close-menu color-gray-dark"><i class="fa fa-times"></i></a></div>
+            <div class="divider" style="margin: -4px 20px 16px 16px;"></div>
+
+
+            <div class="d-flex mb-0 ms-3 pb-0">
+                <div>
+                    <img src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">
+                    <!--                        <img v-if="movement.goods_img !== null"  :src="'images/goods/'+movement.goods_id+'.jpg'" class="rounded-m shadow-xl" width="130">-->
+                    <!--                        <img v-else src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">-->
+                </div>
+                <div class="ms-3">
+                    <h4 class="font-600">{{ activeModal.goods_name }}
+                        <!--                            <span class="font-300" style="margin-left: 15px">{{ movement.amount }} <sup>{{ movement.unit }}</sup></span>-->
+                    </h4>
+                    <h5 class="pt-1 font-600">{{ activeModal.amount }} <sup>{{ activeModal.unit }}</sup></h5>
+                    <h5 class="pt-1 font-600" v-if="activeModal.price>0">{{ activeModal.price }} <sup>₴</sup></h5>
+                    <div v-else class="opacity-20">цена не установленна</div>
+                    <p></p>
+                </div>
+                <div class="ms-auto opacity-40 font-11 me-4">#{{ activeModal.id }}</div>
+            </div>
+
+
+            <div class="row mb-0 mt-2 ms-0 font-10 text-start color-dark-light">
+                <div class="col-12 pe-1">
+                    <div>
+                        <i class="fa fa-pencil-alt pe-1"></i>   Приготовил
+                        <i class="fa fa-user ps-2 pe-1"> </i>   {{ activeModal.user_name_created }}
+                        <i class="fa fa-clock ps-2 pe-2"></i>   {{ activeModal.date_created}}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="content mb-0">
+
+                <table class="table table-sm">
+                    <tbody>
+                    <tr>
+                        <th>#</th>
+                        <th>Ингредиент</th>
+                        <th>кол-во</th>
+                        <th>цена</th>
+                    </tr>
+                    <tr v-for="(ingredient, index) in activeModal.ingredients">
+                        <th scope="row">{{ index + 1 }}</th>
+                        <td> {{ ingredient.goods_name }}</td>
+                        <td> {{ ingredient.amount }} <sup>{{ ingredient.unit }} </sup> </td>
+                        <td> {{ ingredient.price }} <sup>₴</sup></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <a href="#" v-if="activeModal.storage_id_to == my_storage_id" @click.prevent='removeReady(activeModal.link_id)' class="close-menu btn btn-m font-800 rounded-sm btn-full text-uppercase bg-red-dark"> удалить приготовление</a>
+                    </div>
+                    <div class="col-4">
+                        <a href="#" class="close-menu btn btn-m font-800 rounded-sm btn-full text-uppercase bg-gray-dark">закрыть</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
         <nav-bar-menu></nav-bar-menu>
     </div>
 </template>
@@ -249,6 +319,23 @@
             hideModal(value){
               if(value) this.showModal = false;
             },
+
+            showIngredients(id){
+
+                console.log('ingredients ('+id+'):')
+                axios.get(`/api/getIngredients/${id}`).then(res => {
+                    this.activeModal = res.data.data
+                    console.log(res.data.data)
+
+                    showMenu('menu-showIngredients')
+
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error (' [serv] '+this.message)
+                })
+            },
+
+            // not used
             aboutReady(id){
                 this.showModal = true;
                 this.loadingModal = true;
@@ -349,6 +436,7 @@
   "category": "move"
 }
 */
+                    console.log('movements_goods:')
                     console.log(res.data.data);
                     this.movements_goods = res.data.data
                 }).catch(e => {
