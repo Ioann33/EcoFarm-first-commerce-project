@@ -724,7 +724,8 @@ class GoodsController extends Controller
     }
 
     public function getPermitOnBothStorages(Request $request){
-
+        $goods_id = [];
+        $goods = [];
         $goodsOnFirst = DB::table('storage_goods')
             ->where('storage_id', '=', $request->storage_id_from)
             ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
@@ -735,14 +736,34 @@ class GoodsController extends Controller
             ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
             ->get();
 
-        if (count($goodsOnFirst)>0 && count($goodsOnSecond)>0){
-            return response()->json(['status'=>'ok', 'message'=>'on both allowed']);
-        }else{
-
-            return response()->json(['status'=>'error', 'message'=>'deny', 'firstStorage'=>$goodsOnFirst, 'secondStorage' => $goodsOnSecond]);
+        foreach ($goodsOnFirst as $item){
+            $goodsOnSecond[] = $item;
         }
 
+        foreach ($goodsOnSecond as $value){
+            $goods_id[] = $value->goods_id;
+        }
 
+        $unique_value =  array_unique($goods_id);
+
+        $repeat_value = array_diff_assoc($goods_id, $unique_value);
+
+        foreach ($repeat_value as $value){
+            $goods_on_stock = StockBalance::query()
+                ->select(['goods_id','price','amount'])
+                ->where('storage_id','=', $request->storage_id_from)
+                ->where('goods_id', '=', $value)
+                ->addSelect([
+                    'goods_name' => Goods::query()->select('name')->whereColumn('goods_id', 'goods.id')
+                ])
+                ->get();
+
+            if (count($goods_on_stock)>0){
+
+                $goods[] = $goods_on_stock[0];
+            }
+        }
+        return response()->json($goods);
     }
 
 }
