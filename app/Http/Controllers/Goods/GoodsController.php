@@ -13,6 +13,7 @@ use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\GetMovementInfoResource;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
+use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsPermitResource;
 use App\Http\Resources\StorageGoodsResource;
@@ -724,7 +725,8 @@ class GoodsController extends Controller
     }
 
     public function getPermitOnBothStorages(Request $request){
-
+        $goods_id = [];
+        $goods = [];
         $goodsOnFirst = DB::table('storage_goods')
             ->where('storage_id', '=', $request->storage_id_from)
             ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
@@ -735,13 +737,88 @@ class GoodsController extends Controller
             ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
             ->get();
 
-        if (count($goodsOnFirst)>0 && count($goodsOnSecond)>0){
-            return response()->json(['status'=>'ok', 'message'=>'on both allowed']);
-        }else{
-
-            return response()->json(['status'=>'error', 'message'=>'deny', 'firstStorage'=>$goodsOnFirst, 'secondStorage' => $goodsOnSecond]);
+        foreach ($goodsOnFirst as $item){
+            $goodsOnSecond[] = $item;
         }
 
+        foreach ($goodsOnSecond as $value){
+            $goods_id[] = $value->goods_id;
+        }
+
+        $unique_value =  array_unique($goods_id);
+
+        $repeat_value = array_diff_assoc($goods_id, $unique_value);
+
+        foreach ($repeat_value as $value){
+            $goods_on_stock = StockBalance::query()
+                ->select(['goods_id','price','amount'])
+                ->where('storage_id','=', $request->storage_id_from)
+                ->where('goods_id', '=', $value)
+                ->addSelect([
+                    'goods_name' => Goods::query()->select('name')->whereColumn('goods_id', 'goods.id')
+                ])
+                ->get();
+
+            if (count($goods_on_stock)>0){
+
+                $goods[] = $goods_on_stock[0];
+            }
+        }
+        return response()->json($goods);
+    }
+
+    public function getMovementsInProgress(){
+        $progressMovements = Movements::query()
+            ->select()
+            ->where('user_id_accepted', '=', null)
+            ->get();
+
+        return ListGoodsMovementResource::collection($progressMovements);
+    }
+
+    public function removeReady(Request $request, LogService $logService){
+        $this->validate($request,[
+            'link_id' => 'required'
+        ]);
+        $checkAccepted = Movements::query()
+            ->select()
+            ->where('link_id', '=', $request->link_id)
+            ->where('category', '=', 'move')
+            ->get();
+        if (count($checkAccepted)==0){
+            return response()->json([
+                'status'=>'error',
+                'message'=>'перемещения не существует'
+            ]);
+        }
+        if ($checkAccepted[0]['user_id_accepted']){
+            return response()->json([
+                'status'=>'error',
+                'message'=>'этот продукт уже оприходован, удаление невозможно'
+            ]);
+        }
+        $goods_id = $checkAccepted[0]['goods_id'];
+        $amount = $checkAccepted[0]['amount'];
+        DB::beginTransaction();
+        $readyMovements = Movements::query()
+            ->select()
+            ->where('link_id', '=', $request->link_id)
+            ->get();
+        $movements_id = [];
+        foreach ($readyMovements as $movement){
+            $movements_id[] = $movement->id;
+        }
+
+        foreach ($movements_id as $value){
+            $remove = Movements::findOrFail($value);
+            $remove->delete();
+        }
+        $logService->newLog('removeReady', 'продукт '.$goods_id.' в количестве '.$amount.' ,был удален с перемещений ', $goods_id);
+        DB::commit();
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'продукт '.$goods_id.' в количестве '.$amount.' ,был удален с перемещений '
+        ]);
 
     }
 
