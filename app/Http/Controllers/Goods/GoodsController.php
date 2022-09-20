@@ -767,13 +767,19 @@ class GoodsController extends Controller
         return response()->json($goods);
     }
 
-    public function getMovementsInProgress(){
+    public function getMovementsInProgress(Request $request){
+
         $progressMovements = Movements::query()
             ->select()
-            ->where('user_id_accepted', '=', null)
-            ->get();
+            ->where('user_id_accepted', '=', null);
 
-        return ListGoodsMovementResource::collection($progressMovements);
+        if ($request->goods_id === 'all'){
+            return ListGoodsMovementResource::collection($progressMovements->get());
+        }
+        $progressMovements->where('goods_id', '=', $request->goods_id);
+
+
+        return ListGoodsMovementResource::collection($progressMovements->get());
     }
 
     public function removeReady(Request $request, LogService $logService){
