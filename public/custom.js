@@ -1477,3 +1477,13 @@ function init_template(){
         }
     }
 }
+
+function showMenu(menu_name){
+    document.getElementsByClassName('menu-hider')[0].classList.add('menu-active')
+    document.getElementById(menu_name).classList.add('menu-active');
+}
+
+function removeMenu(menu_name){
+    document.getElementsByClassName('menu-hider')[0].classList.remove('menu-active')
+    document.getElementById(menu_name).classList.remove('menu-active');
+}

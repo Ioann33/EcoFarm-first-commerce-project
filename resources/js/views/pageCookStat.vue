@@ -5,43 +5,81 @@
 
         <div class="page-content header-clear-medium">
 <!--            <div class="card card-style p-4 pt-3 mt-3 content">-->
+            <title-page title_main="Готовая продукция произведеная складом"></title-page>
+            <div class="card card-style m-2 p-2" v-for="goods in listMovements">
+                <div class="d-flex mb-0 ms-3 pb-0">
+                    <div>
+                        <img src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">
+                        <!--                        <img v-if="movement.goods_img !== null"  :src="'images/goods/'+movement.goods_id+'.jpg'" class="rounded-m shadow-xl" width="130">-->
+                        <!--                        <img v-else src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">-->
+                    </div>
+                    <div class="ms-3">
+                        <h4 class="font-600">{{ goods.goods_name }}
+                            <!--                            <span class="font-300" style="margin-left: 15px">{{ movement.amount }} <sup>{{ movement.unit }}</sup></span>-->
+                        </h4>
+                        <h5 class="pt-1 font-600">{{ goods.amount }} <sup>{{ goods.goods_unit }}</sup></h5>
+                        <h4 class="pt-1 font-600" v-if="goods.price>0">{{ goods.cost_with_production }} <sup>₴</sup></h4>
+                        <div v-else class="opacity-20">цена не установленна</div>
 
-                <div class=" p-1 pt-0 ">
-                    <table class="table text-center rounded-sm shadow-l" style="overflow: hidden;"> <!-- table-borderless -->
-                        <thead>
-<!--                            <tr class="bg-grass-light">-->
-<!--                                <th></th>-->
-<!--                                <th></th>-->
-<!--                                <th scope="col" class="color-black opacity-50" colspan="3">Инфо</th>-->
-<!--                            </tr>-->
-                            <tr class="bg-grass-light">
-                                <th scope="col" class="color-black opacity-50">Готовая прод.</th>
-                                <th scope="col" class="color-black opacity-50">
-                                    <span class="fas fa-boxes-alt font-20"></span>
-                                </th>
-                                <th scope="col" class="color-black opacity-50"> <i class="fa fa-dollar-sign rounded-s"></i> <span class="fa-fw select-all fas"></span></th>
-                                <th scope="col" class="color-black opacity-50">СС</th>
-                                <th scope="col" class="color-black opacity-50 font-27">Σ</th>
-                            </tr>
-                        </thead>
+                        <p></p>
+                    </div>
+                    <div class="ms-auto opacity-40 font-11 me-4">#{{ goods.id }}</div>
+                </div>
+
+
+                <div class="row mb-0 mt-2 me-2 font-10 text-end color-dark-light">
+                    <div class="col-12 pe-1">
+                        <div>
+                            <i class="fa fa-pencil-alt pe-1"></i>   Приготовил
+                            <i class="fa fa-user ps-2 pe-1"> </i>   {{ goods.user_name_created }} ({{ goods.storage_name_to }})
+                            <i class="fa fa-clock ps-2 pe-2"></i>   {{ goods.date_created }}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="content mb-0 mt-0">
+
+                    <table class="table table-sm">
                         <tbody>
-                            <template v-for="goods in listMovements">
-                                <tr>
-                                    <th scope="row" rowspan="2" style="vertical-align: middle;">{{ goods.goods_name }}</th>
-                                    <td rowspan="2" style="vertical-align: middle;">{{ goods.amount }}</td>
-                                    <td>{{ goods.production }}</td>
-                                    <td>{{ goods.cost }}</td>
-                                    <td>{{ goods.sum }}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>{{ goods.totalProduction }}</b></td>
-                                    <td><b>{{ goods.totalCost ? goods.totalCost.toFixed(2) : '' }}</b></td>
-                                    <td><b>{{ goods.totalSum}}</b></td>
-                                </tr>
+                        <tr>
+                            <th></th>
+
+                            <th>цена <sup>₴</sup></th>
+                            <th>кол-во <sup>{{ goods.goods_unit}}</sup></th>
+                            <th>Итого<sup>₴</sup></th>
+                        </tr>
+                        <tr >
+                            <th scope="row">Цена изготовления</th>
+                            <template v-if="goods.goodsReady_is_accepted == 'yes'">
+                                <td> {{ goods.production }} </td>
+                                <td> {{ goods.amount }}</td>
+                                <td> {{ (goods.production *  goods.amount).toFixed(2)}} </td>
                             </template>
+                            <template v-else>
+                                <td colspan="3" class="text-center"> товар в пути </td>
+                            </template>
+                        </tr>
+                        <tr >
+                            <th scope="row">Себестоимость</th>
+
+                            <td> {{ goods.prime_cost }}</td>
+                            <td> {{ goods.amount }}</td>
+                            <td> {{ (goods.prime_cost *  goods.amount).toFixed(2)}}</td>
+                        </tr><tr >
+                            <th scope="row">Итоговая цена продажи</th>
+                            <td> {{ goods.cost_with_production }}</td>
+                            <td> {{ goods.amount }}</td>
+                            <td> {{ (goods.cost_with_production *  goods.amount).toFixed(2)}}</td>
+
+                        </tr>
                         </tbody>
                     </table>
+
+
                 </div>
+            </div>
+
 
 <!--            </div>-->
         </div>
@@ -67,8 +105,8 @@
         data(){
             return {
                 listMovements: [],
-                df: '2022-06-01 00:00:00',
-                dt: '2022-10-05 00:00:00'
+                df: '2022-08-02 00:00:00',
+                dt: '2022-9-06 00:00:00'
             }
         },
         computed: {},
@@ -76,26 +114,16 @@
             this.my_storage_id = localStorage.getItem('my_storage_id')
         },
         mounted() {
-            axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
+            axios.get('api/getListGoodsMovements/null/'+this.my_storage_id+'/ready/'+this.df+'/'+this.dt)
                 .then(res => {
-                    console.log(res.data)
+                    console.log('list ready goods: ')
+                    console.log(res.data.data)
 
-                    this.listMovements = res.data.data.filter(el => el.category === 'move' && el.link_id !== null ).map(item => {
-                        return {
-                            goods_name: 'Товар ' + item.goods_id, // Змінити назву товару, коли буде в API goods_id
-                            amount: Number.parseFloat(item.amount),
-                            sum: Number.parseFloat(item.price),
-                            //totalProduction: Number.parseFloat(item.amount) * Number.parseFloat(item.price),
-                            cost: '',
-                            totalCost: '',
-                            production: '',
-                            totalSum: '',
-                            link_id: item.link_id
-                        }
-                    })
+                    this.listMovements = res.data.data
 
                     this.listMovements.forEach((el, index) => {
-                        this.getMovementInfo(el.link_id, index);
+                        this.listMovements[index].production =                  (this.listMovements[index].cost_with_production - this.listMovements[index].prime_cost).toFixed(2)
+                        this.listMovements[index].totalCost_with_production =   (this.listMovements[index].cost_with_production * this.listMovements[index].amount).toFixed(2)
                     })
 
                 }).catch(err => {
@@ -106,23 +134,7 @@
         updated() {
         },
         methods: {
-            getMovementInfo(id, index){
-                axios.get('api/getMovementInfo/'+id)
-                    .then(res => {
 
-                        this.listMovements[index].goods_name = res.data.data.goods_name;
-                        this.listMovements[index].cost = Number.parseFloat(res.data.data.price);
-                        this.listMovements[index].production =  (this.listMovements[index].sum - this.listMovements[index].cost).toFixed(2);
-                        this.listMovements[index].totalProduction =  this.listMovements[index].production * this.listMovements[index].amount;
-                        this.listMovements[index].totalCost = this.listMovements[index].amount * this.listMovements[index].cost;
-                        this.listMovements[index].totalSum = (this.listMovements[index].amount * this.listMovements[index].sum).toFixed(2);
-
-
-                    }).catch(err => {
-                        this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                        console.error(this.message)
-                    })
-            }
         }
     }
 </script>

@@ -95,6 +95,7 @@
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
     import TitlePage from "../Components/Title";
+
     export default {
         name: "pageSaleProducts",
         components:{
@@ -133,28 +134,33 @@
             changeType(value){
                 this.type = value;
             },
-            async createGoods(){
-                if(!this.name || !this.unit || !this.type){
+            createGoods() {
+                if (!this.name || !this.unit || !this.type) {
                     this.message = 'Вы не указали обязательное поле';
                     return;
                 }
-                const res = await axios.post('/api/addGoods', {
+                const res = axios.post('/api/addGoods', {
                     name: this.name.toLowerCase(),
                     unit: this.unit.toLowerCase(),
                     type: this.type
                 }).then(res => {
-                   if(!res.data) {
-                       console.error('при добавлении товара произошла ошибка')
-                       this.message = 'при добавлении товара произошла ошибка'
-                   }
-                   else {
-                       console.log('товар добавлен в систему')
-                       this.$router.push({name: 'PermitGoods', params: {
-                           goods_id: res.data.goods_id,
-                           goods_name: this.name.toLowerCase()
-                         }
-                       });
-                   }
+                    if (!res.data) {
+                        this.message = 'при добавлении товара произошла ошибка'
+                        console.error(this.message)
+                    } else {
+                        console.log('товар добавлен в систему')
+                        this.$router.push({
+                            name: 'PermitGoods', params: {
+                                goods_id: res.data.goods_id,
+                                goods_name: this.name.toLowerCase()
+                            }
+                        });
+                    }
+                }).catch(e => {
+                    console.log(e)
+                    if (e.response.status === 422) {
+                        this.message = 'Товар с таким названием уже существует в системе. Товар не добавлен.'
+                    }
                 });
             },
             searchGoods(){

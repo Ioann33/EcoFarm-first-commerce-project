@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Reports;
 
+use App\Models\Movements;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ListGoodsMovementResource extends JsonResource
@@ -33,7 +34,7 @@ class ListGoodsMovementResource extends JsonResource
             $userAcceptedName = null;
         }
 
-        return [
+        $arr =  [
             "id"=>$this->id,
             "user_id_created" => $this->user_id_created,
             "user_name_created" => $this->user->name,
@@ -55,5 +56,28 @@ class ListGoodsMovementResource extends JsonResource
             "category" => $this->category,
             "goods_type" => $this->goods->type
         ];
+
+        if($this->category == "ready") {
+            // получить цену отгрузки price = link_id + move
+            $cost_with_production = Movements::where('link_id', '=', $this->link_id)->where('category', '=', 'move')->first();
+            if(!is_null($cost_with_production)) {
+                $arr["cost_with_production"] = $cost_with_production->price;
+                $arr["prime_cost"] = $this->price;
+                if($cost_with_production->user_id_accepted !== null )
+                    $arr["goodsReady_is_accepted"] = "yes";
+                else
+                    $arr["goodsReady_is_accepted"] = "no";
+
+            }
+            else
+                $arr["price_with_production"] = null;
+        }
+
+
+
+
+
+
+        return $arr;
     }
 }

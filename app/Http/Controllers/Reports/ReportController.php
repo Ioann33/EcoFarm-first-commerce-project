@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Reports;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\Reports\ListSalaryResource;
+use App\Models\Goods;
 use App\Models\Log;
 use App\Models\Money;
 use App\Models\Movements;
 use App\Models\StockBalance;
+use App\Models\Storages;
+use App\Models\User;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,17 +33,57 @@ class ReportController extends Controller
 
     public function getListGoodsMovements(Request $request){
 
+//        return$exp = Movements::query()
+//            ->addSelect([
+//                'user_name_created' => User::query()->select('name')->whereColumn('user_id_created','users.id')
+//            ])
+//            ->addSelect([
+//                'storage_name_from' => Storages::query()->select('name')->whereColumn('storage_id_from','storages.id')
+//            ])
+//            ->addSelect([
+//                'storage_name_to' => Storages::query()->select('name')->whereColumn('storage_id_to','storages.id')
+//            ])
+//            ->addSelect([
+//                'goods_name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id')
+//            ])
+//            ->addSelect([
+//                'goods_unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id')
+//            ])
+//            ->addSelect([
+//                'goods_type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id')
+//            ])
+//            ->addSelect([
+//                'user_name_accepted' => User::query()->select('name')->whereColumn('user_id_accepted','users.id')
+//            ])
+//            ->where('date_accepted','>=', $request->date_from)
+//            ->where('date_accepted','<=', $request->date_to)
+//            ->where(function($query) use ($request) {
+//                $query->where('storage_id_to', '=', $request->storage_id)
+//                    ->orWhere('storage_id_from', '=', $request->storage_id);
+//            })
+//            ->orderBy('date_accepted', 'desc')->get();
+
         $listGoodsMovement = Movements::
-              where('date_accepted','>=', $request->date_from)
-            ->where('date_accepted','<=', $request->date_to)
-            ->where(function($query) use ($request) {
-                $query->where('storage_id_to', '=', $request->storage_id)
-                    ->orWhere('storage_id_from', '=', $request->storage_id);
-            })
-            ->orderBy('date_accepted', 'desc')
+              where('date_created','>=', $request->date_from)
+            ->where('date_created','<=', $request->date_to)
+//            ->where(function($query) use ($request) {
+//                $query->where('storage_id_to', '=', $request->storage_id)
+//                    ->orWhere('storage_id_from', '=', $request->storage_id);
+//            })
+            ->orderBy('date_accepted', 'desc');
 //            ->limit(30)
-            ->get();
-        return ListGoodsMovementResource::collection($listGoodsMovement);
+//            ->get();
+        if ($request->storage_id_from != 'null'){
+            $listGoodsMovement->where('storage_id_from', '=', $request->storage_id_from);
+        }
+        if ($request->storage_id_to != 'null'){
+            $listGoodsMovement->where('storage_id_to', '=', $request->storage_id_to);
+        }
+        if ($request->category !== 'all'){
+            $listGoodsMovement->where('category', '=', $request->category);
+        }
+
+        return ListGoodsMovementResource::collection($listGoodsMovement->get());
 
     }
 
@@ -252,4 +295,44 @@ class ReportController extends Controller
          return response()->json(['data' => $movements_full]);
 
      }
+
+     public function getReportAboutMadeProduct(Request $request){
+         $this->validate($request,[
+             'storage_id'=>'integer'
+         ]);
+        $movements = Movements::query()
+            ->select(['amount', 'price', 'id'])->where('storage_id_to', '=', $request->storage_id)
+            ->where('category', '=', 'ready')
+            ->where('date_created', '>=', $request->date_from)
+            ->where('date_created', '<=', $request->date_to)
+            ->get();
+        $selfCost = null;
+        $marketCost = null;
+        $catMov = [];
+        $resArr = [];
+
+        foreach ($movements as $movement){
+            $catMov[] = $movement->id;
+            $selfCost+= $movement->amount * $movement->price;
+        }
+
+        foreach ($catMov as $value){
+            $movements = Movements::query()->select(['amount', 'price'])->where('link_id', '=', $value)->where('category', '=', 'move')->get();
+            if (isset($movements[0])){
+                $resArr[] = $movements[0];
+            }
+        }
+
+        foreach ($resArr as $item){
+            $marketCost+= $item->amount * $item->price;
+        }
+
+        $profit = $marketCost - $selfCost;
+
+        return response()->json([
+            'self_cost' => number_format($selfCost,2,'.',''),
+            'market_cost' => number_format($marketCost,2,'.',''),
+            'profit' => number_format($profit,2,'.','')
+        ]);
+    }
 }

@@ -13,6 +13,7 @@ use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\GetMovementInfoResource;
 use App\Http\Resources\getMovementResource;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
+use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsPermitResource;
 use App\Http\Resources\StorageGoodsResource;
@@ -398,7 +399,6 @@ class GoodsController extends Controller
         $dateNow = date('Y-m-d H:i:s');
         $request = json_decode($request->getContent());
         $ingredients = $request->ingredients;
-
         try {
 
             $readyProductID = HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
@@ -408,7 +408,9 @@ class GoodsController extends Controller
             $movements->save();
 
             foreach ($ingredients as $ingredient){
-
+                if ($ingredient->goods_id === 'default'){
+                    continue;
+                }
                 HandleGoods::moveGoods($request->storage_id, null, $ingredient->goods_id, $ingredient->amount, 'ingredients', $readyProductID['productID'], null, $user_id, $dateNow);
 
             }
@@ -484,6 +486,9 @@ class GoodsController extends Controller
     }
 
     public function addGoods(Request $request, LogService $service){
+        $this->validate($request, [
+            'name' => 'unique:goods'
+        ]);
         DB::beginTransaction();
         $addGoods = new Goods();
         $addGoods->name = $request->name;
@@ -625,8 +630,7 @@ class GoodsController extends Controller
 
     public function getIngredients(Request $request){
 
-
-        $ready = Movements::find((int)$request->goods_id);
+        $ready = Movements::find((int)$request->movement_id);
         if ($ready){
             return getIngredientsReasource::make($ready);
         }else{
@@ -718,6 +722,110 @@ class GoodsController extends Controller
         DB::commit();
 
         return response()->json(['status' => 'ok', 'message' => 'goods successful '.$category]);
+    }
+
+    public function getPermitOnBothStorages(Request $request){
+        $goods_id = [];
+        $goods = [];
+        $goodsOnFirst = DB::table('storage_goods')
+            ->where('storage_id', '=', $request->storage_id_from)
+            ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
+            ->get();
+
+        $goodsOnSecond = DB::table('storage_goods')
+            ->where('storage_id', '=', $request->storage_id_to)
+            ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
+            ->get();
+
+        foreach ($goodsOnFirst as $item){
+            $goodsOnSecond[] = $item;
+        }
+
+        foreach ($goodsOnSecond as $value){
+            $goods_id[] = $value->goods_id;
+        }
+
+        $unique_value =  array_unique($goods_id);
+
+        $repeat_value = array_diff_assoc($goods_id, $unique_value);
+
+        foreach ($repeat_value as $value){
+            $goods_on_stock = StockBalance::query()
+                ->select(['goods_id','price','amount'])
+                ->where('storage_id','=', $request->storage_id_from)
+                ->where('goods_id', '=', $value)
+                ->addSelect([
+                    'goods_name' => Goods::query()->select('name')->whereColumn('goods_id', 'goods.id')
+                ])
+                ->get();
+
+            if (count($goods_on_stock)>0){
+
+                $goods[] = $goods_on_stock[0];
+            }
+        }
+        return response()->json($goods);
+    }
+
+    public function getMovementsInProgress(Request $request){
+
+        $progressMovements = Movements::query()
+            ->select()
+            ->where('user_id_accepted', '=', null);
+
+        if ($request->goods_id === 'all'){
+            return ListGoodsMovementResource::collection($progressMovements->get());
+        }
+        $progressMovements->where('goods_id', '=', $request->goods_id);
+
+
+        return ListGoodsMovementResource::collection($progressMovements->get());
+    }
+
+    public function removeReady(Request $request, LogService $logService){
+        $this->validate($request,[
+            'link_id' => 'required'
+        ]);
+        $checkAccepted = Movements::query()
+            ->select()
+            ->where('link_id', '=', $request->link_id)
+            ->where('category', '=', 'move')
+            ->get();
+        if (count($checkAccepted)==0){
+            return response()->json([
+                'status'=>'error',
+                'message'=>'перемещения не существует'
+            ]);
+        }
+        if ($checkAccepted[0]['user_id_accepted']){
+            return response()->json([
+                'status'=>'error',
+                'message'=>'этот продукт уже оприходован, удаление невозможно'
+            ]);
+        }
+        $goods_id = $checkAccepted[0]['goods_id'];
+        $amount = $checkAccepted[0]['amount'];
+        DB::beginTransaction();
+        $readyMovements = Movements::query()
+            ->select()
+            ->where('link_id', '=', $request->link_id)
+            ->get();
+        $movements_id = [];
+        foreach ($readyMovements as $movement){
+            $movements_id[] = $movement->id;
+        }
+
+        foreach ($movements_id as $value){
+            $remove = Movements::findOrFail($value);
+            $remove->delete();
+        }
+        $logService->newLog('removeReady', 'продукт '.$goods_id.' в количестве '.$amount.' ,был удален с перемещений ', $goods_id);
+        DB::commit();
+        return response()->json([
+            'status'=>'ok',
+            'message' => 'продукт '.$goods_id.' в количестве '.$amount.' ,был удален с перемещений '
+        ]);
+
     }
 
 }
