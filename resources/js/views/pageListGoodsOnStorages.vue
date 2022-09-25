@@ -142,40 +142,40 @@
                 </div>
             </div>
 
-            <modal :title="'Движение №'+activeModal.id" :loading="loadingModal" @close="hideModal" v-if="showModal">
-                <template v-if="!loadingModal" v-slot:data>
-                    <table class="table table-sm">
-                        <tbody>
-                        <tr>
-                            <th scope="row" colspan="4" class="text-center">Общая информация</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><i>Создано:</i><br>{{ activeModal.date_created }}</td>
-                            <td colspan="2"><i>Пользоватеть:</i><br>{{ activeModal.user_name_created }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><i>Кол-во:</i><br>{{ activeModal.amount }}</td>
-                            <td colspan="2"><i>Цена:</i><br>{{ activeModal.price }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="4" class="text-center">Ингредиенты</th>
-                        </tr>
-                        <tr>
-                            <th>#</th>
-                            <th>Ингредиент</th>
-                            <th>кол-во</th>
-                            <th>цена</th>
-                        </tr>
-                        <tr v-for="(ingredient, index) in activeModal.ingredients">
-                            <th scope="row">{{ index + 1 }}</th>
-                            <td> {{ ingredient.goods_name }}</td>
-                            <td> {{ ingredient.amount }} {{ ingredient.unit }}</td>
-                            <td> {{ ingredient.price }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </template>
-            </modal>
+<!--            <modal :title="'Движение №'+activeModal.id" :loading="loadingModal" @close="hideModal" v-if="showModal">-->
+<!--                <template v-if="!loadingModal" v-slot:data>-->
+<!--                    <table class="table table-sm">-->
+<!--                        <tbody>-->
+<!--                        <tr>-->
+<!--                            <th scope="row" colspan="4" class="text-center">Общая информация</th>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td colspan="2"><i>Создано:</i><br>{{ activeModal.date_created }}</td>-->
+<!--                            <td colspan="2"><i>Пользоватеть:</i><br>{{ activeModal.user_name_created }}</td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td colspan="2"><i>Кол-во:</i><br>{{ activeModal.amount }}</td>-->
+<!--                            <td colspan="2"><i>Цена:</i><br>{{ activeModal.price }}</td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <th scope="row" colspan="4" class="text-center">Ингредиенты</th>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <th>#</th>-->
+<!--                            <th>Ингредиент</th>-->
+<!--                            <th>кол-во</th>-->
+<!--                            <th>цена</th>-->
+<!--                        </tr>-->
+<!--                        <tr v-for="(ingredient, index) in activeModal.ingredients">-->
+<!--                            <th scope="row">{{ index + 1 }}</th>-->
+<!--                            <td> {{ ingredient.goods_name }}</td>-->
+<!--                            <td> {{ ingredient.amount }} {{ ingredient.unit }}</td>-->
+<!--                            <td> {{ ingredient.price }}</td>-->
+<!--                        </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </template>-->
+<!--            </modal>-->
 
 <!--            <div v-if="loading_storages_goods" class="spinner-border spinner-loading_storages_goods text-light" role="status">-->
 <!--                <span class="sr-only">Loading...</span>-->
@@ -251,6 +251,7 @@
                 </div>
 
             </div>
+
         </div>
 
 
