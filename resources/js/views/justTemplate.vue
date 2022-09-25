@@ -55,12 +55,14 @@
                 notificationToast.show()
             },
             test(){
-                axios.get('/api/getStorageGoods/allowed/'+this.my_storage_id+'/all').then(res => {
-                    console.log(res.data.data)
-                }).catch(err => {
-                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                    console.error (' [serv] '+this.message)
-                })
+                axios.get('/api/getStorageGoods/allowed/'+this.my_storage_id+'/all')
+                    .then(res => {
+                        console.log(res.data.data)
+                    })
+                    .catch(err => {
+                        this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                        console.error (' [serv] '+this.message)
+                    })
             }
 
         }
