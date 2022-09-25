@@ -18,7 +18,7 @@
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Произведено</h6>
-                            <h3 class="color-red-dark font-20 mb-0">{{ this.sumProduce.toFixed(2) }}</h3>
+                            <h3 class="color-red-dark font-20 mb-0">{{ this.sumProduce }}</h3>
                         </div>
                         </router-link>
                     </div>
@@ -198,6 +198,7 @@
             this.dt = '2022-10-05 00:00:00'
 
 
+            // ЗАРПЛАТА
             // api/getSalary/total/2/100/2022-06-01 00:00:00/2022-09-05 00:00:00
             await axios.get('api/getSalary/total/'+this.my_storage_id+'/100/'+this.df+'/'+this.dt)
                 .then(res => {
@@ -209,55 +210,71 @@
                 })
 
             // УТИЛИЗАЦИЯ
-            //api/getListGoodsMovements/2/move/2022-08-01/2022-09-01
-            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/trash/'+this.df+'/'+this.dt).then(res => {
-                res.data.data.forEach((el ,index) => {
-                    this.sumTrash = +el.amount * el.price
-                })
-            }).catch(err => {
-                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                console.error (' [serv] '+this.message)
-            })
-
-            //api/getListGoodsMovements/2/trash/2022-08-01/2022-09-01
-            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/move/'+this.df+'/'+this.dt)
+            //api/getListGoodsMovements/21/null/trash/2022-08-01/2022-09-01
+            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/null/trash/'+this.df+'/'+this.dt)
                 .then(res => {
-                    this.listMovements = res.data.data
-                    // this.listTrash = this.listMovements.filter(el => el.category=='trash')
-                    let totalCostPrice = 0
-                    let totalProduce = 0
-                    this.listMovements.forEach((el ,index) => {
-                        // if(el.category == 'trash'){ // Утилизация
-                        //     this.sumTrash =+ el.amount * el.price
-                        // }else
-                        if(el.category == 'move' && el.link_id !== null){
-                            // отгружена ГП
-                            // если null то это было перемещение сырья, а не ГП
-
-                            //console.log(el.link_id)
-                            totalProduce += parseFloat(el.amount) * parseFloat(el.price)
-                            this.sumProduce = totalProduce
-                            // получить данные про изготовление ГП
-                            // api/getMovementInfo/538
-                             axios.get('api/getMovementInfo/'+el.link_id)
-                                .then(res => {
-                                    totalCostPrice +=  Number.parseFloat(res.data.data.price) * Number.parseFloat(res.data.data.amount)
-                                    this.sumCostPrice = totalCostPrice.toFixed(2)
-                                    this.sumCostProduce = (this.sumProduce - this.sumCostPrice).toFixed(2)
-                                    console.log(el.link_id + ': '+res.data.data.price+' * '+res.data.data.amount+' === '+totalCostPrice)
-                                }).catch(err => {
-                                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                                    console.error(this.message)
-                                })
-                        }
-
+                    res.data.data.forEach((el ,index) => {
+                        this.sumTrash = +el.amount * el.price
                     })
-
-
-                }).catch(err => {
+                })
+                .catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                     console.error(this.message)
                 })
+
+            await axios.get('api/getReportAboutMadeProduct',
+                {params: {
+                    storage_id: this.my_storage_id,
+                    date_from: this.df,
+                    date_to: this.dt,
+                    }})
+                .then(res =>{
+                    console.log(res.data)
+                    this.sumCostPrice = res.data.self_cost
+                    this.sumCostProduce = res.data.profit
+                    this.sumProduce = res.data.market_cost
+                })
+                .catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+
+            //api/getListGoodsMovements/2/trash/2022-08-01/2022-09-01
+            // await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/move/'+this.df+'/'+this.dt)
+            //     .then(res => {
+            //         this.listMovements = res.data.data
+            //         // this.listTrash = this.listMovements.filter(el => el.category=='trash')
+            //         let totalCostPrice = 0
+            //         let totalProduce = 0
+            //         this.listMovements.forEach((el ,index) => {
+            //             if(el.category == 'move' && el.link_id !== null){
+            //                 // отгружена ГП
+            //                 // если null то это было перемещение сырья, а не ГП
+            //
+            //                 //console.log(el.link_id)
+            //                 totalProduce += parseFloat(el.amount) * parseFloat(el.price)
+            //                 this.sumProduce = totalProduce
+            //                 // получить данные про изготовление ГП
+            //                 // api/getMovementInfo/538
+            //                  axios.get('api/getMovementInfo/'+el.link_id)
+            //                     .then(res => {
+            //                         totalCostPrice +=  Number.parseFloat(res.data.data.price) * Number.parseFloat(res.data.data.amount)
+            //                         this.sumCostPrice = totalCostPrice.toFixed(2)
+            //                         this.sumCostProduce = (this.sumProduce - this.sumCostPrice).toFixed(2)
+            //                         console.log(el.link_id + ': '+res.data.data.price+' * '+res.data.data.amount+' === '+totalCostPrice)
+            //                     }).catch(err => {
+            //                         this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            //                         console.error(this.message)
+            //                     })
+            //             }
+            //
+            //         })
+            //
+            //
+            //     }).catch(err => {
+            //         this.message = 'Error: ('+err.response+'): '+err;
+            //         console.error(this.message)
+            //     })
 
             // api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
             this.otherSpending = 0
