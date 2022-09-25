@@ -73,10 +73,18 @@ class ReportController extends Controller
             ->orderBy('date_accepted', 'desc');
 //            ->limit(30)
 //            ->get();
-        if ($request->storage_id_from != 'null'){
+        if($request->storage_id_from == $request->storage_id_to){
+
+            $listGoodsMovement->where(function($query){
+                global $request;
+               $query->where('storage_id_from', '=', $request->storage_id_from)->orwhere('storage_id_to', '=', $request->storage_id_to);
+            });
+
+        }
+        elseif ($request->storage_id_from != 'null'){
             $listGoodsMovement->where('storage_id_from', '=', $request->storage_id_from);
         }
-        if ($request->storage_id_to != 'null'){
+        elseif ($request->storage_id_to != 'null'){
             $listGoodsMovement->where('storage_id_to', '=', $request->storage_id_to);
         }
         if ($request->category !== 'all'){
