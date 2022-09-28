@@ -769,6 +769,7 @@ class GoodsController extends Controller
 
     public function getMovementsInProgress(Request $request){
 
+
         $progressMovements = Movements::query()
             ->select()
             ->where('user_id_accepted', '=', null);
@@ -783,6 +784,7 @@ class GoodsController extends Controller
     }
 
     public function removeReady(Request $request, LogService $logService){
+        $dateNow = date('Y-m-d H:i:s');
         $this->validate($request,[
             'link_id' => 'required'
         ]);
@@ -817,6 +819,11 @@ class GoodsController extends Controller
 
         foreach ($movements_id as $value){
             $remove = Movements::findOrFail($value);
+
+            if ($remove->category == 'ingredients'){
+                HandleGoods::addGoodsOnStockBalance($remove->storage_id_from, $remove->goods_id, $remove->amount, $dateNow, $request->price);
+
+            }
             $remove->delete();
         }
         $logService->newLog('removeReady', 'продукт '.$goods_id.' в количестве '.$amount.' ,был удален с перемещений ', $goods_id);
