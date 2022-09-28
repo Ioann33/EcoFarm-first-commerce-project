@@ -21,15 +21,6 @@
                 </div>
 
 
-<!--                <select-input :data="goods"-->
-<!--                              :keyOfValue="'goods_id'"-->
-<!--                              :value="selected_goods"-->
-<!--                              :label="'Продукт'"-->
-<!--                              :defaultOption="'выбрать продукт'"-->
-<!--                              :loading="loadingGoods"-->
-<!--                              @getSelected="selectGoods"-->
-<!--                >-->
-<!--                </select-input>-->
 
                 <select-input :data="types"
                               :keyOfValue="'id'"
@@ -41,7 +32,7 @@
                 </select-input>
 
                 <div class="d-flex">
-                    <div class="col-7 p-1">
+                    <div class="col-12 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="text" class="form-control focus-color focus-blue validate-name "
                                    id="name"
@@ -53,6 +44,8 @@
                             <em></em>
                         </div>
                     </div>
+                </div>
+                <div class="d-flex">
                     <div class="col-4 p-1">
                         <div class="input-style input-style-always-active has-borders no-icon">
                             <input type="text" class="form-control focus-color focus-blue validate-name "

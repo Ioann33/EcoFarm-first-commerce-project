@@ -165,6 +165,7 @@ export default {
             }
 
             this.listGoods = res.data.data.filter(el => el.type === 2);
+            console.log('goods to ready: ')
             console.log(this.listGoods)
 
         },
@@ -175,7 +176,9 @@ export default {
                 return ;
             }
 
-            this.listIngredients = res.data.data.filter(el => el.type === 1).filter(el => el.amount > 0);
+            // this.listIngredients = res.data.data.filter(el => el.type === 1).filter(el => el.amount > 0);
+            this.listIngredients = res.data.data.filter(el => el.amount > 0)
+            console.log('ingredients: ')
             console.log(this.listIngredients)
 
         },

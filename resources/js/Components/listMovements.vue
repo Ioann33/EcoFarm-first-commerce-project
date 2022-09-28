@@ -83,20 +83,21 @@
                 // console.log('goods=' + this.goods_id)
                 this.getListGoodsMovementsOnStorages()
             }
+
         },
         methods: {
             getListGoodsMovements(){
-                axios.get(`/api/getListGoodsMovements/${this.storage_id}/2022-08-01/2022-10-01`).then(res => {
-                    this.movements = res.data.data.splice(0,300);
+                axios.get(`/api/getListGoodsMovements/${this.storage_id}/${this.storage_id}/all/2022-08-01/2022-10-01`).then(res => {
+                    this.movements = res.data.data.splice(0,100);
                     console.log('storage: '+this.storage_id)
                     console.log(this.movements)
                 }).catch(e => {
                     console.log(e)
-                });
+                })
             },
             getListGoodsMovementsOnStorages(){
                 axios.get(`/api/getListGoodsMovementsOnStorages/${this.goods_id}/2022-08-01/2022-10-01`).then(res => {
-                    this.movements = res.data.data.splice(0,300);
+                    this.movements = res.data.data.splice(0,100);
                     console.log('goods: '+this.goods_id)
                     console.log(this.movements)
                 }).catch(e => {

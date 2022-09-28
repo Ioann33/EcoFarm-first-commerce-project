@@ -5,7 +5,7 @@
 
         <div class="page-content header-clear-medium">
             <list-movements
-                :storage_id="my_storage"
+                :storage_id="my_storage_id"
             ></list-movements>
         </div>
 
@@ -40,7 +40,7 @@
             //this.storage_name = localStorage.getItem('my_storage_name');
         },
         mounted() {
-            this.my_storage = localStorage.getItem('my_storage_id');
+            // this.my_storage = localStorage.getItem('my_storage_id');
         },
         updated() {
 
