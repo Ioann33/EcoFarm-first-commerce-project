@@ -785,13 +785,14 @@ class GoodsController extends Controller
 
     public function removeReady(Request $request, LogService $logService){
         $dateNow = date('Y-m-d H:i:s');
+        $user_id = Auth::id();
         $this->validate($request,[
             'link_id' => 'required'
         ]);
         $checkAccepted = Movements::query()
             ->select()
             ->where('link_id', '=', $request->link_id)
-            ->where('category', '=', 'move')
+//            ->where('category', '=', 'move')
             ->get();
         if (count($checkAccepted)==0){
             return response()->json([
@@ -799,12 +800,12 @@ class GoodsController extends Controller
                 'message'=>'перемещения не существует'
             ]);
         }
-        if ($checkAccepted[0]['user_id_accepted']){
-            return response()->json([
-                'status'=>'error',
-                'message'=>'этот продукт уже оприходован, удаление невозможно'
-            ]);
-        }
+//        if ($checkAccepted[0]['user_id_accepted']){
+//            return response()->json([
+//                'status'=>'error',
+//                'message'=>'этот продукт уже оприходован, удаление невозможно'
+//            ]);
+//        }
         $goods_id = $checkAccepted[0]['goods_id'];
         $amount = $checkAccepted[0]['amount'];
         DB::beginTransaction();
@@ -816,9 +817,23 @@ class GoodsController extends Controller
         foreach ($readyMovements as $movement){
             $movements_id[] = $movement->id;
         }
-
+        $checkMovementReady = Movements::query()
+            ->select()
+            ->where('link_id', '=', $request->link_id)
+            ->where('category', '=', 'move')
+            ->get();
         foreach ($movements_id as $value){
             $remove = Movements::findOrFail($value);
+            // проверяем не была ли раньше удалена запис с movements с категорией move.
+            //Если запись с категорией move была удалена ,то ready вернулся обратно на кухню и его теперь нужно удалить
+            if (count($checkMovementReady) == 0 ){
+                if ($remove->category == 'ready'){
+
+                    HandleGoods::moveGoods($remove->storage_id_to, null, $remove->goods_id, $remove->amount, null, null, null,$user_id, $dateNow, $request->price, true);
+                }
+
+            }
+
 
             if ($remove->category == 'ingredients'){
                 HandleGoods::addGoodsOnStockBalance($remove->storage_id_from, $remove->goods_id, $remove->amount, $dateNow, $request->price);
