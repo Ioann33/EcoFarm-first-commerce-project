@@ -853,7 +853,7 @@ class GoodsController extends Controller
 
 
             if ($remove->category == 'ingredients'){
-                HandleGoods::addGoodsOnStockBalance($remove->storage_id_from, $remove->goods_id, $remove->amount, $dateNow, $request->price);
+                HandleGoods::addGoodsOnStockBalance($remove->storage_id_from, $remove->goods_id, $remove->amount, $dateNow, $remove->price);
 
             }
             $remove->delete();
