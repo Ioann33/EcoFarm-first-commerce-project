@@ -792,12 +792,11 @@ class GoodsController extends Controller
         $checkAccepted = Movements::query()
             ->select()
             ->where('link_id', '=', $request->link_id)
-//            ->where('category', '=', 'move')
             ->get();
         if (count($checkAccepted)==0){
             return response()->json([
                 'status'=>'error',
-                'message'=>'перемещения не существует'
+                'message'=>'Готовой продукции (партия #'.$request->link_id.") не существует"
             ]);
         }
 //        if ($checkAccepted[0]['user_id_accepted']){
@@ -806,15 +805,10 @@ class GoodsController extends Controller
 //                'message'=>'этот продукт уже оприходован, удаление невозможно'
 //            ]);
 //        }
-        $goods_id = $checkAccepted[0]['goods_id'];
-        $amount = $checkAccepted[0]['amount'];
+
         DB::beginTransaction();
-        $readyMovements = Movements::query()
-            ->select()
-            ->where('link_id', '=', $request->link_id)
-            ->get();
         $movements_id = [];
-        foreach ($readyMovements as $movement){
+        foreach ($checkAccepted as $movement){
             $movements_id[] = $movement->id;
         }
         $checkMovementReady = Movements::query()
@@ -822,14 +816,37 @@ class GoodsController extends Controller
             ->where('link_id', '=', $request->link_id)
             ->where('category', '=', 'move')
             ->get();
+
+        if (isset($checkMovementReady[0]['user_id_accepted'])){
+            if ($checkMovementReady[0]['user_id_accepted'] != null){
+                return response()->json([
+                    'status'=>'error',
+                    'message'=>'этот продукт уже оприходован, удаление невозможно'
+                ]);
+            }
+        }
+
+
+        $goods_id = '';
+        $amount = '';
+
         foreach ($movements_id as $value){
             $remove = Movements::findOrFail($value);
             // проверяем не была ли раньше удалена запис с movements с категорией move.
             //Если запись с категорией move была удалена ,то ready вернулся обратно на кухню и его теперь нужно удалить
             if (count($checkMovementReady) == 0 ){
+
+                if ($remove->category == 'ready'){
+                    $goods_id = $remove->goods_id;
+                    $amount = $remove->amount;
+                    HandleGoods::moveGoods($remove->storage_id_to, null, $remove->goods_id, $remove->amount, null, null, null,$user_id, $dateNow, $request->price, true);
+                }
+
+            }else{
                 if ($remove->category == 'ready'){
 
-                    HandleGoods::moveGoods($remove->storage_id_to, null, $remove->goods_id, $remove->amount, null, null, null,$user_id, $dateNow, $request->price, true);
+                    $goods_id = $remove->goods_id;
+                    $amount = $remove->amount;
                 }
 
             }
