@@ -77,7 +77,7 @@
         },
         methods: {
             async getListMoneyByCategoryOnStorage(){
-                const res = await axios.get('/api/getListMoneyByCategoryOnStorage/'+this.my_storage_id+'/701/2022-06-01 00:00:00/2022-11-05 00:00:00').then(res => {
+                const res = await axios.get('/api/getListMoneyByCategoryOnStorage/'+this.my_storage_id+'/701/2022-06-01 00:00:00/2022-11-01 00:00:00').then(res => {
 
                     console.log(res.data)
 
