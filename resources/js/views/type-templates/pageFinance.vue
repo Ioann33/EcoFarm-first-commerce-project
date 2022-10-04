@@ -131,7 +131,7 @@
         },
         async mounted() {
             this.df = '2022-06-01 00:00:00'
-            this.dt = '2022-10-05 00:00:00'
+            this.dt = '2022-11-05 00:00:00'
 
 
             await axios.get('api/getMoneyByCategoryOnStorage/sum/all/500/all/'+this.df+'/'+this.dt)
