@@ -52,6 +52,7 @@
         <div class="row">
 
             <div class="col-4 ps-3 pe-0">
+                <router-link :to="{name: 'listMoney', params: {type: 'salary'}}">
                 <div class="card card-style mx-0 mb-3">
                     <div class="p-3 bg-yellow-dark ">
                         <h4 class="font-700 text-uppercase font-10 opacity-50 mt-n2">зарплата </h4>
@@ -59,6 +60,7 @@
                             {{ Intl.NumberFormat().format(this.salaryWeek) }}</h1>
                     </div>
                 </div>
+                </router-link>
             </div>
             <div class="col-4 ps-1 pe-0">
                 <div class="card card-style mx-0 mb-3">
