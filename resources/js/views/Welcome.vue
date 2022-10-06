@@ -58,6 +58,9 @@
 </template>
 
 <script>
+import moment from 'moment'
+
+
 export default {
     name: "Welcome",
     data() {
@@ -82,6 +85,16 @@ export default {
                         console.log('Auth...ok:');
                         console.log(r);
 
+
+                        // установлю диапазон даты для формирования фин отчености
+                        var df = moment().weekday(1).hour(8).minute(0).second(0).format("YYYY-MM-DD hh:mm:ss")
+                        var dt = moment().add(3,'day').hour(0).minute(0).second(0).format("YYYY-MM-DD 00:mm:ss")
+                        localStorage.setItem('df', df)
+                        localStorage.setItem('dt', dt)
+
+
+
+
                         localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN']);
 
                         axios.get('/api/getMainStorage/').then(res => {
@@ -105,6 +118,9 @@ export default {
                                 localStorage.setItem('my_storage_type', res.data.data[0].type)
                                 localStorage.setItem('my_storage_id', res.data.data[0].storage_id)
                                 localStorage.setItem('my_storage_name', res.data.data[0].name)
+                                localStorage.setItem('df', res.data.data[0].name)
+                                localStorage.setItem('dt', res.data.data[0].name)
+
 
                                 this.$router.push({name: 'home'});
 

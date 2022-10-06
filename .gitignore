@@ -49,7 +49,7 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
-
+package-lock.json
 
 /node_modules
 /public/hot
