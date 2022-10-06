@@ -69,7 +69,7 @@
             </div>
 
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
-
+                <p v-if="Array.isArray(list) && list.length === 0" class="text-center">К сожалению, информации не найдено</p>
             </div>
             <!--
                 @focus="$event.target.select()"
@@ -111,7 +111,8 @@ export default {
             dt: (new Date()).toISOString().split('T')[0],
             message: '',
             toast_message: '',
-            loading: false
+            loading: false,
+            list: ''
         }
     },
     computed: {},
@@ -127,6 +128,7 @@ export default {
         if(dt) this.dt = dt;
 
         this.getListStorages();
+        this.getMoneyRequest();
     },
     methods: {
         getListStorages(){
@@ -138,8 +140,12 @@ export default {
         },
         getMoneyRequest(){
             this.loading = true;
-            axios.get(`getMoneyByCategoryOnStorage/list/${this.selectedStorage}/${this.selectedCategory}/{param_id | all }/${this.df}/${this.dt}`)
+            // Пока не знаю что за параметр
+            let param_id = 'all';
+
+            axios.get(`/api/getMoneyByCategoryOnStorage/list/${this.selectedStorage}/${this.selectedCategory}/${param_id}/${this.df} 00:00:00/${this.dt} 00:00:00`)
                 .then(res => {
+                    this.list = res.data.sum;
                     console.log(res.data)
                     this.loading = false;
             }).catch(e => {
