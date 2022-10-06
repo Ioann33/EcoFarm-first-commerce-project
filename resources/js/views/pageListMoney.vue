@@ -138,14 +138,14 @@ export default {
     computed: {},
     mounted() {
         // По дефолту дата за последнюю неделю
-        const current = (new Date()).getTime();
-        const weekAgo = (new Date()).setTime(current - (24*60*60*1000*7));
-        this.df = (new Date(weekAgo)).toISOString().split('T')[0];
+        // const current = (new Date()).getTime();
+        // const weekAgo = (new Date()).setTime(current - (24*60*60*1000*7));
+        // this.df = (new Date(weekAgo)).toISOString().split('T')[0];
 
         let df = localStorage.getItem('df');
         let dt = localStorage.getItem('dt');
-        if(df) this.df = df;
-        if(dt) this.dt = dt;
+        if(df) this.df = df.split(' ')[0];
+        if(dt) this.dt = dt.split(' ')[0];
 
         this.getListStorages();
         this.getMoneyRequest();
