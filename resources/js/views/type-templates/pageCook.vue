@@ -10,7 +10,7 @@
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Утилизировано</h6>
-                            <h3 class="color-red-dark font-20 mb-0">{{this.sumTrash.toFixed(2)}} </h3>
+                            <h3 class="color-red-dark font-20 mb-0">{{Intl.NumberFormat().format(this.sumTrash.toFixed(2))}} </h3>
                         </div>
                     </div>
 
@@ -18,7 +18,7 @@
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Произведено</h6>
-                            <h3 class="color-red-dark font-20 mb-0">{{ this.sumProduce }}</h3>
+                            <h3 class="color-red-dark font-20 mb-0"> {{Intl.NumberFormat().format(this.sumProduce)}}</h3>
                         </div>
                         </router-link>
                     </div>
@@ -26,28 +26,28 @@
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Прочие затраты</h6>
-                            <h3 class="color-brown-dark font-20 mb-0">{{ this.otherSpending.toFixed(2)}}</h3>
+                            <h3 class="color-brown-dark font-20 mb-0">{{Intl.NumberFormat().format(this.otherSpending.toFixed(2)) }}</h3>
                         </div>
                     </div>
                     <div class="col-6 ps-1">
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Себестоимость</h6>
-                            <h3 class="color-blue-dark font-20 mb-0">{{  this.sumCostPrice }}</h3>
+                            <h3 class="color-blue-dark font-20 mb-0">{{ Intl.NumberFormat().format(this.sumCostPrice)  }}</h3>
                         </div>
                         </router-link>
                     </div>
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">ЗП</h6>
-                            <h3 class="color-green-dark font-20 mb-0">{{ this.sumSalary.toFixed(2) }}</h3>
+                            <h3 class="color-green-dark font-20 mb-0">{{ Intl.NumberFormat().format(this.sumSalary.toFixed(2))}}</h3>
                         </div>
                     </div>
                     <div class="col-6 ps-1">
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Изготовление</h6>
-                            <h3 class="color-green-dark font-20 mb-0">{{  this.sumCostProduce }}</h3>
+                            <h3 class="color-green-dark font-20 mb-0">{{  Intl.NumberFormat().format(this.sumCostProduce)  }}</h3>
                         </div>
                         </router-link>
                     </div>
@@ -194,6 +194,9 @@
             this.my_storage_name = localStorage.getItem('my_storage_name')
         },
         async mounted() {
+
+            console.log('sdffd'+df2)
+
             this.df = '2022-06-01 00:00:00'
             this.dt = '2022-11-01 00:00:00'
 
