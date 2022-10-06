@@ -12,7 +12,7 @@
                 <div class="row mb-0">
                     <div class="col-6">
                         <div class="input-style has-borders no-icon mb-4 input-style-active">
-                            <input type="date" :value="df" :max="dt" min="2000-01-01" class="form-control validate-text" id="form6" placeholder="from" @change="getMoneyRequest">
+                            <input type="date" v-model="df" :max="dt" min="2000-01-01" class="form-control validate-text" id="form6" placeholder="from" @blur="getMoneyRequest">
                             <label for="form6" class="color-highlight">From</label>
                             <i class="fa fa-check valid me-4 pe-3 font-12 color-green-dark"></i>
                             <i class="fa fa-check disabled invalid me-4 pe-3 font-12 color-red-dark"></i>
@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-6">
                         <div class="input-style has-borders no-icon mb-4 input-style-active">
-                            <input type="date" :value="dt" :max="today" :min="df" class="form-control validate-text" id="form7" placeholder="to" @change="getMoneyRequest">
+                            <input type="date" v-model="dt" :max="today" :min="df" class="form-control validate-text" id="form7" placeholder="to" @blur="getMoneyRequest">
                             <label for="form7" class="color-highlight">To</label>
                             <i class="fa fa-check valid me-4 pe-3 font-12 color-green-dark"></i>
                             <i class="fa fa-check disabled invalid me-4 pe-3 font-12 color-red-dark"></i>
@@ -70,6 +70,26 @@
 
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
                 <p v-if="Array.isArray(list) && list.length === 0" class="text-center">К сожалению, информации не найдено</p>
+                <table v-if="list.length" class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Сумма</th>
+                        <th scope="col"><i class="fa-solid fa-user"></i></th>
+                        <th scope="col">Описание</th>
+                        <th scope="col">Дата</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="item in list">
+                        <th scope="row">{{ item.id }}</th>
+                        <td>{{ item.size_pay }}</td>
+                        <td>{{ item.user_id }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.date }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
             <!--
                 @focus="$event.target.select()"
@@ -140,16 +160,14 @@ export default {
         },
         getMoneyRequest(){
             this.loading = true;
-            // Пока не знаю что за параметр
-            let param_id = 'all';
 
-            axios.get(`/api/getMoneyByCategoryOnStorage/list/${this.selectedStorage}/${this.selectedCategory}/${param_id}/${this.df} 00:00:00/${this.dt} 00:00:00`)
+            axios.get(`/api/getMoneyByCategoryOnStorage/list/${this.selectedStorage}/${this.selectedCategory}/all/${this.df} 00:00:00/${this.dt} 00:00:00`)
                 .then(res => {
                     this.list = res.data.sum;
                     console.log(res.data)
                     this.loading = false;
             }).catch(e => {
-
+                console.log(e)
             });
         }
     }
