@@ -8,7 +8,9 @@ use App\Models\Money;
 use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\MyModel\MoneyTransfer;
+use App\Models\Storages;
 use App\Models\TransactionCategory;
+use App\Models\User;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -198,7 +200,15 @@ class FinanceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function getMoneyByCategoryOnStorage(Request $request){
-        $sum = Money::where('date', '>=', $request->date_from)
+        $sum = Money::query()
+            ->select()
+            ->addSelect([
+                'storage_name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id')
+            ])
+            ->addSelect([
+                'user_name' => User::query()->select('name')->whereColumn('user_id','users.id')
+            ])
+            ->where('date', '>=', $request->date_from)
             ->where('date', '<=', $request->date_to);
 
         if($request->storage_id != 'all') {
@@ -220,7 +230,9 @@ class FinanceController extends Controller
         if ($request->type == 'sum'){
             return response()->json(['sum'=>$res]);
         }
-        return response()->json(['list'=>$res]);
+        return response()->json([
+            'list'=>$res
+        ]);
     }
 /*
 {
