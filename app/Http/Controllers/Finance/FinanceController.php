@@ -217,7 +217,10 @@ class FinanceController extends Controller
             $res = $sum->get();
         }
 
-        return response()->json(['sum'=>$res]);
+        if ($request->type == 'sum'){
+            return response()->json(['sum'=>$res]);
+        }
+        return response()->json(['list'=>$res]);
     }
 /*
 {
