@@ -11,16 +11,16 @@
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
                 <div class="row mb-0">
                     <div class="col-6">
-                        <div class="input-style has-borders no-icon mb-4 input-style-active">
-                            <input type="date" v-model="df" :max="dt" min="2000-01-01" class="form-control validate-text" id="form6" placeholder="from" @blur="getMoneyRequest">
+                        <div class="input-style input-date has-borders no-icon mb-4 input-style-active">
+                            <input ref="from" @click="showPicker('from')" type="date" v-model="df" :max="dt" min="2000-01-01" class="form-control validate-text" id="form6" placeholder="from" @blur="getMoneyRequest">
                             <label for="form6" class="color-highlight">From</label>
                             <i class="fa fa-check valid me-4 pe-3 font-12 color-green-dark"></i>
                             <i class="fa fa-check disabled invalid me-4 pe-3 font-12 color-red-dark"></i>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="input-style has-borders no-icon mb-4 input-style-active">
-                            <input type="date" v-model="dt" :max="today" :min="df" class="form-control validate-text" id="form7" placeholder="to" @blur="getMoneyRequest">
+                        <div class="input-style input-date has-borders no-icon mb-4 input-style-active">
+                            <input ref="to" @click="showPicker('to')" type="date" v-model="dt" :max="today" :min="df" class="form-control validate-text" id="form7" placeholder="to" @blur="getMoneyRequest">
                             <label for="form7" class="color-highlight">To</label>
                             <i class="fa fa-check valid me-4 pe-3 font-12 color-green-dark"></i>
                             <i class="fa fa-check disabled invalid me-4 pe-3 font-12 color-red-dark"></i>
@@ -151,6 +151,9 @@ export default {
         this.getMoneyRequest();
     },
     methods: {
+        showPicker(ref){
+            this.$refs[ref].showPicker();
+        },
         getListStorages(){
             axios.get('/api/getListStorages').then(res => {
                 this.storages = res.data.data;
@@ -177,6 +180,10 @@ export default {
 <style scoped>
     input[type=date] {
         width: 100%;
+        font-size: 14px !important;
+    }
+    .input-date > i.valid {
+        margin-right: 10px !important;
     }
     .spinner-border {
         bottom: 5px;
