@@ -12,7 +12,7 @@
 
             <div class="tab-controls tabs-small tabs-rounded mb-2" data-highlight="bg-blue-dark">
                 <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-10" class="bg-blue-dark no-click">Продукция</a>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-11" class="collapsed" @click.once="changeRule('ingredients')">Продукты</a>
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-11" class="collapsed"  > Продукты</a> <!-- @click.once="changeRule('ingredients')" -->
                 <a href="#" data-bs-toggle="collapse" data-bs-target="#tab-12" class="collapsed">Все</a>
             </div>
 
@@ -65,7 +65,7 @@
                     <tbody>
                     <tr v-for="(storage, index) in listStorages" :key="storage.id">
                         <th scope="row" class="align-self-center ">{{ storage.name }}</th>
-                        <td ><h4 class="font-600">{{ Number.parseFloat(sum.ready[storage.id]) + Number.parseFloat(sum.ingredients[storage.id]) }}</h4></td>
+                        <td ><h4 class="font-600">{{ (Number.parseFloat(sum.ready[storage.id]) + Number.parseFloat(sum.ingredients[storage.id])).toFixed(2) }}</h4></td>
                     </tr>
                     </tbody>
                 </table>
@@ -122,6 +122,7 @@
                 this.loading.ready = true;
                 this.listStorages.forEach((el, index) => {
                     this.getCostGoodsOnStock(el.id, index, this.listStorages.length, 'ready')
+                    this.getCostGoodsOnStock(el.id, index, this.listStorages.length, 'ingredients')
                 })
             }).catch(err => {
                 this.message = 'Error: (' + err.response.status + '): ' + err.response.data.message;
@@ -132,17 +133,18 @@
             update_template()
         },
         methods: {
-             changeRule(rule) {
-
-                this.loading[rule] = true;
-                console.log('Стартуем список запросов')
-                this.listStorages.forEach((el, index) => {
-                    this.getCostGoodsOnStock(el.id, index, this.listStorages.length, rule)
-                })
-            },
+            //  changeRule(rule) {
+            //
+            //     this.loading[rule] = true;
+            //     console.log('Стартуем список запросов')
+            //     this.listStorages.forEach((el, index) => {
+            //         this.getCostGoodsOnStock(el.id, index, this.listStorages.length, rule)
+            //     })
+            // },
             getCostGoodsOnStock(id, index, length, rule) {
                 axios.get('/api/costGoodsOnStock/'+id+'/'+rule).then(res => {
                     this.sum[rule][id] = res.data.sum;
+
 
                     if((index+1) === length ) {
                         this.loading[rule] = false;
