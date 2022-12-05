@@ -69,8 +69,9 @@
             </div>
 
             <div class="card card-style overflow-visible p-4 pt-3 mt-3">
+
                 <p v-if="Array.isArray(list) && list.length === 0" class="text-center">К сожалению, информации не найдено</p>
-                <table v-if="list.length" class="table">
+                <table class="table">
                     <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -132,7 +133,7 @@ export default {
             message: '',
             toast_message: '',
             loading: false,
-            list: ''
+            list: null,
         }
     },
     computed: {},
@@ -163,11 +164,10 @@ export default {
         },
         getMoneyRequest(){
             this.loading = true;
-
             axios.get(`/api/getMoneyByCategoryOnStorage/list/${this.selectedStorage}/${this.selectedCategory}/all/${this.df} 00:00:00/${this.dt} 00:00:00`)
                 .then(res => {
-                    this.list = res.data.sum;
-                    console.log(res.data)
+                    this.list = res.data.list;
+                    console.log(this.list)
                     this.loading = false;
             }).catch(e => {
                 console.log(e)
