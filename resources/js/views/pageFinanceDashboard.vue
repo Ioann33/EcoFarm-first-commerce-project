@@ -30,7 +30,7 @@
                     <tbody>
                     <tr v-for="(storage, index) in listStorages" :key="storage.id">
                         <th scope="row" class="align-self-center ">{{ storage.name }}</th>
-                        <td ><h4 class="font-600">{{ sum.ready[storage.id] ? sum.ready[storage.id] : '...' }}</h4></td>
+                        <td ><h4 class="font-600">{{ sum['ready'][storage.id] ? sum['ready'][storage.id] : '...' }}</h4></td>
                     </tr>
                     </tbody>
                 </table>
