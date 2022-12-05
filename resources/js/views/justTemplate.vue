@@ -44,6 +44,9 @@
         computed: {},
         mounted() {
             this.toast('toast-successful', 'Test')
+
+            // получение параметров из route
+            // this.$route.params.type
         },
         updated() {
         },

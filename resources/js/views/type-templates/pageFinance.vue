@@ -1,26 +1,73 @@
 <template>
     <div class="page-content header-clear-medium">
         <!-- ERROR -->  <error :message="message"></error>
-        <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
+        <!-- cardBalance -->
+<!--        <card-balance :storage_id="my_storage_id"></card-balance>-->
 
-        неделя:
+
+        <div data-card-height="120" style="height: 150px" class="card card-style rounded-m shadow-xl preload-img"
+             data-src="images/teplitsa.webp">
+            <div class="card-top mt-2 ms-3" style="text-align: left !important;">
+                <h1 class="color-white mb-0 mb-n2 font-22">{{ this.my_storage_name }}</h1>
+                <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">{{this.my_storage_type}} {{this.my_storage_id}}</p>
+            </div>
+            <div class="card-top text-center mt-5">
+                <h1 class="color-white fa-4x">0 ₴ </h1>
+                <p class="color-white opacity-70 font-11 mb-n5">Баланс</p>
+            </div>
+
+            <!--        <div class="card-top mt-2 ms-3 text-center">-->
+            <!--            <h1 class="color-white mb-0 mb-n2 font-22"> cener text </h1>-->
+            <!--            <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700"> center small text </p>-->
+            <!--        </div>-->
+
+            <div class="card-top mt-2 ms-3 me-2" style="text-align: right !important;">
+                <h1 class="color-white me-2 mb-0 mb-n2 font-22 font-500"> 0 </h1>
+                <p class="bottom-0 color-white opacity-50 under-heading font-10 font-500">оборот сегодня</p>
+            </div>
+
+            <div class="card-bottom">
+                <h1 class="text-end me-3 font-22 font-500  color-white mb-0"> 0 </h1>
+
+                <p class="text-end me-2 font-10 font-500 opacity-50 color-white mb-2">оборот за неделю </p>
+                <!--            <h1 class="color-white mb-0 mb-n2 font-22">22</h1>-->
+                <!--            <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">продано сегодня</p>-->
+            </div>
+
+
+            <div class="card-bottom">
+                <!--    <p class="ms-3 font-10 font-500 opacity-50 color-white mb-2">Exp: 10/22</p>-->
+            </div>
+            <!--        <div class="card-bottom">-->
+            <!--            <p class="text-end me-3 font-10 font-500 opacity-50 color-white mb-2"><i class="fab fa-cc-visa font-20 rotate-90"></i></p>-->
+            <!--        </div>-->
+
+            <div class="card-overlay bg-black opacity-40"></div>
+        </div>
+
+
+
+
+        <div class="ms-3">неделя начиная с {{ this.df}}</div>
         <div class="row">
 
             <div class="col-4 ps-3 pe-0">
+                <router-link :to="{name: 'listMoney', params: {type: 'salary'}}">
                 <div class="card card-style mx-0 mb-3">
                     <div class="p-3 bg-yellow-dark ">
                         <h4 class="font-700 text-uppercase font-10 opacity-50 mt-n2">зарплата </h4>
                         <h1 class="font-700 font-24 opacity-60 mb-0 text-center">
-                            {{ this.salaryWeek }}</h1>
+                            {{ Intl.NumberFormat().format(this.salaryWeek) }}</h1>
                     </div>
                 </div>
+                </router-link>
             </div>
             <div class="col-4 ps-1 pe-0">
                 <div class="card card-style mx-0 mb-3">
                     <div class="p-3 bg-yellow-dark ">
                         <h4 class="font-700 text-uppercase font-10 opacity-50 mt-n2">капитальные </h4>
                         <h1 class="font-700 font-24 opacity-60 mb-0 text-center">
-                            {{ this.capitalWeek }}</h1>
+                            {{ Intl.NumberFormat().format(this.capitalWeek)   }}</h1>
                     </div>
                 </div>
             </div>
@@ -29,7 +76,7 @@
                     <div class="p-3 bg-yellow-dark ">
                         <h4 class="font-700 text-uppercase font-10 opacity-50 mt-n2">не профильные </h4>
                         <h1 class="font-700 font-24 opacity-60 mb-0 text-center">
-                            {{ this.non_profitWeek }}</h1>
+                            {{ Intl.NumberFormat().format(this.non_profitWeek)   }}</h1>
                     </div>
                 </div>
             </div>
@@ -128,11 +175,12 @@
         computed: {},
         beforeMount() {
             this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.my_storage_name = localStorage.getItem('my_storage_name')
+            this.my_storage_type = localStorage.getItem('my_storage_type')
+            this.df = localStorage.getItem('df')
+            this.dt = localStorage.getItem('dt')
         },
         async mounted() {
-            this.df = '2022-06-01 00:00:00'
-            this.dt = '2022-10-05 00:00:00'
-
 
             await axios.get('api/getMoneyByCategoryOnStorage/sum/all/500/all/'+this.df+'/'+this.dt)
                 .then(res => {

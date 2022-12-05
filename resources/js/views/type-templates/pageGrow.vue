@@ -241,11 +241,11 @@
         beforeMount() {
             this.my_storage_id = localStorage.getItem('my_storage_id')
             this.my_storage_name = localStorage.getItem('my_storage_name')
+            this.df = localStorage.getItem('df')
+            this.dt = localStorage.getItem('dt')
         },
         mounted() {
             console.log('     Component views/Home mounted....')
-            this.df = '2022-06-01 00:00:00'
-            this.dt = '2022-10-05 00:00:00'
 
 
             // получим Сумму всех перемещений на этом складе за период

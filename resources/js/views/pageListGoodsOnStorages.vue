@@ -413,7 +413,7 @@
                 this.loading_goods = true;
 
                 //получить движение продукта по складам
-                axios.get('/api/getListGoodsMovementsOnStorages/'+this.movements_selected_goods+'/2022-08-01/2022-10-01').then(res => {
+                axios.get('/api/getListGoodsMovementsOnStorages/'+this.movements_selected_goods+'/2022-08-01/2022-11-01').then(res => {
 /*
 {
   "id": 849,

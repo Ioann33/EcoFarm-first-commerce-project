@@ -105,13 +105,15 @@
         data(){
             return {
                 listMovements: [],
-                df: '2022-08-02 00:00:00',
-                dt: '2022-9-06 00:00:00'
+                df: '',
+                dt: ''
             }
         },
         computed: {},
         beforeMount() {
             this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.df = localStorage.getItem('df')
+            this.dt = localStorage.getItem('dt')
         },
         mounted() {
             axios.get('api/getListGoodsMovements/null/'+this.my_storage_id+'/ready/'+this.df+'/'+this.dt)

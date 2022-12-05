@@ -69,6 +69,8 @@
         computed: {},
         beforeMount() {
             this.my_storage_id = localStorage.getItem('my_storage_id')
+            this.df = localStorage.getItem('df')
+            this.dt = localStorage.getItem('dt')
         },
         mounted() {
             this.getListMoneyByCategoryOnStorage();
@@ -77,7 +79,7 @@
         },
         methods: {
             async getListMoneyByCategoryOnStorage(){
-                const res = await axios.get('/api/getListMoneyByCategoryOnStorage/'+this.my_storage_id+'/701/2022-06-01 00:00:00/2022-09-05 00:00:00').then(res => {
+                const res = await axios.get('/api/getListMoneyByCategoryOnStorage/'+this.my_storage_id+'/701/'+this.df+'/'+this.dt).then(res => {
 
                     console.log(res.data)
 
