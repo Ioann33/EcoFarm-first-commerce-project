@@ -118,8 +118,8 @@ export default {
                                 localStorage.setItem('my_storage_type', res.data.data[0].type)
                                 localStorage.setItem('my_storage_id', res.data.data[0].storage_id)
                                 localStorage.setItem('my_storage_name', res.data.data[0].name)
-                                localStorage.setItem('df', res.data.data[0].name)
-                                localStorage.setItem('dt', res.data.data[0].name)
+                                // localStorage.setItem('df', res.data.data[0].name)
+                                // localStorage.setItem('dt', res.data.data[0].name)
 
 
                                 this.$router.push({name: 'home'});
