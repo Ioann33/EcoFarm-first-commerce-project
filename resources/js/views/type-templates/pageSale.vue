@@ -111,6 +111,10 @@
             <a href="">список операций</a>
         </router-link>
 
+        <router-link :to="{name: 'listSales'}">
+            <div><a href="">продажи</a></div>
+        </router-link>
+
         <list-goods :storage_id="this.my_storage_id"></list-goods>
 
 

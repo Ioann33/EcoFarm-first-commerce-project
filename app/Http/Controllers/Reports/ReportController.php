@@ -343,4 +343,27 @@ class ReportController extends Controller
             'profit' => number_format($profit,2,'.','')
         ]);
     }
+
+    public function getListSales(Request $request){
+//        return $sales = Money::query()
+//            ->select()
+//            ->addSelect([
+//                'stock_price' => Movements::query()->select('price')->whereColumn('param_id','movements.id')
+//            ])
+//            ->addSelect([
+//                'amount' => Movements::query()->select('amount')->whereColumn('param_id','movements.id')
+//            ])
+//            ->addSelect([
+//                'goods_id' => Movements::query()->select('goods_id')->whereColumn('param_id','movements.id'),
+//            ])
+//            ->addSelect([
+//                'user_name' => User::query()->select('name')->whereColumn('user_id','users.id')
+//            ])
+//            ->where('storage_id', '=', $request->storage_id)
+//            ->where('category', '=', 700)
+//            ->where('date', '>=', $request->df)
+//            ->where('date', '<=', $request->dt)
+//            ->get();
+        return DB::select("select man.date as date, size_pay as size_pay,  mov.amount as amount, mov.price as stock_price, g.name as goods_name, g.unit as unit, u.name as user_name from money man left join movements mov on man.param_id = mov.id left join goods g on mov.goods_id = g.id left join users u on man.user_id = u.id where man.storage_id = {$request->storage_id} and man.category = 700 and date>='{$request->df}' and date<='{$request->dt}'");
+    }
 }

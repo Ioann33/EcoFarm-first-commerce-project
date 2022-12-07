@@ -174,6 +174,11 @@ const router = createRouter({
             component: () => import('../views/pageListMovements')
         },
         {
+            path: '/listSales',
+            name: 'listSales',
+            component: () => import('../views/pageListSales')
+        },
+        {
             path: '/listMoney/:type?',
             name: 'listMoney',
             component: () => import('../views/pageListMoney')
