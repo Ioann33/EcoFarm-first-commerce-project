@@ -12,6 +12,7 @@ use App\Http\Resources\getListGoodsMovementsOnStoragesReasource;
 use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\GetMovementInfoResource;
 use App\Http\Resources\getMovementResource;
+use App\Http\Resources\getMovementResourceReview;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
 use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
@@ -103,10 +104,28 @@ class GoodsController extends Controller
             $dir = 'storage_id_from';
         }
 
-        $movement = Movements::where($dir, '=', $request->id)
-            ->where('user_id_accepted', $operator,null)->get();
 
-        return getMovementResource::collection($movement);
+
+
+
+        $movement = Movements::query()->select()
+            ->where($dir, '=', $request->id)
+            ->where('user_id_accepted', $operator,null)
+            ->addSelect([
+                'user_name_created' => User::query()->select('name')->whereColumn('user_id_created','users.id'),
+                'user_name_accepted' => User::query()->select('name')->whereColumn('user_id_accepted','users.id'),
+                'storage_from_name' => Storages::query()->select('name')->whereColumn('storage_id_from','storages.id'),
+                'storage_to_name' => Storages::query()->select('name')->whereColumn('storage_id_to','storages.id'),
+                'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
+                'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
+                'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
+            ])
+            ->get();
+        return getMovementResourceReview::collection($movement);
+
+//        $movement = Movements::where($dir, '=', $request->id)
+//            ->where('user_id_accepted', $operator,null)->get();
+//        return getMovementResource::collection($movement);
     }
 
     public function goodsMovementPull(Request $request, LogService $service){
