@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/getListSales', [\App\Http\Controllers\Reports\ReportController::class, 'getListSales']);
 
     Route::get('/getFinance/{storage_id}/{type?}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
+    Route::get('/getRates', [\App\Http\Controllers\Finance\FinanceController::class, 'getRates']);
     Route::get('/costGoodsOnStock/{storage_id}/{type}', [\App\Http\Controllers\Goods\GoodsController::class, 'costGoods']);
     Route::get('/getMovementInfo/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovementInfo']);
     Route::get('/getListGoodsMovementsOnStorages/{goods_id}/{date_from}/{date_to}', [\App\Http\Controllers\Goods\GoodsController::class, 'getListGoodsMovementsOnStorages']);

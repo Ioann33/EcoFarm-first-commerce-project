@@ -30,6 +30,19 @@
                                     <em v-if="this.my_storage_type !== 'grow'">{{ amount }} {{ unit }} ➠ {{ price }}грн</em>
                                 </template>
                             </v-select>
+                            <label style="z-index: 10; left: 9px; top: -12px; background-color: #fff; padding: 0 4px;" class="color-blue-dark">Тип продажи </label>
+<!--                            v-model="" @change=""-->
+                            <select v-model="ratio[i]" @change="changePrice(i)" class="form-control">
+                                <option value="default" disabled selected>выбрать тариф</option>
+
+                                <option
+                                    v-for="(rate, index) in rates"
+                                    v-bind:value="rate.ratio"
+                                >
+                                    {{ rate.name }}
+                                </option>
+
+                            </select>
                             <div v-if="loading_goods" class="spinner-border text-light select-input-spinner" role="status">
                                 <span class="sr-only">Loading...</span>
                             </div>
@@ -120,13 +133,17 @@
                 message: '',
                 loading_goods: false,
                 available_goods: [],
+                rates : [],
+                ratio : [],
                 sale_goods: [{
                     goods_id: 'default',
                     amount: 0,
                     max_amount: 0,
                     unit: 'кг',
                     price: 5,
-                    total: 0
+                    total: 0,
+                    stock_price: 0,
+                    stock_amount: 0
                 }]
             }
         },
@@ -147,6 +164,7 @@
             }
         },
         async mounted() {
+            this.getRates();
             this.my_storage_id = localStorage.getItem('my_storage_id');
             // await this.getStorageGoods(this.my_storage_id);
 
@@ -164,12 +182,27 @@
                     console.log(e)
                 });
             },
+            changePrice(i){
+                // console.log(this.sale_goods[i])
+
+                this.sale_goods[i].total = (this.sale_goods[i].stock_amount * this.sale_goods[i].stock_price * this.ratio[i]).toFixed(2)
+                this.sale_goods[i].price = (this.sale_goods[i].stock_price * this.ratio[i]).toFixed(2)
+
+                // console.log(i)
+
+            },
+            getRates(){
+                axios.get('/api/getRates').then(res => {
+                    this.rates = res.data;
+                });
+            },
             changeGoods(value, index){
                 // Сохраняем те данные, которые мы получили от апи поиска по товарах
                 this.sale_goods[index].goods_id = value.goods_id
                 this.sale_goods[index].unit = value.unit
                 this.sale_goods[index].max_amount = value.amount
                 this.sale_goods[index].price = value.price;
+                this.sale_goods[index].stock_price = value.price;
 
                 // Теперь нужно получить конкретные показатели по товару на текущем складе,
                 // например, максимальное к-во
@@ -210,7 +243,9 @@
             checkAmount(i){
                 if(this.sale_goods[i].amount > this.sale_goods[i].max_amount){
                     this.sale_goods[i].amount = this.sale_goods[i].max_amount;
+                    this.sale_goods[i].stock_amount = this.sale_goods[i].max_amount;
                 }
+                this.sale_goods[i].stock_amount = this.sale_goods[i].amount
                 this.sale_goods[i].total = (this.sale_goods[i].amount * this.sale_goods[i].price).toFixed(2);
             },
 
@@ -221,7 +256,9 @@
                     max_amount: 0,
                     unit: 'кг',
                     price: 0,
-                    total: 0
+                    total: 0,
+                    stock_price: 0,
+                    stock_amount: 0
                 });
             },
             async saleProducts(){
@@ -232,7 +269,7 @@
                         storage_id: this.my_storage_id,
                         goods_id: el.goods_id,
                         amount: el.amount,
-                        price: el.price
+                        price: el.price,
                     })
                 })
                 console.log('>>> продажа товара: ')

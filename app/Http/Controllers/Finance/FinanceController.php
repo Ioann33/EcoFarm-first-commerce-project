@@ -8,6 +8,7 @@ use App\Models\Money;
 use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\MyModel\MoneyTransfer;
+use App\Models\Rate;
 use App\Models\Storages;
 use App\Models\TransactionCategory;
 use App\Models\User;
@@ -397,5 +398,10 @@ class FinanceController extends Controller
         DB::commit();
 
         return response()->json(['message'=>'покупка товара', 'status' => 'ok',]);
+    }
+
+    public function getRates()
+    {
+        return Rate::all();
     }
 }

@@ -5,12 +5,12 @@
             <div class="col-9">
                 <div class="row mb-0">
                     <div class="col-12 pt-2 pb-2" style="border-bottom: solid 1px #f2f2f7;">
-                        <div><b class="p-3">Товар </b> {{ item.goods_name }}</div>
-                        <div><b class="p-3">Количество</b> {{ item.amount }} {{ item.unit}}</div>
-                        <div><b class="p-3">Цена за еденицу</b> {{ item.stock_price }} <sup class="opacity-50">₴</sup> </div>
-                        <div><b class="p-3">Цена изготовления</b> {{ this.myRound(item.stock_price, item.amount) }} <sup class="opacity-50">₴</sup></div>
-                        <div><b class="p-3">Цена продажи</b> {{ item.size_pay }} <sup class="opacity-50">₴</sup></div>
-                        <div><b class="p-3">Прибыль</b> {{ this.myRound(item.stock_price, item.amount) - item.size_pay }} <sup class="opacity-50">₴</sup> </div>
+                        <div><b class="p-3">Продажа </b> {{ item.goods_name }}</div>
+<!--                        <div><b class="p-3">Количество</b> {{ item.amount }} {{ item.unit}}</div>-->
+<!--                        <div><b class="p-3">Цена за еденицу</b> {{ item.stock_price }} <sup class="opacity-50">₴</sup> </div>-->
+                        <div><b class="p-3">Цена изготовления</b> {{ item.amount }} {{ item.unit}} * {{ item.stock_price }} <sup class="opacity-50">₴</sup> =  {{ this.myRound(item.stock_price, item.amount) }} <sup class="opacity-50">₴</sup></div>
+                        <div><b class="p-3">Цена продажи</b> {{ item.amount }} {{ item.unit}} * {{ (item.size_pay/item.amount).toFixed(2)}} <sup class="opacity-50">₴</sup>  = {{ item.size_pay }} <sup class="opacity-50">₴</sup></div>
+                        <div><b class="p-3">Прибыль</b> {{(item.size_pay - this.myRound(item.stock_price, item.amount)).toFixed(2) }} <sup class="opacity-50">₴</sup> </div>
                     </div>
                     <div class="col-12 pt-2 pb-2" v-if="item.storage_name_to">
                         ➠
@@ -35,9 +35,9 @@
 
     <div style="margin-top: 20px; margin-right: 30px; padding: 20px; float: right; font-size: 1.1rem">
         <div><b>за период: </b> c {{this.df}} по {{this.dt}}</div>
-        <div><b>выручка: </b> {{this.resIncoming}} <sup class="opacity-50">₴</sup></div>
+        <div><b>выручка: </b> {{this.resIncoming.toFixed(2)}} <sup class="opacity-50">₴</sup></div>
         <div><b>себестоимость: </b> {{ this.resSelfCost}} <sup class="opacity-50">₴</sup></div>
-        <div><b>прибыль: </b> {{this.resIncoming - this.resSelfCost}} <sup class="opacity-50">₴</sup></div>
+        <div><b>прибыль: </b> {{(this.resIncoming - this.resSelfCost).toFixed(2)}} <sup class="opacity-50">₴</sup></div>
     </div>
 
 </template>
@@ -50,10 +50,10 @@
             return {
                 movements: [],
                 my_storage_id : '',
-                resIncoming : null,
-                resSelfCost : null,
-                df : '2022-10-24',
-                dt : '2022-11-02',
+                resIncoming : 0,
+                resSelfCost : 0,
+                df : '2022-12-01',
+                dt : '2022-12-20',
             }
         },
         beforeMount() {
