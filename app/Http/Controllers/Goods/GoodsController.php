@@ -142,7 +142,13 @@ class GoodsController extends Controller
 
         global $stockBalance;
         $stockBalance = StockBalance::all();
-
+        $goods = StorageGoods::query()->select()
+            ->addSelect([
+                'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
+                'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
+                'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
+                'storage_name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id'),
+            ]);
         if ($request->storage_id === 'all') {
             if($request->goods_id === 'all') {
                 return response()->json([
@@ -153,14 +159,7 @@ class GoodsController extends Controller
 
 // вывод количества выбранного продукта на складах
 //            return dd($request->input());
-              $goods = StorageGoods::query()->select()
-                  ->addSelect([
-                      'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
-                      'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
-                      'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
-                      'storage_name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id'),
-                  ])
-                  ->where('goods_id', '=', $request->goods_id)
+              $goods->where('goods_id', '=', $request->goods_id)
                   ->get();
 /*
     [
@@ -201,26 +200,16 @@ class GoodsController extends Controller
         }
 
         if ($request->goods_id === 'all'){
-            $goods = StorageGoods::query()->select()
-                ->where('storage_id','=', $request->storage_id);
+            $goods->where('storage_id','=', $request->storage_id);
         }else{
-            $goods = StorageGoods::query()->select()
-                ->where('storage_id','=', $request->storage_id)
+            $goods->where('storage_id','=', $request->storage_id)
                 ->where('goods_id', '=', $request->goods_id);
         }
-            $goods->addSelect([
-                'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
-                'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
-                'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
-            ]);
         if ($request->key === 'allowed'){
             $result = $goods->where('storage_id','=', $request->storage_id)
                 ->get();
             return StorageAllowedGoodsResource::collection($result);
         }
-        $goods->addSelect([
-            'storage_name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id'),
-        ]);
         return StorageGoodsResource::collection($goods->get());
 
     }
