@@ -140,6 +140,9 @@ class GoodsController extends Controller
      */
     public function getStorageGoods(Request $request){
 
+        global $stockBalance;
+        $stockBalance = StockBalance::all();
+
         if ($request->storage_id === 'all') {
             if($request->goods_id === 'all') {
                 return response()->json([
@@ -150,7 +153,15 @@ class GoodsController extends Controller
 
 // вывод количества выбранного продукта на складах
 //            return dd($request->input());
-              $goods = StorageGoods::where('goods_id', $request->goods_id)->get();
+              $goods = StorageGoods::query()->select()
+                  ->addSelect([
+                      'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
+                      'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
+                      'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
+                      'storage_name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id'),
+                  ])
+                  ->where('goods_id', '=', $request->goods_id)
+                  ->get();
 /*
     [
         {
@@ -193,7 +204,7 @@ class GoodsController extends Controller
             $goods = StorageGoods::query()->select()
                 ->where('storage_id','=', $request->storage_id);
         }else{
-            $goods = StorageGoods::all()
+            $goods = StorageGoods::query()->select()
                 ->where('storage_id','=', $request->storage_id)
                 ->where('goods_id', '=', $request->goods_id);
         }
@@ -210,8 +221,6 @@ class GoodsController extends Controller
         $goods->addSelect([
             'storage_name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id'),
         ]);
-        global $stockBalance;
-        $stockBalance = StockBalance::all();
         return StorageGoodsResource::collection($goods->get());
 
     }
