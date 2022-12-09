@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\StorageResource;
 use App\Http\Resources\StoragesPropResource;
 use App\Http\Resources\UserStorageResource;
+use App\Models\Goods;
 use App\Models\MainStore;
 use App\Models\Storages;
+use App\Models\User;
 use App\Models\UserStorages;
 use App\Services\LogService;
 use Illuminate\Http\Request;
@@ -17,7 +19,13 @@ class StorageController extends Controller
 {
     public function getListMyStorages(){
         $user_id = Auth::id();
-        $userStorage = UserStorages::where('user_id', '=', $user_id)->get();
+        $userStorage = UserStorages::query()
+            ->select()
+            ->addSelect([
+                'name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id'),
+                'type' => Storages::query()->select('type')->whereColumn('storage_id','storages.id'),
+            ])
+            ->where('user_id', '=', $user_id)->get();
         return UserStorageResource::collection($userStorage);
     }
 
