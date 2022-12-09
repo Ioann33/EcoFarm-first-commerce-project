@@ -50,13 +50,22 @@ class ReportController extends Controller
 //                    ->orWhere('storage_id_from', '=', $request->storage_id);
 //            })
 //            ->orderBy('date_accepted', 'desc')->get();
-        $listGoodsMovement = Movements::
-              where('date_created','>=', $request->date_from)
+        $listGoodsMovement = Movements::query()->select()
+            ->where('date_created','>=', $request->date_from)
             ->where('date_created','<=', $request->date_to)
 //            ->where(function($query) use ($request) {
 //                $query->where('storage_id_to', '=', $request->storage_id)
 //                    ->orWhere('storage_id_from', '=', $request->storage_id);
 //            })
+            ->addSelect([
+                'user_name_created' => User::query()->select('name')->whereColumn('user_id_created','users.id'),
+                'user_name_accepted' => User::query()->select('name')->whereColumn('user_id_accepted','users.id'),
+                'storage_from_name' => Storages::query()->select('name')->whereColumn('storage_id_from','storages.id'),
+                'storage_to_name' => Storages::query()->select('name')->whereColumn('storage_id_to','storages.id'),
+                'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
+                'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
+                'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
+            ])
             ->orderBy('date_accepted', 'desc');
 //            ->limit(30)
 //            ->get();
