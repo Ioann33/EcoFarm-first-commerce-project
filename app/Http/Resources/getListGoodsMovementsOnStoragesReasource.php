@@ -14,39 +14,22 @@ class getListGoodsMovementsOnStoragesReasource extends JsonResource
      */
     public function toArray($request)
     {
-        if ($this->storage_id_from != null){
-            $storageNameFrom = $this->storageFrom->name;
-        }else{
-            $storageNameFrom = null;
-        }
-
-        if ($this->storage_id_to != null){
-            $storageNameTo = $this->storageTo->name;
-        }else{
-            $storageNameTo = null;
-        }
-
-        if ($this->user_id_accepted != null){
-            $userAcceptedName = $this->userAccepted->name;
-        }else{
-            $userAcceptedName = null;
-        }
 
         return [
             "id"=>$this->id,
             "user_id_created" => $this->user_id_created,
-            "user_name_created" => $this->user->name,
+            "user_name_created" => $this->user_name_created,
             "date_created"=> $this->date_created,
             "storage_id_from" => $this->storage_id_from,
-            "storage_name_from" => $storageNameFrom,
+            "storage_name_from" => $this->storage_from_name,
             "storage_id_to" => $this->storage_id_to,
-            "storage_name_to" => $storageNameTo,
+            "storage_name_to" => $this->storage_to_name,
             "goods_id" => $this->goods_id,
-            "goods_name" => $this->goods->name,
-            "goods_unit" => $this->goods->unit,
+            "goods_name" => $this->name,
+            "goods_unit" => $this->unit,
             "amount" => $this->amount,
             "user_id_accepted" => $this->user_id_accepted,
-            "user_name_accepted" => $userAcceptedName,
+            "user_name_accepted" => $this->user_name_accepted,
             "price" => $this->price,
             "order_main" => $this->order_main,
             "date_accepted" => $this->date_accepted,
