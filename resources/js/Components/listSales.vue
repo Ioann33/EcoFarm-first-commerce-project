@@ -1,4 +1,29 @@
 <template>
+    <div class="card card-style">
+        <div class="content mb-0">
+            <h3>Выберете период</h3>
+            <p>
+
+            </p>
+
+            <div class="input-style input-style-always-active has-borders has-icon validate-field mb-4">
+                <i class="fa fa-calendar-day color-blue-dark"></i>
+                <input type="date" class="form-control validate-name" v-model="this.df" id="form1ab" @blur="refreshList">
+                <label for="form1ab" class="color-theme opacity-50 text-uppercase font-700 font-10">From</label>
+                <i class="fa fa-times disabled invalid color-red-dark"></i>
+                <i class="fa fa-check disabled valid color-green-dark"></i>
+            </div>
+
+            <div class="input-style input-style-always-active has-borders has-icon validate-field mb-4">
+                <i class="fa fa-calendar-day color-blue-dark"></i>
+                <input type="date" class="form-control validate-name" id="form1ab" v-model="this.dt" @blur="refreshList">
+                <label for="form1ab" class="color-theme opacity-50 text-uppercase font-700 font-10">To</label>
+                <i class="fa fa-times disabled invalid color-red-dark"></i>
+                <i class="fa fa-check disabled valid color-green-dark"></i>
+            </div>
+
+        </div>
+    </div>
     <div class="card card-style p-0 pt-0 mt-0" v-for="(item, index) in movements" :key="index">
 
         <div class="row m-0" >
@@ -36,7 +61,7 @@
     <div style="margin-top: 20px; margin-right: 30px; padding: 20px; float: right; font-size: 1.1rem">
         <div><b>за период: </b> c {{this.df}} по {{this.dt}}</div>
         <div><b>выручка: </b> {{this.resIncoming.toFixed(2)}} <sup class="opacity-50">₴</sup></div>
-        <div><b>себестоимость: </b> {{ this.resSelfCost}} <sup class="opacity-50">₴</sup></div>
+        <div><b>себестоимость: </b> {{ (this.resSelfCost).toFixed(2)}} <sup class="opacity-50">₴</sup></div>
         <div><b>прибыль: </b> {{(this.resIncoming - this.resSelfCost).toFixed(2)}} <sup class="opacity-50">₴</sup></div>
     </div>
 
@@ -52,8 +77,8 @@
                 my_storage_id : '',
                 resIncoming : 0,
                 resSelfCost : 0,
-                df : '2022-12-01',
-                dt : '2022-12-20',
+                df : '',
+                dt : '',
             }
         },
         beforeMount() {
@@ -70,6 +95,9 @@
                 let res = first * second
                 return res.toFixed(2)
 
+            },
+            refreshList(){
+                this.getListSales()
             },
             countMoney(transaction){
                 transaction.forEach(el =>{
