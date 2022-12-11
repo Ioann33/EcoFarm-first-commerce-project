@@ -16,7 +16,7 @@ class StorageGoodsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $stockBalance = StockBalance::all();
+        global $stockBalance;
         $totalPriceSum = $stockBalance
             ->where('storage_id', '=', $this->storage_id)
             ->where('goods_id','=', $this->goods_id)
@@ -39,12 +39,12 @@ class StorageGoodsResource extends JsonResource
 
 
         return [
-            'storage_name' => $this->storage->name,
+            'storage_name' => $this->storage_name,
             'storage_id'=> $this->storage_id,
             'goods_id' => $this->goods_id,
-            'name' => $this->goods->name,
-            'unit' => $this->goods->unit,
-            'type' => $this->goods->type,
+            'name' => $this->name,
+            'unit' => $this->unit,
+            'type' => $this->type,
             'amount' => $stockBalance
               ->where('storage_id', '=', $this->storage_id)
               ->where('goods_id','=', $this->goods_id)

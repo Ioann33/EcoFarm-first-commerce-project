@@ -24,6 +24,8 @@
             :status="this.status"
             :editPrice="this.editPrice"
             @getMovementId="setMovementId"
+            @showIngredients="showIngredients"
+
         ></card-movement>
     </div>
 
@@ -32,6 +34,73 @@
 
 
 </div> <!-- page-contend -->
+
+    <!-- меню показать Ингредиенты -->
+    <div id="menu-showIngredients" class="menu menu-box-bottom menu-box-detached" data-menu-effect="menu-over">
+        <div class="menu-title"><h1>Состав готовой продукции</h1><p class="color-green-dark">ингредиенты</p><a href="#" class="close-menu color-gray-dark"><i class="fa fa-times"></i></a></div>
+        <div class="divider" style="margin: -4px 20px 16px 16px;"></div>
+
+
+        <div class="d-flex mb-0 ms-3 pb-0">
+            <div>
+                <img src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">
+                <!--                        <img v-if="movement.goods_img !== null"  :src="'images/goods/'+movement.goods_id+'.jpg'" class="rounded-m shadow-xl" width="130">-->
+                <!--                        <img v-else src="images/food/full/1s.jpg" class="rounded-m shadow-xl" width="130">-->
+            </div>
+            <div class="ms-3">
+                <h4 class="font-600">{{ activeModal.goods_name }}
+                    <!--                            <span class="font-300" style="margin-left: 15px">{{ movement.amount }} <sup>{{ movement.unit }}</sup></span>-->
+                </h4>
+                <h5 class="pt-1 font-600">{{ activeModal.amount }} <sup>{{ activeModal.unit }}</sup></h5>
+                <h5 class="pt-1 font-600" v-if="activeModal.price>0">{{ activeModal.price }} <sup>₴</sup></h5>
+                <div v-else class="opacity-20">цена не установленна</div>
+                <p></p>
+            </div>
+            <div class="ms-auto opacity-40 font-11 me-4">#{{ activeModal.id }}</div>
+        </div>
+
+
+        <div class="row mb-0 mt-2 ms-0 font-10 text-start color-dark-light">
+            <div class="col-12 pe-1">
+                <div>
+                    <i class="fa fa-pencil-alt pe-1"></i>   Приготовил
+                    <i class="fa fa-user ps-2 pe-1"> </i>   {{ activeModal.user_name_created }}
+                    <i class="fa fa-clock ps-2 pe-2"></i>   {{ activeModal.date_created}}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="content mb-0">
+
+            <table class="table table-sm">
+                <tbody>
+                <tr>
+                    <th>#</th>
+                    <th>Ингредиент</th>
+                    <th>кол-во</th>
+                    <th>цена</th>
+                </tr>
+                <tr v-for="(ingredient, index) in activeModal.ingredients">
+                    <th scope="row">{{ index + 1 }}</th>
+                    <td> {{ ingredient.goods_name }}</td>
+                    <td> {{ ingredient.amount }} <sup>{{ ingredient.unit }} </sup> </td>
+                    <td> {{ ingredient.price }} <sup>₴</sup></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="row mb-3">
+                <div class="col-8">
+                    <a href="#" v-if="activeModal.storage_id_to == my_storage_id" @click.prevent='removeReady(activeModal.link_id)' class="close-menu btn btn-m font-800 rounded-sm btn-full text-uppercase bg-red-dark"> удалить приготовление</a>
+                </div>
+                <div class="col-4">
+                    <a href="#" class="close-menu btn btn-m font-800 rounded-sm btn-full text-uppercase bg-gray-dark">закрыть</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <!-- меню Установить цену -->
     <div id="menu-setPrice" class="menu menu-box-bottom menu-box-detached bg-orange-light rounded-m" data-menu-effect="menu-over" data-menu-height="200">
@@ -60,6 +129,9 @@
         </div>
     </div>
 
+    <!-- TOAST -->
+    <div id="toast-successful" class="snackbar-toast bg-green-dark color-white" data-delay="1500" data-autohide="true"><i class="fa fa-check-circle me-3"></i>{{ this.toast_message}}</div>
+
     <nav-bar-menu></nav-bar-menu>
 
 </div>  <!-- id="page" -->
@@ -87,12 +159,22 @@ export default {
             dir: null,              // { in | out }
             status: null,           // { opened | canceled | progress }
             message: null,           // for error message
+            toast_message: '',
             movement_id: '',
             price: -0,
             editPrice: false,
             oneUpdate: 0,
-            my_storage_type: ''
+            my_storage_type: '',
+            activeModal: {},
+            my_storage_id: 0,
+            main_storage_id: 0,
+
         }
+    },
+    beforeMount() {
+        this.my_storage_id = localStorage.getItem('my_storage_id')
+        this.main_storage_id = localStorage.getItem('main_storage_id')
+
     },
     mounted() {
         this.dir = this.$route.params.dir
@@ -120,23 +202,62 @@ export default {
         })
     },
     updated() {
-            update_template()
+            //update_template()
     },
     methods: {
+        toast(id, message){
+            this.toast_message = message
+            var notificationToast = new bootstrap.Toast(document.getElementById(id))
+            notificationToast.show()
+        },
+        removeReady(link_id){
+            console.log('remove ready: '+link_id)
+
+
+            axios.get('/api/removeReady',{
+                    params: {link_id}
+                })
+                .then(res => {
+                    console.log('  [serv] ' + res.data.message)
+
+                    if(res.data.status === 'ok'){
+                        removeMenu('menu-showIngredients')
+                        this.toast('toast-successful','Удалено')
+                        let a = this.listMovements.findIndex((el, index) => el.link_id == link_id)
+                        this.listMovements.splice(a,1)
+                    }
+
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.error (' [serv] '+this.message)
+            })
+
+        },
+        showIngredients(id){
+
+            console.log('ingredients:')
+            axios.get(`/api/getIngredients/${id}`).then(res => {
+                this.activeModal = res.data.data
+                console.log(res.data.data)
+
+                showMenu('menu-showIngredients')
+
+            }).catch(err => {
+                this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                console.error (' [serv] '+this.message)
+            })
+        },
         setMovementId(e){
             this.movement_id = e;
             console.log('Получили movement_id из карточки товара : ' + this.movement_id)
-
             // если editPrice == false т.е. это не главный склад - то сразу перейти к процедуре - перемещение товара, без установления цены
             if(!this.editPrice){
                 this.pullGoods(this.movement_id)
             } else {
 
 
-
                 // установить цену на товар "по умолчанию" взятую из этого перемещения
                 axios.get('/api/getMovementInfo/' + this.movement_id).then(res => {
-
                     // если отгрузка из type=grow - то цену  нужно брать рекомендованную
                     axios.get('api/getStorageProp/' + res.data.data.storage_id_from).then(res2 => {
 
@@ -156,6 +277,9 @@ export default {
                             this.price = res.data.data.price
                             console.log('цена продукта взять из базы: ' + this.price)
                         }
+
+                        showMenu('menu-setPrice')
+
                     }).catch(err => {
                         this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                         console.error(this.message)

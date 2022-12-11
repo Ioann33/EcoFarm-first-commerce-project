@@ -1,16 +1,67 @@
 <template>
     <div class="page-content header-clear-medium">
         <!-- ERROR -->  <error :message="message"></error>
-        <!-- cardBalance --> <card-balance :storage_id="my_storage_id"></card-balance>
+        <!-- cardBalance -->
+<!--        <card-balance :storage_id="my_storage_id"></card-balance>-->
+
+
+
+        <div data-card-height="120" style="height: 150px" class="card card-style rounded-m shadow-xl preload-img"
+             data-src="images/teplitsa.webp">
+            <div class="card-top mt-2 ms-3" style="text-align: left !important;">
+                <h1 class="color-white mb-0 mb-n2 font-22">{{ this.my_storage_name }}</h1>
+                <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">{{this.my_storage_type}} {{this.my_storage_id}}</p>
+            </div>
+            <div class="card-top text-center mt-5">
+                <h1 class="color-white fa-4x">0 ₴ </h1>
+                <p class="color-white opacity-70 font-11 mb-n5">Баланс наличка</p>
+            </div>
+
+            <!--        <div class="card-top mt-2 ms-3 text-center">-->
+            <!--            <h1 class="color-white mb-0 mb-n2 font-22"> cener text </h1>-->
+            <!--            <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700"> center small text </p>-->
+            <!--        </div>-->
+
+            <div class="card-top mt-2 ms-3 me-2" style="text-align: right !important;">
+                <h1 class="color-white me-2 mb-0 mb-n2 font-22 font-500"> 0 </h1>
+                <p class="bottom-0 color-white opacity-50 under-heading font-10 font-500">произведено сегодня</p>
+            </div>
+
+            <div class="card-bottom">
+                <h1 class="text-end me-3 font-22 font-500  color-white mb-0"> {{Intl.NumberFormat().format(this.sumProduce)}} </h1>
+
+                <p class="text-end me-2 font-10 font-500 opacity-50 color-white mb-2">произведено на неделе </p>
+                <!--            <h1 class="color-white mb-0 mb-n2 font-22">22</h1>-->
+                <!--            <p class="bottom-0 color-white opacity-50 under-heading font-11 font-700">продано сегодня</p>-->
+            </div>
+
+
+            <div class="card-bottom">
+                <!--    <p class="ms-3 font-10 font-500 opacity-50 color-white mb-2">Exp: 10/22</p>-->
+            </div>
+            <!--        <div class="card-bottom">-->
+            <!--            <p class="text-end me-3 font-10 font-500 opacity-50 color-white mb-2"><i class="fab fa-cc-visa font-20 rotate-90"></i></p>-->
+            <!--        </div>-->
+
+            <div class="card-overlay bg-black opacity-40"></div>
+        </div>
+
+
+
+
+
+
+
 
         <!--статистика эффективность         -->
+        <div class="ms-3">текущая неделя, начиная с {{ this.df}}</div>
         <div class="card card-style">
             <div class="content mb-0">
                 <div class="row mb-0">
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Утилизировано</h6>
-                            <h3 class="color-red-dark font-20 mb-0">{{this.sumTrash.toFixed(2)}} </h3>
+                            <h3 class="color-red-dark font-20 mb-0">{{Intl.NumberFormat().format(this.sumTrash.toFixed(2))}} </h3>
                         </div>
                     </div>
 
@@ -18,7 +69,7 @@
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Произведено</h6>
-                            <h3 class="color-red-dark font-20 mb-0">{{ this.sumProduce.toFixed(2) }}</h3>
+                            <h3 class="color-red-dark font-20 mb-0"> {{Intl.NumberFormat().format(this.sumProduce)}}</h3>
                         </div>
                         </router-link>
                     </div>
@@ -26,28 +77,28 @@
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Прочие затраты</h6>
-                            <h3 class="color-brown-dark font-20 mb-0">{{ this.otherSpending.toFixed(2)}}</h3>
+                            <h3 class="color-brown-dark font-20 mb-0">{{Intl.NumberFormat().format(this.otherSpending.toFixed(2)) }}</h3>
                         </div>
                     </div>
                     <div class="col-6 ps-1">
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Себестоимость</h6>
-                            <h3 class="color-blue-dark font-20 mb-0">{{  this.sumCostPrice }}</h3>
+                            <h3 class="color-blue-dark font-20 mb-0">{{ Intl.NumberFormat().format(this.sumCostPrice)  }}</h3>
                         </div>
                         </router-link>
                     </div>
                     <div class="col-6 pe-1">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">ЗП</h6>
-                            <h3 class="color-green-dark font-20 mb-0">{{ this.sumSalary.toFixed(2) }}</h3>
+                            <h3 class="color-green-dark font-20 mb-0">{{ Intl.NumberFormat().format(this.sumSalary.toFixed(2))}}</h3>
                         </div>
                     </div>
                     <div class="col-6 ps-1">
                         <router-link :to="{name: 'cookStat'}">
                         <div class="mx-0 mb-3">
                             <h6 class="font-12 font-800 text-uppercase opacity-30">Изготовление</h6>
-                            <h3 class="color-green-dark font-20 mb-0">{{  this.sumCostProduce }}</h3>
+                            <h3 class="color-green-dark font-20 mb-0">{{  Intl.NumberFormat().format(this.sumCostProduce)  }}</h3>
                         </div>
                         </router-link>
                     </div>
@@ -192,12 +243,13 @@
         beforeMount() {
             this.my_storage_id = localStorage.getItem('my_storage_id')
             this.my_storage_name = localStorage.getItem('my_storage_name')
+            this.my_storage_type = localStorage.getItem('my_storage_type')
+            this.df = localStorage.getItem('df')
+            this.dt = localStorage.getItem('dt')
         },
         async mounted() {
-            this.df = '2022-06-01 00:00:00'
-            this.dt = '2022-09-05 00:00:00'
 
-
+            // ЗАРПЛАТА
             // api/getSalary/total/2/100/2022-06-01 00:00:00/2022-09-05 00:00:00
             await axios.get('api/getSalary/total/'+this.my_storage_id+'/100/'+this.df+'/'+this.dt)
                 .then(res => {
@@ -208,45 +260,72 @@
                     console.error(this.message)
                 })
 
-            //api/getListGoodsMovements/2/2022-08-01/2022-09-01
-            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/'+this.df+'/'+this.dt)
+            // УТИЛИЗАЦИЯ
+            //api/getListGoodsMovements/21/null/trash/2022-08-01/2022-09-01
+            await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/null/trash/'+this.df+'/'+this.dt)
                 .then(res => {
-                    this.listMovements = res.data.data
-                    // this.listTrash = this.listMovements.filter(el => el.category=='trash')
-                    let totalCostPrice = 0
-                    let totalProduce = 0
-                    this.listMovements.forEach((el ,index) => {
-                        if(el.category == 'trash'){ // Утилизация
-                            this.sumTrash =+ el.amount * el.price
-                        }else
-                        if(el.category == 'move' && el.link_id !== null){
-                            // отгружена ГП
-                            // если null то это было перемещение сырья, а не ГП
-
-                            //console.log(el.link_id)
-                            totalProduce += parseFloat(el.amount) * parseFloat(el.price)
-                            this.sumProduce = totalProduce
-                            // получить данные про изготовление ГП
-                            // api/getMovementInfo/538
-                             axios.get('api/getMovementInfo/'+el.link_id)
-                                .then(res => {
-                                    totalCostPrice +=  Number.parseFloat(res.data.data.price) * Number.parseFloat(res.data.data.amount)
-                                    this.sumCostPrice = totalCostPrice.toFixed(2)
-                                    this.sumCostProduce = (this.sumProduce - this.sumCostPrice).toFixed(2)
-                                    console.log(el.link_id + ': '+res.data.data.price+' * '+res.data.data.amount+' === '+totalCostPrice)
-                                }).catch(err => {
-                                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
-                                    console.error(this.message)
-                                })
-                        }
-
+                    res.data.data.forEach((el ,index) => {
+                        this.sumTrash = +el.amount * el.price
                     })
-
-
-                }).catch(err => {
+                })
+                .catch(err => {
                     this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
                     console.error(this.message)
                 })
+
+            await axios.get('api/getReportAboutMadeProduct',
+                {params: {
+                    storage_id: this.my_storage_id,
+                    date_from: this.df,
+                    date_to: this.dt,
+                    }})
+                .then(res =>{
+                    console.log(res.data)
+                    this.sumCostPrice = res.data.self_cost
+                    this.sumCostProduce = res.data.profit
+                    this.sumProduce = res.data.market_cost
+                })
+                .catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+
+            //api/getListGoodsMovements/2/trash/2022-08-01/2022-09-01
+            // await axios.get('api/getListGoodsMovements/'+this.my_storage_id+'/move/'+this.df+'/'+this.dt)
+            //     .then(res => {
+            //         this.listMovements = res.data.data
+            //         // this.listTrash = this.listMovements.filter(el => el.category=='trash')
+            //         let totalCostPrice = 0
+            //         let totalProduce = 0
+            //         this.listMovements.forEach((el ,index) => {
+            //             if(el.category == 'move' && el.link_id !== null){
+            //                 // отгружена ГП
+            //                 // если null то это было перемещение сырья, а не ГП
+            //
+            //                 //console.log(el.link_id)
+            //                 totalProduce += parseFloat(el.amount) * parseFloat(el.price)
+            //                 this.sumProduce = totalProduce
+            //                 // получить данные про изготовление ГП
+            //                 // api/getMovementInfo/538
+            //                  axios.get('api/getMovementInfo/'+el.link_id)
+            //                     .then(res => {
+            //                         totalCostPrice +=  Number.parseFloat(res.data.data.price) * Number.parseFloat(res.data.data.amount)
+            //                         this.sumCostPrice = totalCostPrice.toFixed(2)
+            //                         this.sumCostProduce = (this.sumProduce - this.sumCostPrice).toFixed(2)
+            //                         console.log(el.link_id + ': '+res.data.data.price+' * '+res.data.data.amount+' === '+totalCostPrice)
+            //                     }).catch(err => {
+            //                         this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+            //                         console.error(this.message)
+            //                     })
+            //             }
+            //
+            //         })
+            //
+            //
+            //     }).catch(err => {
+            //         this.message = 'Error: ('+err.response+'): '+err;
+            //         console.error(this.message)
+            //     })
 
             // api/getSumMoneyMovementGoods/20/2022-08-01/2022-09-05
             this.otherSpending = 0

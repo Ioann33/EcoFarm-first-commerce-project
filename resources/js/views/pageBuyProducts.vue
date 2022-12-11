@@ -11,12 +11,24 @@
 
             <div class="card card-style p-4 overflow-visible">
 
-                <div class="row mb-0" v-for="(item, index) in buy_goods" :key="item.goods_id">
-                    <select-input :data="list_goods"
-                                  :label="'Товар '+ (index+1)"
-                                  :value="item.goods_id"
-                                  @getSelected="getGoodsId($event, index)">
-                    </select-input>
+                <div class="row mb-0" v-for="(item, index) in buy_goods" :key="index">
+                    <div class="position-relative pb-3">
+                        <label class="color-blue-dark position-absolute" style="z-index: 10; left: 25px; top: -12px; background-color: #fff; padding: 0 4px;">Продукт</label>
+                        <v-select :options="list_goods"
+                                  :value="'goods_id'"
+                                  :label="'goods_name'"
+                                  :placeholder="'выбрать продукт'"
+                                  @option:selected="changeGoods($event, index)"
+                                  @search="searchGoods"
+                        >
+                        </v-select>
+                    </div>
+
+<!--                    <select-input :data="list_goods"-->
+<!--                                  :label="'Товар '+ (index+1)"-->
+<!--                                  :value="item.goods_id"-->
+<!--                                  @getSelected="getGoodsId($event, index)">-->
+<!--                    </select-input>-->
 
                     <div class="col-12 d-flex justify-content-end">
                         <div class="form-check icon-check">
@@ -117,6 +129,7 @@
     import TitlePage from '../Components/Title'
     import SelectInput from "../Components/SelectInput"
     import cardBalance from "../Components/cardBalance";
+    import vSelect from "vue-select"
 
     export default {
         name: "pageBuyProducts",
@@ -124,7 +137,7 @@
             error,
             TitlePage,
             headBar, NavBar, NavBarMenu, SelectInput,
-            cardBalance
+            cardBalance, vSelect
         },
         data() {
             return {
@@ -156,9 +169,22 @@
         },
         mounted() {
             this.my_storage_id = localStorage.getItem('my_storage_id');
-            this.getAllowedGoods(this.my_storage_id)
+            // this.getAllowedGoods(this.my_storage_id)
         },
         methods: {
+            searchGoods(value){
+                if(!value) return;
+                axios.get('/api/searchStorageGoods/allowed/' + this.my_storage_id + '/'+value.toLowerCase()).then(res => {
+                    this.list_goods = res.data.data;
+                }).catch(err => {
+                    this.message = 'Error: ('+err.response.status+'): '+err.response.data.message;
+                    console.error(this.message)
+                })
+            },
+            changeGoods(value, index){
+                this.buy_goods[index].unit = value.unit;
+                this.buy_goods[index].goods_id = value.goods_id;
+            },
             async getAllowedGoods(storage_id){
                 const res = await axios.get(`/api/getStorageGoods/available/${storage_id}/all`);
                 if(!res.data){
@@ -172,9 +198,9 @@
                 res.data.data.forEach(el => {
                     if(el.type !=2) {
                         if(el.amount>0)
-                            name = el.name + ' ('+ el.amount+el.unit+' ➠ '+ el.price+'грн)'
+                            name = el.goods_name + ' ('+ el.amount+el.unit+' ➠ '+ el.price+'грн)'
                         else
-                            name = el.name
+                            name = el.goods_name
 
                        this.list_goods.push({
                             goods_id: el.goods_id,

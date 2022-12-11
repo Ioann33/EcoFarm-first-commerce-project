@@ -12,7 +12,9 @@ use App\Http\Resources\getListGoodsMovementsOnStoragesReasource;
 use App\Http\Resources\getListGoodsResource;
 use App\Http\Resources\GetMovementInfoResource;
 use App\Http\Resources\getMovementResource;
+use App\Http\Resources\getMovementResourceReview;
 use App\Http\Resources\Reports\getAllowedStoragesResource;
+use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\StorageAllowedGoodsResource;
 use App\Http\Resources\StorageGoodsPermitResource;
 use App\Http\Resources\StorageGoodsResource;
@@ -20,6 +22,7 @@ use App\Http\Resources\StorageResource;
 use App\Models\Goods;
 use App\Models\MainStore;
 use App\Models\Movements;
+use App\Models\MyModel\CheckGoodsRight;
 use App\Models\MyModel\HandleGoods;
 use App\Models\Orders;
 use App\Models\Recipe;
@@ -101,10 +104,28 @@ class GoodsController extends Controller
             $dir = 'storage_id_from';
         }
 
-        $movement = Movements::where($dir, '=', $request->id)
-            ->where('user_id_accepted', $operator,null)->get();
 
-        return getMovementResource::collection($movement);
+
+
+
+        $movement = Movements::query()->select()
+            ->where($dir, '=', $request->id)
+            ->where('user_id_accepted', $operator,null)
+            ->addSelect([
+                'user_name_created' => User::query()->select('name')->whereColumn('user_id_created','users.id'),
+                'user_name_accepted' => User::query()->select('name')->whereColumn('user_id_accepted','users.id'),
+                'storage_from_name' => Storages::query()->select('name')->whereColumn('storage_id_from','storages.id'),
+                'storage_to_name' => Storages::query()->select('name')->whereColumn('storage_id_to','storages.id'),
+                'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
+                'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
+                'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
+            ])
+            ->get();
+        return getMovementResourceReview::collection($movement);
+
+//        $movement = Movements::where($dir, '=', $request->id)
+//            ->where('user_id_accepted', $operator,null)->get();
+//        return getMovementResource::collection($movement);
     }
 
     public function goodsMovementPull(Request $request, LogService $service){
@@ -138,6 +159,15 @@ class GoodsController extends Controller
      */
     public function getStorageGoods(Request $request){
 
+        global $stockBalance;
+        $stockBalance = StockBalance::all();
+        $goods = StorageGoods::query()->select()
+            ->addSelect([
+                'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
+                'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
+                'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
+                'storage_name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id'),
+            ]);
         if ($request->storage_id === 'all') {
             if($request->goods_id === 'all') {
                 return response()->json([
@@ -148,7 +178,8 @@ class GoodsController extends Controller
 
 // вывод количества выбранного продукта на складах
 //            return dd($request->input());
-              $goods = StorageGoods::where('goods_id', $request->goods_id)->get();
+              $goods->where('goods_id', '=', $request->goods_id)
+                  ->get();
 /*
     [
         {
@@ -188,22 +219,45 @@ class GoodsController extends Controller
         }
 
         if ($request->goods_id === 'all'){
-            $goods = StorageGoods::all()
-                ->where('storage_id','=', $request->storage_id);
+            $goods->where('storage_id','=', $request->storage_id);
         }else{
-            $goods = StorageGoods::all()
-                ->where('storage_id','=', $request->storage_id)
+            $goods->where('storage_id','=', $request->storage_id)
                 ->where('goods_id', '=', $request->goods_id);
         }
-
         if ($request->key === 'allowed'){
-            $goods = StorageGoods::all()
-                ->where('storage_id','=', $request->storage_id);
-            return StorageAllowedGoodsResource::collection($goods);
+            $result = $goods->where('storage_id','=', $request->storage_id)
+                ->get();
+            return StorageAllowedGoodsResource::collection($result);
+        }
+        return StorageGoodsResource::collection($goods->get());
+
+    }
+
+
+    public function getStorageGoodsTwo(Request $request){
+
+        if ($request->key === 'available') {
+            $goods = DB::table('stock_balance')
+                ->join('goods', 'stock_balance.goods_id', '=', 'goods.id')
+                ->join('storages', 'stock_balance.storage_id', '=', 'storages.id')
+                ->select(DB::raw("stock_balance.storage_id as storage_id, storages.name as storage_name, stock_balance.goods_id as goods_id, goods.name as goods_name, goods.unit, goods.type, stock_balance.price, stock_balance.amount"));
+        }else{
+            $goods = DB::table('storage_goods')
+                ->join('goods', 'storage_goods.goods_id', '=','goods.id')
+                ->join('storages', 'storage_goods.storage_id', '=','storages.id')
+                ->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type, storages.id as storage_id, storages.name as storage_name, storages.type as storage_type"));
         }
 
-        return StorageGoodsResource::collection($goods);
+        if ($request->storage_id !== 'all'){
+            $goods->where('storage_id', '=', $request->storage_id);
+        }
 
+        if ($request->goods_id !== 'all'){
+            $goods->where('goods.id', '=',$request->goods_id);
+        }
+
+
+        return response()->json(['data' => $goods->get()]);
     }
 
 
@@ -270,6 +324,10 @@ class GoodsController extends Controller
 
     public function goodsMovementPush(Request $request, LogService $service)
     {
+        $permit = CheckGoodsRight::check($request->goods_id, $request->storage_id_to);
+        if ($permit){
+            return response()->json(['status'=>'error', 'message' => 'the goods does not allowed on this storage, you can^t push !']);
+        }
         DB::beginTransaction();
 
         try {
@@ -366,13 +424,18 @@ class GoodsController extends Controller
         $dateNow = date('Y-m-d H:i:s');
         $request = json_decode($request->getContent());
         $ingredients = $request->ingredients;
-
         try {
 
             $readyProductID = HandleGoods::moveGoods(null, $request->storage_id, $request->goods_id, $request->amount,'ready', null, null, $user_id, $dateNow);
 
-            foreach ($ingredients as $ingredient){
+            $movements = Movements::findOrFail($readyProductID['productID']);
+            $movements->link_id = $readyProductID['productID'];
+            $movements->save();
 
+            foreach ($ingredients as $ingredient){
+                if ($ingredient->goods_id === 'default'){
+                    continue;
+                }
                 HandleGoods::moveGoods($request->storage_id, null, $ingredient->goods_id, $ingredient->amount, 'ingredients', $readyProductID['productID'], null, $user_id, $dateNow);
 
             }
@@ -448,14 +511,26 @@ class GoodsController extends Controller
     }
 
     public function addGoods(Request $request, LogService $service){
+        $this->validate($request, [
+            'name' => 'unique:goods'
+        ]);
+        DB::beginTransaction();
         $addGoods = new Goods();
         $addGoods->name = $request->name;
         $addGoods->unit = $request->unit;
         $addGoods->type = $request->type;
         $addGoods->save();
         $id = $addGoods->id;
-        $service->newLog('addGoods', 'added new goods '.$id, $id);
-        return response()->json(['goods_id'=>$id, 'status'=>'ok', 'message'=>'added new goods ']);
+        $set = new StorageGoods();
+        $mainStore = MainStore::where('name', '=', 'main_storage')
+            ->get()
+            ->toArray();
+        $set->storage_id = $mainStore[0]['param'];
+        $set->goods_id = $id;
+        $set->save();
+        DB::commit();
+        $service->newLog('addGoods', 'added new goods '.$id.', and set permit on main storage', $id);
+        return response()->json(['goods_id'=>$id, 'status'=>'ok', 'message'=>'added new goods , and set permit on main storage']);
     }
 
     public function updateGoods(Request $request, LogService $service){
@@ -580,8 +655,7 @@ class GoodsController extends Controller
 
     public function getIngredients(Request $request){
 
-
-        $ready = Movements::find((int)$request->goods_id);
+        $ready = Movements::find((int)$request->movement_id);
         if ($ready){
             return getIngredientsReasource::make($ready);
         }else{
@@ -594,6 +668,15 @@ class GoodsController extends Controller
        $movements = Movements::where('goods_id', '=', $request->goods_id)
             ->where('date_created','>=', $request->date_from)
             ->where('date_created','<=', $request->date_to)
+           ->addSelect([
+               'user_name_created' => User::query()->select('name')->whereColumn('user_id_created','users.id'),
+               'user_name_accepted' => User::query()->select('name')->whereColumn('user_id_accepted','users.id'),
+               'storage_from_name' => Storages::query()->select('name')->whereColumn('storage_id_from','storages.id'),
+               'storage_to_name' => Storages::query()->select('name')->whereColumn('storage_id_to','storages.id'),
+               'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
+               'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
+               'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
+           ])
            ->orderBy('date_created', 'desc')
            ->orderBy('id', 'desc')
            ->get();
@@ -650,15 +733,18 @@ class GoodsController extends Controller
         DB::beginTransaction();
 
         try {
-            foreach ($request as $value){
+            foreach ($request->move as $value){
                 if (isset($value->storage_id_from)){
                     $category = 'move';
                 }else{
                     $category = 'grow';
                 }
-
+                $permit = CheckGoodsRight::check($value->goods_id, $value->storage_id_to);
+                if ($permit){
+                    return response()->json(['status'=>'error', 'message' => 'the goods ( '.GetName::goods($value->goods_id).' ) does not allowed on this storage ( '.GetName::storage($value->storage_id_to).' ), you can^t push, operation was canceled !']);
+                }
                 $push = HandleGoods::moveGoods($value->storage_id_from, $value->storage_id_to, $value->goods_id, $value->amount, $category);
-                $service->newLog('pushPackageGoods', ' push goods('.GetName::goods($value->goods_id).'), storage: '.GetName::storage($value->storage_id_from).' -> '.GetName::storage($value->storage_id_to).', amount: '.$value->amount.', category '.$category, $push['productID']);
+                $service->newLog('pushPackageGoods', $category.' goods('.GetName::goods($value->goods_id).'), storage: '.GetName::storage($value->storage_id_from).' -> '.GetName::storage($value->storage_id_to).', amount: '.$value->amount.', category '.$category, $push['productID']);
             }
         }catch (NotEnoughGoods $e){
             DB::rollBack();
@@ -669,7 +755,147 @@ class GoodsController extends Controller
         }
         DB::commit();
 
-        return response()->json(['status' => 'ok', 'message' => 'goods successful pushed']);
+        return response()->json(['status' => 'ok', 'message' => 'goods successful '.$category]);
+    }
+
+    public function getPermitOnBothStorages(Request $request){
+        $goods_id = [];
+        $goods = [];
+        $goodsOnFirst = DB::table('storage_goods')
+            ->where('storage_id', '=', $request->storage_id_from)
+            ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
+            ->get();
+
+        $goodsOnSecond = DB::table('storage_goods')
+            ->where('storage_id', '=', $request->storage_id_to)
+            ->join('goods', 'storage_goods.goods_id', '=','goods.id')->where('goods.name', 'like',"%$request->name%" )->select(DB::raw("goods.id as goods_id, goods.name as goods_name, goods.unit, goods.type as goods_type"))
+            ->get();
+
+        foreach ($goodsOnFirst as $item){
+            $goodsOnSecond[] = $item;
+        }
+
+        foreach ($goodsOnSecond as $value){
+            $goods_id[] = $value->goods_id;
+        }
+
+        $unique_value =  array_unique($goods_id);
+
+        $repeat_value = array_diff_assoc($goods_id, $unique_value);
+
+        foreach ($repeat_value as $value){
+            $goods_on_stock = StockBalance::query()
+                ->select(['goods_id','price','amount'])
+                ->where('storage_id','=', $request->storage_id_from)
+                ->where('goods_id', '=', $value)
+                ->addSelect([
+                    'goods_name' => Goods::query()->select('name')->whereColumn('goods_id', 'goods.id')
+                ])
+                ->get();
+
+            if (count($goods_on_stock)>0){
+
+                $goods[] = $goods_on_stock[0];
+            }
+        }
+        return response()->json($goods);
+    }
+
+    public function getMovementsInProgress(Request $request){
+
+
+        $progressMovements = Movements::query()
+            ->select()
+            ->where('user_id_accepted', '=', null);
+
+        if ($request->goods_id === 'all'){
+            return ListGoodsMovementResource::collection($progressMovements->get());
+        }
+        $progressMovements->where('goods_id', '=', $request->goods_id);
+
+
+        return ListGoodsMovementResource::collection($progressMovements->get());
+    }
+
+    public function removeReady(Request $request, LogService $logService)
+    {
+        $dateNow = date('Y-m-d H:i:s');
+        $user_id = Auth::id();
+        $this->validate($request, [
+            'link_id' => 'required'
+        ]);
+
+        $movementsReady = Movements::query()
+            ->select()
+            ->where('link_id', '=', $request->link_id)
+            ->get();
+        if (count($movementsReady) == 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Готовая продукция (партия #' . $request->link_id . ") не существует"
+            ]);
+        }
+
+
+        DB::beginTransaction();
+
+        $movements_id = [];
+
+        foreach ($movementsReady as $movement) {
+/* пример данных в БД:
+ category: ready
+ category: ingredients
+ category: ingredients
+ [category: move, user_id_accepted: null | {45}] - записи в БД с категорией move может и не быть - это в случае, если мы отметили перемещение
+ */
+            $movements_id[] = $movement->id;
+
+            if ($movement->category == 'move' && $movement->user_id_accepted !== null) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Готовая продукция(#'.$movement->goods_id.') уже оприходована('.$movement->date_accepted.'). Удаление невозможно'
+                ]);
+            } elseif ($movement->category == 'move') {
+                $isMove = true;
+            } else {
+                $isMove = false;
+            }
+        }
+
+
+        $goods_id = '';
+        $amount = '';
+
+        foreach ($movements_id as $id) {
+            $remove = Movements::findOrFail($id);
+            // проверяем не была ли раньше удалена запис с movements с категорией move.
+            //Если запись с категорией move была удалена ,то ready вернулся обратно на кухню и его теперь нужно удалить
+//            if (count($checkMovementReady) == 0 ){
+            if (!$isMove && $remove->category == 'ready')
+            {
+                $goods_id = $remove->goods_id;
+                $amount = $remove->amount;
+                HandleGoods::moveGoods($remove->storage_id_to, null, $remove->goods_id, $remove->amount, null, null, null, $user_id, $dateNow, $request->price, true);
+            }
+            elseif ($remove->category == 'ready')
+            {
+                $goods_id = $remove->goods_id;
+                $amount = $remove->amount;
+            }
+            elseif ($remove->category == 'ingredients')
+            {
+                HandleGoods::addGoodsOnStockBalance($remove->storage_id_from, $remove->goods_id, $remove->amount, $dateNow, $remove->price);
+            }
+            $remove->delete();
+        }
+
+        $logService->newLog('removeReady', 'продукт: ' . $goods_id . ' в количестве: ' . $amount . ' был удален с перемещений ', $goods_id);
+        DB::commit();
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Готовая продукция (партия #' . $request->link_id . ") была удалена"
+        ]);
+
     }
 
 }

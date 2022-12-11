@@ -4,9 +4,9 @@
         <nav-bar></nav-bar>
 
         <div class="page-content header-clear-medium">
-            <list-movements
+            <list-sales
                 :storage_id="my_storage_id"
-            ></list-movements>
+            ></list-sales>
         </div>
 
         <nav-bar-menu></nav-bar-menu>
@@ -19,14 +19,14 @@
     import NavBarMenu from "../Components/NavBarMenu";
     import error from "../Components/Error";
     import TitlePage from "../Components/Title";
-    import listMovements from "../Components/listMovements";
+    import listSales from "../Components/listSales";
 
     export default {
         name: "pagePreSale",
         components: {
             error,
             TitlePage,
-            headBar, NavBar, NavBarMenu, listMovements
+            headBar, NavBar, NavBarMenu, listSales
         },
         data(){
             return {

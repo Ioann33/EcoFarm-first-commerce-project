@@ -8,7 +8,10 @@ use App\Models\Money;
 use App\Models\Movements;
 use App\Models\MyModel\HandleGoods;
 use App\Models\MyModel\MoneyTransfer;
+use App\Models\Rate;
+use App\Models\Storages;
 use App\Models\TransactionCategory;
+use App\Models\User;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -198,7 +201,15 @@ class FinanceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function getMoneyByCategoryOnStorage(Request $request){
-        $sum = Money::where('date', '>=', $request->date_from)
+        $sum = Money::query()
+            ->select()
+            ->addSelect([
+                'storage_name' => Storages::query()->select('name')->whereColumn('storage_id','storages.id')
+            ])
+            ->addSelect([
+                'user_name' => User::query()->select('name')->whereColumn('user_id','users.id')
+            ])
+            ->where('date', '>=', $request->date_from)
             ->where('date', '<=', $request->date_to);
 
         if($request->storage_id != 'all') {
@@ -217,7 +228,12 @@ class FinanceController extends Controller
             $res = $sum->get();
         }
 
-        return response()->json(['sum'=>$res]);
+        if ($request->type == 'sum'){
+            return response()->json(['sum'=>$res]);
+        }
+        return response()->json([
+            'list'=>$res
+        ]);
     }
 /*
 {
@@ -339,6 +355,10 @@ class FinanceController extends Controller
 
                 $trance_id = MoneyTransfer::moneyTransfer($costProduct, $dateNow, $sale['storage_id'], 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], 700, $move_id['productID'], $user_id);
 
+                $movements = Movements::findOrFail($move_id['productID']);
+                $movements->link_id = $trance_id;
+                $movements->save();
+
                 $service->newLog('doSale', 'продажа товара '.$sale['goods_id'].',в количестве '.$sale['amount'].', по цене '. $sale['price'], $trance_id);
 
             }
@@ -366,6 +386,10 @@ class FinanceController extends Controller
                 $trance_id = MoneyTransfer::moneyTransfer(-$costProduct, $dateNow, $buy['storage_id'], 'покупка товара '.$buy['goods_id'].',в количестве '.$buy['amount'].', по цене '. $buy['price'], 800, $move_id['productID'],$user_id);
                 $service->newLog('doBuy', 'покупка товара '.$buy['goods_id'].', в количестве '.$buy['amount'].', по цене '. $buy['price'], $trance_id);
 
+                $movements = Movements::findOrFail($move_id['productID']);
+                $movements->link_id = $trance_id;
+                $movements->save();
+
             }
         }catch (NotEnoughGoods $e){
             DB::rollBack();
@@ -374,5 +398,10 @@ class FinanceController extends Controller
         DB::commit();
 
         return response()->json(['message'=>'покупка товара', 'status' => 'ok',]);
+    }
+
+    public function getRates()
+    {
+        return Rate::all();
     }
 }

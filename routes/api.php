@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/setOrderStatus/{status}/{id}', [\App\Http\Controllers\Orders\OrderController::class, 'setOrderStatus']);
     Route::get('/getStorageGoods/{key}/{storage_id}/{goods_id?}', [\App\Http\Controllers\Goods\GoodsController::class, 'getStorageGoods']);
     Route::get('/searchStorageGoods/{key}/{storage_id}/{name?}', [\App\Http\Controllers\Goods\GoodsController::class, 'searchStorageGoods']);
+    Route::get('/getPermitOnBothStorages/{storage_id_from}/{storage_id_to}/{name?}', [\App\Http\Controllers\Goods\GoodsController::class, 'getPermitOnBothStorages']);
     Route::get('/getMovement/{dir}/{status}/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovement']);
     Route::get('/getOrder/{order_id}', [\App\Http\Controllers\Orders\OrderController::class, 'getOrder']);
 
@@ -39,19 +40,23 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
 
 
-    Route::get('/getListGoodsMovements/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getListGoodsMovements']);
+    Route::get('/getListGoodsMovements/{storage_id_from}/{storage_id_to}/{category}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getListGoodsMovements']);
     Route::get('/getSumMoneyGoodsMovements/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSumMoneyGoodsMovements']);
     Route::get('/getSalary/{type}/{storage_id}/{category_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSalary']);
     Route::get('/getSaldo/{storage_id}/{date_from}/{date_to}', [\App\Http\Controllers\Reports\ReportController::class, 'getSaldo']);
     Route::get('/getLogs/{event}/{date_from?}/{date_to?}', [\App\Http\Controllers\Reports\ReportController::class, 'getLogs']);
+    Route::get('/getAdvancedLogs', [\App\Http\Controllers\Reports\ReportController::class, 'getAdvancedLogs']);
+    Route::get('/getReportAboutMadeProduct', [\App\Http\Controllers\Reports\ReportController::class, 'getReportAboutMadeProduct']);
     Route::get('/checkStockBalance/{storage_id}/{goods_id}/{action?}/{latest?}', [\App\Http\Controllers\Reports\ReportController::class, 'checkStockBalance']);
+    Route::get('/getListSales', [\App\Http\Controllers\Reports\ReportController::class, 'getListSales']);
 
     Route::get('/getFinance/{storage_id}/{type?}', [\App\Http\Controllers\Finance\FinanceController::class, 'getFinance']);
+    Route::get('/getRates', [\App\Http\Controllers\Finance\FinanceController::class, 'getRates']);
     Route::get('/costGoodsOnStock/{storage_id}/{type}', [\App\Http\Controllers\Goods\GoodsController::class, 'costGoods']);
     Route::get('/getMovementInfo/{id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovementInfo']);
     Route::get('/getListGoodsMovementsOnStorages/{goods_id}/{date_from}/{date_to}', [\App\Http\Controllers\Goods\GoodsController::class, 'getListGoodsMovementsOnStorages']);
     Route::get('/getListGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'getListGoods']);
-    Route::get('/getIngredients/{goods_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getIngredients']);
+    Route::get('/getIngredients/{movement_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getIngredients']);
     Route::get('/searchGoods/{name}', [\App\Http\Controllers\Goods\GoodsController::class, 'searchGoods']);
     Route::post('/GrowAndMoveOnMainStorage', [\App\Http\Controllers\Goods\GoodsController::class, 'GrowAndMoveOnMainStorage']);
     Route::post('/GrowAndMove', [\App\Http\Controllers\Goods\GoodsController::class, 'GrowAndMove']);
@@ -74,6 +79,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/updateRecipe', [\App\Http\Controllers\Goods\GoodsController::class, 'updateRecipe']);
     Route::post('/pushPackageGoods', [\App\Http\Controllers\Goods\GoodsController::class, 'pushPackageGoods']);
     Route::get('/getRecipe/{goods_id}', [\App\Http\Controllers\Goods\GoodsController::class, 'getRecipe']);
+    Route::get('/getMovementsInProgress', [\App\Http\Controllers\Goods\GoodsController::class, 'getMovementsInProgress']);
+    Route::get('/removeReady', [\App\Http\Controllers\Goods\GoodsController::class, 'removeReady']);
 
     Route::post('/addUser', [\App\Http\Controllers\User\UserController::class, 'addUser']);
     Route::post('/updateUser', [\App\Http\Controllers\User\UserController::class, 'updateUser']);
@@ -82,6 +89,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/setUserPermit', [\App\Http\Controllers\User\UserController::class, 'setUserPermit']);
     Route::get('/searchUser/{login}', [\App\Http\Controllers\User\UserController::class, 'searchUser']);
 
+
+    #############################api/V2
+
+    Route::get('/v2/getStorageGoods/{key}/{storage_id}/{goods_id?}', [\App\Http\Controllers\Goods\GoodsController::class, 'getStorageGoodsTwo']);
 });
 
 

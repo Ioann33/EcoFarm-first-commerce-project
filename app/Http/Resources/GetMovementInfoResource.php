@@ -52,7 +52,8 @@ class GetMovementInfoResource extends JsonResource
             "date_accepted" => $this->date_accepted,
             "link_id" => $this->link_id,
             "category" => $this->category,
-            "goods_type" => $this->goods->type
+            "goods_type" => $this->goods->type,
+            "unit" => $this->goods->unit
         ];
     }
 }

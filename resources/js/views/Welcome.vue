@@ -22,7 +22,14 @@
 
                         <div class="input-style no-borders has-icon validate-field mt-4">
                             <i class="fa fa-lock"></i>
-                            <input v-model="user_password"  type="password" class="form-control validate-password" id="form3a" placeholder="Пароль">
+                            <input
+                                v-model="user_password"
+                                v-on:keydown.enter="login"
+                                type="password"
+                                class="form-control validate-password"
+                                id="form3a"
+                                placeholder="Пароль"
+                            >
                             <label for="form3a" class="color-blue-dark font-10 mt-1">Пароль</label>
                             <i class="fa fa-times disabled invalid color-red-dark"></i>
                             <i class="fa fa-check disabled valid color-green-dark"></i>
@@ -30,10 +37,12 @@
                         </div>
 
                         <div class="d-flex mt-4 mb-4">
-                            <div class="w-50 font-11 pb-2 color text-start"><a href="#">ссылка куда то</a></div>
-                            <div class="w-50 font-11 pb-2 text-end"><a href="#">Забыл пароль</a></div>
+<!--                            <div class="w-50 font-11 pb-2 color text-start"><a href="#">ссылка куда то</a></div>-->
+<!--                            <div class="w-50 font-11 pb-2 text-end"><a href="#">Забыл пароль</a></div>-->
                         </div>
-                        <a @click.prevent="login" href="#" class="back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-900 bg-highlight">Вход</a>
+                        <a
+                            @click.prevent="login"
+                            href="#" class="back-button btn btn-full btn-m shadow-large rounded-sm text-uppercase font-900 bg-highlight">Вход</a>
                     </div>
                 </div>
                 <div v-if="error" class="mt-5 mx-3 alert alert-small rounded-s shadow-xl bg-red-dark login-error" role="alert">
@@ -49,6 +58,9 @@
 </template>
 
 <script>
+import moment from 'moment'
+
+
 export default {
     name: "Welcome",
     data() {
@@ -73,6 +85,16 @@ export default {
                         console.log('Auth...ok:');
                         console.log(r);
 
+
+                        // установлю диапазон даты для формирования фин отчености
+                        var df = moment().weekday(1).hour(8).minute(0).second(0).format("YYYY-MM-DD hh:mm:ss")
+                        var dt = moment().add(3,'day').hour(0).minute(0).second(0).format("YYYY-MM-DD 00:mm:ss")
+                        localStorage.setItem('df', df)
+                        localStorage.setItem('dt', dt)
+
+
+
+
                         localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN']);
 
                         axios.get('/api/getMainStorage/').then(res => {
@@ -96,6 +118,9 @@ export default {
                                 localStorage.setItem('my_storage_type', res.data.data[0].type)
                                 localStorage.setItem('my_storage_id', res.data.data[0].storage_id)
                                 localStorage.setItem('my_storage_name', res.data.data[0].name)
+                                // localStorage.setItem('df', res.data.data[0].name)
+                                // localStorage.setItem('dt', res.data.data[0].name)
+
 
                                 this.$router.push({name: 'home'});
 

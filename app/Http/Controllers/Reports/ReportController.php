@@ -5,46 +5,94 @@ namespace App\Http\Controllers\Reports;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Reports\ListGoodsMovementResource;
 use App\Http\Resources\Reports\ListSalaryResource;
+use App\Models\Goods;
 use App\Models\Log;
 use App\Models\Money;
 use App\Models\Movements;
 use App\Models\StockBalance;
+use App\Models\Storages;
+use App\Models\User;
 use App\Services\LogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Utils;
 
 class ReportController extends Controller
 {
-
-    public $moneyModel;
-
-    public $movementsModel;
-
-
-    public function __construct()
-    {
-        $this->moneyModel = Money::all();
-        $this->movementsModel = Movements::all();
-    }
-
     public function getListGoodsMovements(Request $request){
 
-        $listGoodsMovement = Movements::
-              where('date_accepted','>=', $request->date_from)
-            ->where('date_accepted','<=', $request->date_to)
-            ->where(function($query) use ($request) {
-                $query->where('storage_id_to', '=', $request->storage_id)
-                    ->orWhere('storage_id_from', '=', $request->storage_id);
-            })
-            ->orderBy('date_accepted', 'desc')
+//        return$exp = Movements::query()
+//            ->addSelect([
+//                'user_name_created' => User::query()->select('name')->whereColumn('user_id_created','users.id')
+//            ])
+//            ->addSelect([
+//                'storage_name_from' => Storages::query()->select('name')->whereColumn('storage_id_from','storages.id')
+//            ])
+//            ->addSelect([
+//                'storage_name_to' => Storages::query()->select('name')->whereColumn('storage_id_to','storages.id')
+//            ])
+//            ->addSelect([
+//                'goods_name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id')
+//            ])
+//            ->addSelect([
+//                'goods_unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id')
+//            ])
+//            ->addSelect([
+//                'goods_type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id')
+//            ])
+//            ->addSelect([
+//                'user_name_accepted' => User::query()->select('name')->whereColumn('user_id_accepted','users.id')
+//            ])
+//            ->where('date_accepted','>=', $request->date_from)
+//            ->where('date_accepted','<=', $request->date_to)
+//            ->where(function($query) use ($request) {
+//                $query->where('storage_id_to', '=', $request->storage_id)
+//                    ->orWhere('storage_id_from', '=', $request->storage_id);
+//            })
+//            ->orderBy('date_accepted', 'desc')->get();
+        $listGoodsMovement = Movements::query()->select()
+            ->where('date_created','>=', $request->date_from)
+            ->where('date_created','<=', $request->date_to)
+//            ->where(function($query) use ($request) {
+//                $query->where('storage_id_to', '=', $request->storage_id)
+//                    ->orWhere('storage_id_from', '=', $request->storage_id);
+//            })
+            ->addSelect([
+                'user_name_created' => User::query()->select('name')->whereColumn('user_id_created','users.id'),
+                'user_name_accepted' => User::query()->select('name')->whereColumn('user_id_accepted','users.id'),
+                'storage_from_name' => Storages::query()->select('name')->whereColumn('storage_id_from','storages.id'),
+                'storage_to_name' => Storages::query()->select('name')->whereColumn('storage_id_to','storages.id'),
+                'name' => Goods::query()->select('name')->whereColumn('goods_id','goods.id'),
+                'unit' => Goods::query()->select('unit')->whereColumn('goods_id','goods.id'),
+                'type' => Goods::query()->select('type')->whereColumn('goods_id','goods.id'),
+            ])
+            ->orderBy('date_accepted', 'desc');
 //            ->limit(30)
-            ->get();
-        return ListGoodsMovementResource::collection($listGoodsMovement);
+//            ->get();
+        if($request->storage_id_from == $request->storage_id_to){
+
+            $listGoodsMovement->where(function($query){
+                global $request;
+               $query->where('storage_id_from', '=', $request->storage_id_from)->orwhere('storage_id_to', '=', $request->storage_id_to);
+            });
+
+        }
+        elseif ($request->storage_id_from != 'null'){
+            $listGoodsMovement->where('storage_id_from', '=', $request->storage_id_from);
+        }
+        elseif ($request->storage_id_to != 'null'){
+            $listGoodsMovement->where('storage_id_to', '=', $request->storage_id_to);
+        }
+        if ($request->category !== 'all'){
+            $listGoodsMovement->where('category', '=', $request->category);
+        }
+
+        return ListGoodsMovementResource::collection($listGoodsMovement->get());
 
     }
 
     public function getSumMoneyGoodsMovements(Request $request){
-        $listGoodsMovement = $this->movementsModel
+        $listGoodsMovement = Movements::all()
             ->where('storage_id_from', '=', $request->storage_id)
             ->where('date_accepted','>=', $request->date_from)
             ->where('date_accepted','<=', $request->date_to)
@@ -56,14 +104,14 @@ class ReportController extends Controller
         return ['sum'=>$listGoodsMovement];
     }
      public function getSalary(Request $request){
-         $listSalary = $this->moneyModel
+         $listSalary = Money::query()->select()
              ->where('param_id', '=', $request->storage_id)
              ->where('category', '=', $request->category_id)
              ->where('date', '>=', $request->date_from)
              ->where('date', '<=', $request->date_to);
 
         if ($request->type === 'list'){
-            return ListSalaryResource::collection($listSalary);
+            return ListSalaryResource::collection($listSalary->get());
         }else{
             $totalSum = $listSalary->sum('size_pay');
             return response()->json(['sum' => $totalSum]);
@@ -72,12 +120,12 @@ class ReportController extends Controller
      }
 
      public function getSaldo(Request $request){
-        $salary = $this->moneyModel
+        $salary = Money::query()->select()
             ->where('param_id', '=', $request->storage_id)
             ->where('category', '=', 1)->where('date', '>=', $request->date_from)
             ->where('date', '<=', $request->date_to)
             ->sum('size_pay');
-        $spending = $this->moneyModel
+        $spending = Money::query()->select()
             ->where('param_id', '=', $request->storage_id)
             ->where('category', '=', 2)
             ->where('date', '>=', $request->date_from)
@@ -240,4 +288,78 @@ class ReportController extends Controller
              else
          return $logs = Log::where('event', '=', $request->event)->limit(25)->get();
      }
+
+     public function getAdvancedLogs(Request $request){
+         $this->validate($request,[
+             'limit' => 'integer'
+             ]);
+
+         $movements_full = DB::table('movements_full')->orderBy('date_created', 'desc')->limit($request->limit)->get();
+
+         return response()->json(['data' => $movements_full]);
+
+     }
+
+     public function getReportAboutMadeProduct(Request $request){
+         $this->validate($request,[
+             'storage_id'=>'integer'
+         ]);
+        $movements = Movements::query()
+            ->select(['amount', 'price', 'id'])->where('storage_id_to', '=', $request->storage_id)
+            ->where('category', '=', 'ready')
+            ->where('date_created', '>=', $request->date_from)
+            ->where('date_created', '<=', $request->date_to)
+            ->get();
+        $selfCost = null;
+        $marketCost = null;
+        $catMov = [];
+        $resArr = [];
+
+        foreach ($movements as $movement){
+            $catMov[] = $movement->id;
+            $selfCost+= $movement->amount * $movement->price;
+        }
+
+        foreach ($catMov as $value){
+            $movements = Movements::query()->select(['amount', 'price'])->where('link_id', '=', $value)->where('category', '=', 'move')->get();
+            if (isset($movements[0])){
+                $resArr[] = $movements[0];
+            }
+        }
+
+        foreach ($resArr as $item){
+            $marketCost+= $item->amount * $item->price;
+        }
+
+        $profit = $marketCost - $selfCost;
+
+        return response()->json([
+            'self_cost' => number_format($selfCost,2,'.',''),
+            'market_cost' => number_format($marketCost,2,'.',''),
+            'profit' => number_format($profit,2,'.','')
+        ]);
+    }
+
+    public function getListSales(Request $request){
+//        return $sales = Money::query()
+//            ->select()
+//            ->addSelect([
+//                'stock_price' => Movements::query()->select('price')->whereColumn('param_id','movements.id')
+//            ])
+//            ->addSelect([
+//                'amount' => Movements::query()->select('amount')->whereColumn('param_id','movements.id')
+//            ])
+//            ->addSelect([
+//                'goods_id' => Movements::query()->select('goods_id')->whereColumn('param_id','movements.id'),
+//            ])
+//            ->addSelect([
+//                'user_name' => User::query()->select('name')->whereColumn('user_id','users.id')
+//            ])
+//            ->where('storage_id', '=', $request->storage_id)
+//            ->where('category', '=', 700)
+//            ->where('date', '>=', $request->df)
+//            ->where('date', '<=', $request->dt)
+//            ->get();
+        return DB::select("select man.date as date, size_pay as size_pay,  mov.amount as amount, mov.price as stock_price, g.name as goods_name, g.unit as unit, u.name as user_name from money man left join movements mov on man.param_id = mov.id left join goods g on mov.goods_id = g.id left join users u on man.user_id = u.id where man.storage_id = {$request->storage_id} and man.category = 700 and date>='{$request->df}' and date<='{$request->dt}'");
+    }
 }

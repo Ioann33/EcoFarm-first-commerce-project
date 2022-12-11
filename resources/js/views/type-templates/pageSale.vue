@@ -40,14 +40,14 @@
 
                 <div class="col-6 ps-3 pe-2">
                     <!-- КУПИТЬ -->
-                    <router-link :to="{name: 'buyProducts'}">
-                        <div class="card card-style mx-0 mb-3">
-                            <div class="p-3 bg-blue-dark text-center">
-                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">
-                                    Купить </h1>
-                            </div>
-                        </div>
-                    </router-link>
+<!--                    <router-link :to="{name: 'buyProducts'}">-->
+<!--                        <div class="card card-style mx-0 mb-3">-->
+<!--                            <div class="p-3 bg-blue-dark text-center">-->
+<!--                                <h1 class="font-700 font-34  opacity-60 mb-0 text-center">-->
+<!--                                    Купить </h1>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </router-link>-->
                 </div>
 
 
@@ -109,6 +109,10 @@
 
         <router-link :to="{name: 'listMovements'}">
             <a href="">список операций</a>
+        </router-link>
+
+        <router-link :to="{name: 'listSales'}">
+            <div><a href="">продажи</a></div>
         </router-link>
 
         <list-goods :storage_id="this.my_storage_id"></list-goods>
